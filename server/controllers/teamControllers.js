@@ -20,7 +20,15 @@ const createTeam = async (req, res) => {
       });
     }
 
-    // Team creation code will come next
+    const team = await Team.create({
+      teamName: teamName.toLowerCase(),
+      igl: req.user._id,
+      players: [req.user._id],
+    });
+    res.status(201).json({
+      message: "Team created successfully",
+      team,
+    });
   } catch (error) {
     res.status(500).json({
       message: error.message,
