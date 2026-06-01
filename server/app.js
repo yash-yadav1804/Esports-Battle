@@ -13,8 +13,9 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
+const teamRoutes = require("./routes/teamRoutes");
 app.use("/api/auth", authRoutes);
-
+app.use("/api/teams", teamRoutes);
 // Test Route
 app.get("/", (req, res) => {
   res.send("Esports API Running");
