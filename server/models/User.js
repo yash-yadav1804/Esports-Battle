@@ -20,6 +20,8 @@ const userSchema = new mongoose.Schema(
     },
     bgmiUID: {
       type: String,
+      required: true,
+      unique: true,
     },
 
     role: {
