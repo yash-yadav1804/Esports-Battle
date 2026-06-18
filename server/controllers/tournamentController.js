@@ -183,6 +183,50 @@ const leaveTournament = async (req, res) => {
     });
   }
 };
+const startTournament = async (req, res) => {
+  try {
+    const { tournamentId } = req.params;
+
+    const tournament = await Tournament.findById(tournamentId);
+
+    if (!tournament) {
+      return res.status(404).json({
+        message: "Tournament not found",
+      });
+    }
+
+    if (tournament.status === "live") {
+      return res.status(400).json({
+        message: "Tournament is already live",
+      });
+    }
+
+    if (tournament.status === "completed") {
+      return res.status(400).json({
+        message: "Tournament is already completed",
+      });
+    }
+
+    if (tournament.registeredTeams.length === 0) {
+      return res.status(400).json({
+        message: "No teams registered",
+      });
+    }
+
+    tournament.status = "live";
+
+    await tournament.save();
+
+    res.status(200).json({
+      message: "Tournament started successfully",
+      tournament,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
 
 module.exports = {
   createTournament,
@@ -190,4 +234,5 @@ module.exports = {
   getAllTournaments,
   getTournamentById,
   leaveTournament,
+  startTournament,
 };

@@ -4,6 +4,8 @@ const {
   registerTeam,
   getAllTournaments,
   getTournamentById,
+  leaveTournament,
+  startTournament,
 } = require("../controllers/tournamentController");
 const protect = require("../middleware/authMiddleware");
 const authorizeRoles = require("../middleware/roleMiddleware");
@@ -16,8 +18,15 @@ router.post(
   authorizeRoles("admin"),
   createTournament,
 );
+router.post("/leave/:tournamentId", protect, leaveTournament);
 router.post("/register/:tournamentId", protect, registerTeam);
 router.get("/", getAllTournaments);
 router.get("/:tournamentId", getTournamentById);
+router.patch(
+  "/start/:tournamentId",
+  protect,
+  authorizeRoles("admin"),
+  startTournament,
+);
 
 module.exports = router;
