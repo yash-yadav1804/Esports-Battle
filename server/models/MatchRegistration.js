@@ -40,5 +40,14 @@ const matchRegistrationSchema = new mongoose.Schema(
     timestamps: true,
   },
 );
+matchRegistrationSchema.index(
+  {
+    player: 1,
+    matchRoom: 1,
+  },
+  {
+    unique: true,
+  },
+);
 
 module.exports = mongoose.model("MatchRegistration", matchRegistrationSchema);
