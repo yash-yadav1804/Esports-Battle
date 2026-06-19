@@ -32,8 +32,8 @@ const matchRegistrationSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["pending", "approved", "rejected"],
-      default: "pending",
+      enum: ["joined", "left"],
+      default: "joined",
     },
   },
   {
