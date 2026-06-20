@@ -1,15 +1,12 @@
 const express = require("express");
-const { createMatchRoom } = require("../controllers/matchRoomController");
+
+const { addMatchResult } = require("../controllers/matchResultController");
+
 const protect = require("../middleware/authMiddleware");
 const { authorizeRoles } = require("../middleware/roleMiddleware");
 
 const router = express.Router();
 
-router.post(
-  "/create/:tournamentId",
-  protect,
-  authorizeRoles("admin"),
-  createMatchRoom,
-);
+router.post("/add", protect, authorizeRoles("admin"), addMatchResult);
 
 module.exports = router;
