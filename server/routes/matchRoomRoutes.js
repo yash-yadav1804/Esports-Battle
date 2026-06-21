@@ -1,5 +1,8 @@
 const express = require("express");
-const { createMatchRoom } = require("../controllers/matchRoomController");
+const {
+  createMatchRoom,
+  getAllMatchRooms,
+} = require("../controllers/matchRoomController");
 const protect = require("../middleware/authMiddleware");
 const { authorizeRoles } = require("../middleware/roleMiddleware");
 
@@ -11,5 +14,6 @@ router.post(
   authorizeRoles("admin"),
   createMatchRoom,
 );
+router.get("/", getAllMatchRooms);
 
 module.exports = router;

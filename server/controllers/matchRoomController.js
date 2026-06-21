@@ -4,17 +4,14 @@ const Tournament = require("../models/Tournament");
 const createMatchRoom = async (req, res) => {
   try {
     const { tournamentId } = req.params;
-
     const { roomId, roomPassword, matchNumber } = req.body;
 
-    // Required fields validation
     if (!roomId || !roomPassword) {
       return res.status(400).json({
         message: "Please fill all required fields",
       });
     }
 
-    // Find tournament
     const tournament = await Tournament.findById(tournamentId);
 
     if (!tournament) {
@@ -23,17 +20,13 @@ const createMatchRoom = async (req, res) => {
       });
     }
 
-    // Tournament validation
     if (tournament.status === "completed") {
       return res.status(400).json({
         message: "Tournament already completed",
       });
     }
 
-    // Check room already exists
-    const existingRoom = await MatchRoom.findOne({
-      roomId,
-    });
+    const existingRoom = await MatchRoom.findOne({ roomId });
 
     if (existingRoom) {
       return res.status(400).json({
@@ -41,7 +34,6 @@ const createMatchRoom = async (req, res) => {
       });
     }
 
-    // Create room
     const room = await MatchRoom.create({
       roomId,
       roomPassword,
@@ -61,6 +53,21 @@ const createMatchRoom = async (req, res) => {
   }
 };
 
+const getAllMatchRooms = async (req, res) => {
+  try {
+    const rooms = await MatchRoom.find()
+      .populate("tournament", "title game")
+      .populate("createdBy", "name");
+
+    res.status(200).json(rooms);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   createMatchRoom,
+  getAllMatchRooms,
 };
