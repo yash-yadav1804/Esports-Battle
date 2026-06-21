@@ -40,7 +40,22 @@ const addMatchResult = async (req, res) => {
     });
   }
 };
+const getAllMatchResults = async (req, res) => {
+  try {
+    const results = await MatchResult.find()
+      .populate("team", "teamName")
+      .populate("tournament", "title")
+      .populate("matchRoom", "roomId");
+
+    res.status(200).json(results);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
 
 module.exports = {
   addMatchResult,
+  getAllMatchResults,
 };

@@ -9,12 +9,12 @@ const matchResultSchema = new mongoose.Schema(
     },
     tournament: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Team",
+      ref: "Tournament",
       required: true,
     },
     matchRoom: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Team",
+      ref: "MatchRoom",
       required: true,
     },
     kills: {
@@ -26,7 +26,7 @@ const matchResultSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    killsPoints: {
+    killPoints: {
       type: Number,
       required: true,
       default: 0,
