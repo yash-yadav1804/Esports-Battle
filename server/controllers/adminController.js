@@ -1,9 +1,9 @@
+const User = require("../models/User");
+const Team = require("../models/Team");
 const Tournament = require("../models/Tournament");
 const MatchRoom = require("../models/MatchRoom");
 const MatchResult = require("../models/MatchResult");
 const PrizeDistribution = require("../models/PrizeDistribution");
-const Team = require("../models/Team");
-const User = require("../models/User");
 
 const getAllUsers = async (req, res) => {
   try {
@@ -193,6 +193,70 @@ const updateTeam = async (req, res) => {
     });
   }
 };
+const getDashboardStats = async (req, res) => {
+  try {
+    const totalUsers = await User.countDocuments();
+    const totalPlayers = await User.countDocuments({ role: "player" });
+    const totalAdmins = await User.countDocuments({ role: "admin" });
+
+    const totalTeams = await Team.countDocuments();
+
+    const totalTournaments = await Tournament.countDocuments();
+    const upcomingTournaments = await Tournament.countDocuments({
+      status: "upcoming",
+    });
+    const liveTournaments = await Tournament.countDocuments({
+      status: "live",
+    });
+    const completedTournaments = await Tournament.countDocuments({
+      status: "completed",
+    });
+
+    const totalMatchRooms = await MatchRoom.countDocuments();
+    const totalMatchResults = await MatchResult.countDocuments();
+
+    const prizes = await PrizeDistribution.find();
+
+    let totalPrizeDistributed = 0;
+
+    prizes.forEach((prize) => {
+      totalPrizeDistributed += prize.firstPlace?.amount || 0;
+      totalPrizeDistributed += prize.secondPlace?.amount || 0;
+      totalPrizeDistributed += prize.thirdPlace?.amount || 0;
+    });
+
+    res.status(200).json({
+      message: "Dashboard stats fetched successfully",
+      stats: {
+        users: {
+          totalUsers,
+          totalPlayers,
+          totalAdmins,
+        },
+        teams: {
+          totalTeams,
+        },
+        tournaments: {
+          totalTournaments,
+          upcomingTournaments,
+          liveTournaments,
+          completedTournaments,
+        },
+        matches: {
+          totalMatchRooms,
+          totalMatchResults,
+        },
+        prizes: {
+          totalPrizeDistributed,
+        },
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
 module.exports = {
   getAllUsers,
   deleteUser,
@@ -200,4 +264,5 @@ module.exports = {
   deleteTournament,
   updateTournament,
   updateTeam,
+  getDashboardStats,
 };
