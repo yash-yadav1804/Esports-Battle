@@ -316,6 +316,62 @@ const completeTournament = async (req, res) => {
     });
   }
 };
+const getTournamentHistory = async (req, res) => {
+  try {
+    const tournaments = await Tournament.find({
+      status: "completed",
+    }).sort({ updatedAt: -1 });
+
+    const history = [];
+
+    for (const tournament of tournaments) {
+      const prize = await PrizeDistribution.findOne({
+        tournament: tournament._id,
+      })
+        .populate("firstPlace.team", "teamName")
+        .populate("secondPlace.team", "teamName")
+        .populate("thirdPlace.team", "teamName");
+
+      history.push({
+        tournamentId: tournament._id,
+        tournamentName: tournament.title,
+        game: tournament.game,
+        mode: tournament.mode,
+        prizePool: tournament.prizePool,
+        entryFee: tournament.entryFee,
+        totalRegisteredTeams: tournament.registeredTeams.length,
+
+        winner: prize?.firstPlace?.team?.teamName || "No winner found",
+
+        firstPlace: {
+          team: prize?.firstPlace?.team?.teamName || null,
+          amount: prize?.firstPlace?.amount || 0,
+        },
+
+        secondPlace: {
+          team: prize?.secondPlace?.team?.teamName || null,
+          amount: prize?.secondPlace?.amount || 0,
+        },
+
+        thirdPlace: {
+          team: prize?.thirdPlace?.team?.teamName || null,
+          amount: prize?.thirdPlace?.amount || 0,
+        },
+
+        completedAt: tournament.updatedAt,
+      });
+    }
+
+    res.status(200).json({
+      count: history.length,
+      history,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
 module.exports = {
   createTournament,
   registerTeam,
@@ -324,4 +380,5 @@ module.exports = {
   leaveTournament,
   startTournament,
   completeTournament,
+  getTournamentHistory,
 };
