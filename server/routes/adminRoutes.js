@@ -6,6 +6,7 @@ const {
   deleteTeam,
   deleteTournament,
   updateTournament,
+  updateTeam,
 } = require("../controllers/adminController");
 
 const protect = require("../middleware/authMiddleware");
@@ -29,5 +30,5 @@ router.patch(
   authorizeRoles("admin"),
   updateTournament,
 );
-
+router.patch("/teams/:teamId", protect, authorizeRoles("admin"), updateTeam);
 module.exports = router;

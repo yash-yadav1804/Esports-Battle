@@ -141,10 +141,63 @@ const updateTournament = async (req, res) => {
     });
   }
 };
+const updateTeam = async (req, res) => {
+  try {
+    const { teamId } = req.params;
+    const { teamName, maxPlayers } = req.body;
+
+    const team = await Team.findById(teamId);
+
+    if (!team) {
+      return res.status(404).json({
+        message: "Team not found",
+      });
+    }
+
+    if (teamName !== undefined) {
+      const formattedTeamName = teamName.toLowerCase();
+
+      const existingTeam = await Team.findOne({
+        teamName: formattedTeamName,
+        _id: { $ne: teamId },
+      });
+
+      if (existingTeam) {
+        return res.status(400).json({
+          message: "Team name already exists",
+        });
+      }
+
+      team.teamName = formattedTeamName;
+    }
+
+    if (maxPlayers !== undefined) {
+      if (maxPlayers < team.players.length) {
+        return res.status(400).json({
+          message: "Max players cannot be less than current team players",
+        });
+      }
+
+      team.maxPlayers = maxPlayers;
+    }
+
+    await team.save();
+
+    res.status(200).json({
+      message: "Team updated successfully",
+      team,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
 module.exports = {
   getAllUsers,
   deleteUser,
   deleteTeam,
   deleteTournament,
   updateTournament,
+  updateTeam,
 };
