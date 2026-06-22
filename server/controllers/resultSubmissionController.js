@@ -3,6 +3,7 @@ const MatchResult = require("../models/MatchResult");
 const Team = require("../models/Team");
 const Tournament = require("../models/Tournament");
 const MatchRoom = require("../models/MatchRoom");
+const Notification = require("../models/Notification");
 
 const submitResult = async (req, res) => {
   try {
@@ -126,7 +127,6 @@ const getPendingSubmissions = async (req, res) => {
     });
   }
 };
-
 const approveSubmission = async (req, res) => {
   try {
     const { submissionId } = req.params;
@@ -151,9 +151,6 @@ const approveSubmission = async (req, res) => {
     });
 
     if (existingResult) {
-      submission.status = "approved";
-      await submission.save();
-
       return res.status(400).json({
         message: "Match result already exists for this team and match room",
       });
@@ -184,6 +181,13 @@ const approveSubmission = async (req, res) => {
     submission.status = "approved";
     await submission.save();
 
+    await Notification.create({
+      user: submission.submittedBy,
+      title: "Result Approved",
+      message: `Your result has been approved. Total points: ${totalPoints}`,
+      type: "result_submission",
+    });
+
     res.status(200).json({
       message: "Submission approved and match result created successfully",
       matchResult,
@@ -194,7 +198,6 @@ const approveSubmission = async (req, res) => {
     });
   }
 };
-
 const rejectSubmission = async (req, res) => {
   try {
     const { submissionId } = req.params;
@@ -219,6 +222,13 @@ const rejectSubmission = async (req, res) => {
 
     await submission.save();
 
+    await Notification.create({
+      user: submission.submittedBy,
+      title: "Result Rejected",
+      message: submission.adminNote,
+      type: "result_submission",
+    });
+
     res.status(200).json({
       message: "Submission rejected successfully",
       submission,
@@ -229,7 +239,6 @@ const rejectSubmission = async (req, res) => {
     });
   }
 };
-
 const getMySubmissions = async (req, res) => {
   try {
     const submissions = await ResultSubmission.find({

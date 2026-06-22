@@ -13,6 +13,7 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
+const notificationRoutes = require("./routes/notificationRoutes");
 const profileRoutes = require("./routes/profileRoutes");
 const teamRoutes = require("./routes/teamRoutes");
 const tournamentRoutes = require("./routes/tournamentRoutes");
@@ -25,7 +26,9 @@ const dashboardRoutes = require("./routes/dashboardRoutes");
 const teamRequestRoutes = require("./routes/teamRequestRoutes");
 const prizeRoutes = require("./routes/prizeRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const resultSubmissionRoutes = require("./routes/resultSubmissionRoutes");
 app.use("/api/admin", adminRoutes);
+app.use("/api/notifications", notificationRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/tournaments", tournamentRoutes);
 app.use("/api/auth", authRoutes);
@@ -38,7 +41,7 @@ app.use("/api/winner", winnerRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/team-requests", teamRequestRoutes);
 app.use("/api/prizes", prizeRoutes);
-// Test Route
+app.use("/api/result-submissions", resultSubmissionRoutes);
 
 app.get("/", (req, res) => {
   res.send("Esports API Running");
