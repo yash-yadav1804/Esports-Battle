@@ -13,6 +13,7 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
+const profileRoutes = require("./routes/profileRoutes");
 const teamRoutes = require("./routes/teamRoutes");
 const tournamentRoutes = require("./routes/tournamentRoutes");
 const matchRoomRoutes = require("./routes/matchRoomRoutes");
@@ -25,6 +26,7 @@ const teamRequestRoutes = require("./routes/teamRequestRoutes");
 const prizeRoutes = require("./routes/prizeRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 app.use("/api/admin", adminRoutes);
+app.use("/api/profile", profileRoutes);
 app.use("/api/tournaments", tournamentRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/teams", teamRoutes);
