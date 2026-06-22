@@ -23,6 +23,8 @@ const winnerRoutes = require("./routes/winnerRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const teamRequestRoutes = require("./routes/teamRequestRoutes");
 const prizeRoutes = require("./routes/prizeRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+app.use("/api/admin", adminRoutes);
 app.use("/api/tournaments", tournamentRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/teams", teamRoutes);
