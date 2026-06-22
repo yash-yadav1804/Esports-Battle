@@ -6,6 +6,7 @@ const {
   getTournamentById,
   leaveTournament,
   startTournament,
+  completeTournament,
 } = require("../controllers/tournamentController");
 const protect = require("../middleware/authMiddleware");
 
@@ -28,6 +29,12 @@ router.patch(
   protect,
   authorizeRoles("admin"),
   startTournament,
+);
+router.patch(
+  "/complete/:tournamentId",
+  protect,
+  authorizeRoles("admin"),
+  completeTournament,
 );
 
 module.exports = router;

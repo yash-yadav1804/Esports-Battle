@@ -1,5 +1,7 @@
 const Tournament = require("../models/Tournament");
 const Team = require("../models/Team");
+const MatchResult = require("../models/MatchResult");
+const PrizeDistribution = require("../models/PrizeDistribution");
 
 const createTournament = async (req, res) => {
   try {
@@ -227,7 +229,93 @@ const startTournament = async (req, res) => {
     });
   }
 };
+const completeTournament = async (req, res) => {
+  try {
+    const { tournamentId } = req.params;
 
+    const tournament = await Tournament.findById(tournamentId);
+
+    if (!tournament) {
+      return res.status(404).json({
+        message: "Tournament not found",
+      });
+    }
+
+    if (tournament.status === "completed") {
+      return res.status(400).json({
+        message: "Tournament already completed",
+      });
+    }
+
+    const results = await MatchResult.find({
+      tournament: tournamentId,
+    }).populate("team", "teamName");
+
+    if (results.length === 0) {
+      return res.status(400).json({
+        message: "No match results found",
+      });
+    }
+
+    const leaderboard = {};
+
+    results.forEach((result) => {
+      const teamId = result.team._id.toString();
+
+      if (!leaderboard[teamId]) {
+        leaderboard[teamId] = {
+          team: result.team,
+          points: 0,
+        };
+      }
+
+      leaderboard[teamId].points += result.totalPoints;
+    });
+
+    const sortedTeams = Object.values(leaderboard).sort(
+      (a, b) => b.points - a.points,
+    );
+
+    const prizePool = tournament.prizePool;
+
+    const firstPrize = Math.floor(prizePool * 0.5);
+    const secondPrize = Math.floor(prizePool * 0.3);
+    const thirdPrize = Math.floor(prizePool * 0.2);
+
+    await PrizeDistribution.create({
+      tournament: tournamentId,
+
+      firstPlace: {
+        team: sortedTeams[0]?.team?._id,
+        amount: firstPrize,
+      },
+
+      secondPlace: {
+        team: sortedTeams[1]?.team?._id,
+        amount: secondPrize,
+      },
+
+      thirdPlace: {
+        team: sortedTeams[2]?.team?._id,
+        amount: thirdPrize,
+      },
+    });
+
+    tournament.status = "completed";
+
+    await tournament.save();
+
+    res.status(200).json({
+      message: "Tournament completed successfully",
+      winner: sortedTeams[0]?.team?.teamName,
+      prizePool,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
 module.exports = {
   createTournament,
   registerTeam,
@@ -235,4 +323,5 @@ module.exports = {
   getTournamentById,
   leaveTournament,
   startTournament,
+  completeTournament,
 };
