@@ -2,37 +2,67 @@ const Tournament = require("../models/Tournament");
 const Team = require("../models/Team");
 const MatchResult = require("../models/MatchResult");
 const PrizeDistribution = require("../models/PrizeDistribution");
+const Notification = require("../models/Notification");
 
+// notify all players of registered teams
+const notifyTournamentPlayers = async (tournament, title, message) => {
+  const teams = await Team.find({
+    _id: { $in: tournament.registeredTeams },
+  });
+
+  const userIds = new Set();
+
+  teams.forEach((team) => {
+    team.players.forEach((playerId) => {
+      userIds.add(playerId.toString());
+    });
+
+    userIds.add(team.igl.toString());
+  });
+
+  const notifications = Array.from(userIds).map((userId) => ({
+    user: userId,
+    title,
+    message,
+    type: "tournament",
+  }));
+
+  if (notifications.length > 0) {
+    await Notification.insertMany(notifications);
+  }
+};
+
+// Create Tournament
 const createTournament = async (req, res) => {
   try {
     const { title, game, mode, entryFee, prizePool, maxTeams, startDate } =
       req.body;
 
-    // Required fields validation
     if (!title || !game || !mode || !startDate) {
       return res.status(400).json({
         message: "Please fill all required fields",
       });
     }
 
-    // Number validation
-    if (isNaN(entryFee) || isNaN(prizePool)) {
+    if (entryFee !== undefined && isNaN(entryFee)) {
       return res.status(400).json({
-        message: "Entry fee and prize pool must be numbers",
+        message: "Entry fee must be a number",
       });
     }
 
-    // Negative value validation
+    if (prizePool !== undefined && isNaN(prizePool)) {
+      return res.status(400).json({
+        message: "Prize pool must be a number",
+      });
+    }
+
     if (entryFee < 0 || prizePool < 0) {
       return res.status(400).json({
         message: "Value cannot be negative",
       });
     }
 
-    // Duplicate tournament check
-    const existingTournament = await Tournament.findOne({
-      title,
-    });
+    const existingTournament = await Tournament.findOne({ title });
 
     if (existingTournament) {
       return res.status(400).json({
@@ -40,7 +70,6 @@ const createTournament = async (req, res) => {
       });
     }
 
-    // Create tournament
     const tournament = await Tournament.create({
       title,
       game,
@@ -52,7 +81,6 @@ const createTournament = async (req, res) => {
       createdBy: req.user._id,
     });
 
-    // Success response
     res.status(201).json({
       message: "Tournament created successfully",
       tournament,
@@ -64,16 +92,12 @@ const createTournament = async (req, res) => {
   }
 };
 
+// Register Team in Tournament
 const registerTeam = async (req, res) => {
   try {
     const { tournamentId } = req.params;
 
-    console.log("Tournament ID:", tournamentId);
-    console.log("Logged In User ID:", req.user._id);
-
     const tournament = await Tournament.findById(tournamentId);
-
-    console.log("Tournament:", tournament);
 
     if (!tournament) {
       return res.status(404).json({
@@ -81,17 +105,27 @@ const registerTeam = async (req, res) => {
       });
     }
 
+    if (tournament.status === "completed") {
+      return res.status(400).json({
+        message: "Cannot register in completed tournament",
+      });
+    }
+
     const team = await Team.findOne({
       players: req.user._id,
     });
-    console.log("Team Found:", team);
+
     if (!team) {
       return res.status(400).json({
         message: "You are not in any team",
       });
     }
 
-    if (tournament.registeredTeams.includes(team._id)) {
+    const alreadyRegistered = tournament.registeredTeams.some(
+      (teamId) => teamId.toString() === team._id.toString(),
+    );
+
+    if (alreadyRegistered) {
       return res.status(400).json({
         message: "Team already registered",
       });
@@ -117,9 +151,11 @@ const registerTeam = async (req, res) => {
     });
   }
 };
+
+// Get All Tournaments
 const getAllTournaments = async (req, res) => {
   try {
-    const tournaments = await Tournament.find();
+    const tournaments = await Tournament.find().sort({ createdAt: -1 });
 
     res.status(200).json(tournaments);
   } catch (error) {
@@ -128,16 +164,21 @@ const getAllTournaments = async (req, res) => {
     });
   }
 };
+
+// Get Tournament By ID
 const getTournamentById = async (req, res) => {
   try {
     const { tournamentId } = req.params;
+
     const tournament =
       await Tournament.findById(tournamentId).populate("registeredTeams");
+
     if (!tournament) {
       return res.status(404).json({
         message: "Tournament not found",
       });
     }
+
     res.status(200).json(tournament);
   } catch (error) {
     res.status(500).json({
@@ -146,26 +187,46 @@ const getTournamentById = async (req, res) => {
   }
 };
 
+// Leave Tournament
 const leaveTournament = async (req, res) => {
   try {
     const { tournamentId } = req.params;
 
     const tournament = await Tournament.findById(tournamentId);
 
-    const team = await Team.findOne({
-      players: req.user._id,
-    });
     if (!tournament) {
       return res.status(404).json({
         message: "Tournament not found",
       });
     }
+
+    if (tournament.status === "live") {
+      return res.status(400).json({
+        message: "Cannot leave tournament after it has started",
+      });
+    }
+
+    if (tournament.status === "completed") {
+      return res.status(400).json({
+        message: "Cannot leave completed tournament",
+      });
+    }
+
+    const team = await Team.findOne({
+      players: req.user._id,
+    });
+
     if (!team) {
       return res.status(400).json({
         message: "You are not in any team",
       });
     }
-    if (!tournament.registeredTeams.includes(team._id)) {
+
+    const isRegistered = tournament.registeredTeams.some(
+      (teamId) => teamId.toString() === team._id.toString(),
+    );
+
+    if (!isRegistered) {
       return res.status(400).json({
         message: "Team is not registered in this tournament",
       });
@@ -185,6 +246,8 @@ const leaveTournament = async (req, res) => {
     });
   }
 };
+
+// Start Tournament
 const startTournament = async (req, res) => {
   try {
     const { tournamentId } = req.params;
@@ -219,6 +282,12 @@ const startTournament = async (req, res) => {
 
     await tournament.save();
 
+    await notifyTournamentPlayers(
+      tournament,
+      "Tournament Started",
+      `${tournament.title} has started. Join your match room on time.`,
+    );
+
     res.status(200).json({
       message: "Tournament started successfully",
       tournament,
@@ -229,6 +298,8 @@ const startTournament = async (req, res) => {
     });
   }
 };
+
+// Complete Tournament
 const completeTournament = async (req, res) => {
   try {
     const { tournamentId } = req.params;
@@ -305,6 +376,12 @@ const completeTournament = async (req, res) => {
 
     await tournament.save();
 
+    await notifyTournamentPlayers(
+      tournament,
+      "Tournament Completed",
+      `${tournament.title} has been completed. Winner: ${sortedTeams[0]?.team?.teamName}`,
+    );
+
     res.status(200).json({
       message: "Tournament completed successfully",
       winner: sortedTeams[0]?.team?.teamName,
@@ -316,6 +393,8 @@ const completeTournament = async (req, res) => {
     });
   }
 };
+
+// Completed Tournament History
 const getTournamentHistory = async (req, res) => {
   try {
     const tournaments = await Tournament.find({
@@ -372,6 +451,7 @@ const getTournamentHistory = async (req, res) => {
     });
   }
 };
+
 module.exports = {
   createTournament,
   registerTeam,
