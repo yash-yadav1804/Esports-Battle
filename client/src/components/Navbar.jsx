@@ -29,7 +29,9 @@ const Navbar = () => {
         <Link to="/tournaments" className={styles.link}>
           Tournaments
         </Link>
-
+        <Link to="/profile" className={styles.link}>
+          Profile
+        </Link>
         {user?.role === "admin" && (
           <>
             <Link to="/admin/dashboard" className={styles.link}>
