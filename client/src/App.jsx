@@ -5,6 +5,7 @@ import Tournaments from "./pages/Tournaments";
 import TournamentDetails from "./pages/TournamentDetails";
 import AdminDashboard from "./pages/AdminDashboard";
 import CreateTournament from "./pages/CreateTournament";
+import Leaderboard from "./pages/Leaderboard";
 
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -34,6 +35,15 @@ const App = () => {
           element={
             <ProtectedRoute>
               <TournamentDetails />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/leaderboard/:tournamentId"
+          element={
+            <ProtectedRoute>
+              <Leaderboard />
             </ProtectedRoute>
           }
         />

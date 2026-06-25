@@ -1,0 +1,53 @@
+.page {
+  min-height: 100vh;
+  padding: 40px;
+  background: var(--bg-main);
+}
+
+.backLink {
+  display: inline-block;
+  margin-bottom: 20px;
+  color: var(--link);
+  text-decoration: none;
+}
+
+.title {
+  font-size: 36px;
+  margin-bottom: 28px;
+}
+
+.tableWrapper {
+  background: var(--bg-card);
+  border-radius: 14px;
+  overflow: hidden;
+  max-width: 800px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 16px;
+  text-align: left;
+  border-bottom: 1px solid #334155;
+}
+
+.table th {
+  color: var(--primary);
+  background: #020617;
+}
+
+.table td {
+  color: var(--text-main);
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.error {
+  color: var(--danger);
+}
