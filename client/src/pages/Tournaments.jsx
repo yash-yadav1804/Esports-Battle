@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import API from "../api/axios";
+import styles from "./Tournaments.module.css";
 
 const Tournaments = () => {
   const [tournaments, setTournaments] = useState([]);
@@ -29,7 +30,7 @@ const Tournaments = () => {
 
   if (loading) {
     return (
-      <div className="page">
+      <div className={styles.page}>
         <h1>Loading tournaments...</h1>
       </div>
     );
@@ -37,32 +38,36 @@ const Tournaments = () => {
 
   if (error) {
     return (
-      <div className="page">
+      <div className={styles.page}>
         <h1>Error</h1>
-        <p className="error">{error}</p>
+        <p className={styles.error}>{error}</p>
       </div>
     );
   }
 
   return (
-    <div className="page">
-      <h1>Tournaments</h1>
+    <div className={styles.page}>
+      <h1 className={styles.title}>Tournaments</h1>
 
       {tournaments.length === 0 ? (
         <p>No tournaments found</p>
       ) : (
-        <div className="grid">
+        <div className={styles.grid}>
           {tournaments.map((tournament) => (
-            <div className="card" key={tournament._id}>
-              <h2>{tournament.title}</h2>
-              <p>Game: {tournament.game}</p>
-              <p>Mode: {tournament.mode}</p>
-              <p>Entry Fee: ₹{tournament.entryFee}</p>
-              <p>Prize Pool: ₹{tournament.prizePool}</p>
-              <p>Status: {tournament.status}</p>
+            <div className={styles.card} key={tournament._id}>
+              <h2 className={styles.cardTitle}>{tournament.title}</h2>
+
+              <p className={styles.info}>Game: {tournament.game}</p>
+              <p className={styles.info}>Mode: {tournament.mode}</p>
+              <p className={styles.info}>Entry Fee: ₹{tournament.entryFee}</p>
+              <p className={styles.info}>Prize Pool: ₹{tournament.prizePool}</p>
+              <p className={styles.info}>
+                Status:{" "}
+                <span className={styles.status}>{tournament.status}</span>
+              </p>
 
               <Link
-                className="linkButton"
+                className={styles.linkButton}
                 to={`/tournaments/${tournament._id}`}
               >
                 View Details

@@ -2,55 +2,25 @@
   box-sizing: border-box;
 }
 
+:root {
+  --bg-main: #0f172a;
+  --bg-card: #1e293b;
+  --text-main: #ffffff;
+  --text-muted: #cbd5e1;
+  --primary: #22c55e;
+  --primary-hover: #16a34a;
+  --danger: #f87171;
+  --link: #93c5fd;
+}
+
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: #0f172a;
-  color: white;
+  background: var(--bg-main);
+  color: var(--text-main);
 }
 
-.page {
-  min-height: 100vh;
-  padding: 40px;
-}
-
-.card {
-  background: #1e293b;
-  padding: 24px;
-  border-radius: 12px;
-  max-width: 420px;
-  margin-bottom: 20px;
-}
-
+button,
 input {
-  width: 100%;
-  padding: 12px;
-  margin: 10px 0;
-  border: none;
-  border-radius: 8px;
-  outline: none;
-}
-
-button {
-  width: 100%;
-  padding: 12px;
-  background: #22c55e;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-button:disabled {
-  background: #64748b;
-}
-
-.error {
-  color: #f87171;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 20px;
+  font-family: inherit;
 }

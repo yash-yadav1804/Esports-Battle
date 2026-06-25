@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import API from "../api/axios";
+import styles from "./TournamentDetails.module.css";
 
 const TournamentDetails = () => {
   const { tournamentId } = useParams();
@@ -29,7 +30,7 @@ const TournamentDetails = () => {
 
   if (loading) {
     return (
-      <div className="page">
+      <div className={styles.page}>
         <h1>Loading tournament details...</h1>
       </div>
     );
@@ -37,43 +38,48 @@ const TournamentDetails = () => {
 
   if (error) {
     return (
-      <div className="page">
+      <div className={styles.page}>
         <h1>Error</h1>
-        <p className="error">{error}</p>
+        <p className={styles.error}>{error}</p>
       </div>
     );
   }
 
   return (
-    <div className="page">
-      <Link className="backLink" to="/tournaments">
+    <div className={styles.page}>
+      <Link className={styles.backLink} to="/tournaments">
         ← Back to Tournaments
       </Link>
 
-      <div className="card largeCard">
-        <h1>{tournament.title}</h1>
+      <div className={styles.card}>
+        <h1 className={styles.title}>{tournament.title}</h1>
 
-        <p>Game: {tournament.game}</p>
-        <p>Mode: {tournament.mode}</p>
-        <p>Entry Fee: ₹{tournament.entryFee}</p>
-        <p>Prize Pool: ₹{tournament.prizePool}</p>
-        <p>Max Teams: {tournament.maxTeams}</p>
-        <p>Status: {tournament.status}</p>
-        <p>Start Date: {new Date(tournament.startDate).toLocaleDateString()}</p>
+        <p className={styles.info}>Game: {tournament.game}</p>
+        <p className={styles.info}>Mode: {tournament.mode}</p>
+        <p className={styles.info}>Entry Fee: ₹{tournament.entryFee}</p>
+        <p className={styles.info}>Prize Pool: ₹{tournament.prizePool}</p>
+        <p className={styles.info}>Max Teams: {tournament.maxTeams}</p>
+        <p className={styles.info}>Status: {tournament.status}</p>
+        <p className={styles.info}>
+          Start Date: {new Date(tournament.startDate).toLocaleDateString()}
+        </p>
 
-        <h2>Registered Teams</h2>
+        <h2 className={styles.sectionTitle}>Registered Teams</h2>
 
         {tournament.registeredTeams?.length === 0 ? (
           <p>No teams registered yet</p>
         ) : (
-          <ul>
+          <ul className={styles.teamList}>
             {tournament.registeredTeams.map((team) => (
               <li key={team._id}>{team.teamName}</li>
             ))}
           </ul>
         )}
 
-        <Link className="linkButton" to={`/leaderboard/${tournament._id}`}>
+        <Link
+          className={styles.linkButton}
+          to={`/leaderboard/${tournament._id}`}
+        >
           View Leaderboard
         </Link>
       </div>

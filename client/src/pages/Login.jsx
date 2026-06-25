@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api/axios";
+import styles from "./Login.module.css";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -26,8 +27,6 @@ const Login = () => {
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      alert("Login successful");
-
       navigate("/tournaments");
     } catch (error) {
       setError(error.response?.data?.message || "Login failed");
@@ -37,13 +36,14 @@ const Login = () => {
   };
 
   return (
-    <div className="page">
-      <div className="card">
-        <h1>Login</h1>
-        <p>Login to your Esports Battle account</p>
+    <div className={styles.page}>
+      <div className={styles.card}>
+        <h1 className={styles.title}>Login</h1>
+        <p className={styles.subtitle}>Login to your Esports Battle account</p>
 
         <form onSubmit={handleLogin}>
           <input
+            className={styles.input}
             type="email"
             placeholder="Enter email"
             value={email}
@@ -51,15 +51,16 @@ const Login = () => {
           />
 
           <input
+            className={styles.input}
             type="password"
             placeholder="Enter password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          {error && <p className="error">{error}</p>}
+          {error && <p className={styles.error}>{error}</p>}
 
-          <button type="submit" disabled={loading}>
+          <button className={styles.button} type="submit" disabled={loading}>
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>

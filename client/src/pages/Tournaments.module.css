@@ -1,0 +1,56 @@
+.page {
+  min-height: 100vh;
+  padding: 40px;
+  background: var(--bg-main);
+}
+
+.title {
+  font-size: 36px;
+  margin-bottom: 28px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 420px));
+  gap: 28px;
+}
+
+.card {
+  background: var(--bg-card);
+  padding: 26px;
+  border-radius: 14px;
+}
+
+.cardTitle {
+  font-size: 26px;
+  margin-bottom: 20px;
+}
+
+.info {
+  color: var(--text-main);
+  margin: 12px 0;
+}
+
+.status {
+  text-transform: capitalize;
+  font-weight: bold;
+}
+
+.linkButton {
+  display: inline-block;
+  margin-top: 18px;
+  padding: 10px 14px;
+  background: var(--primary);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+.linkButton:hover {
+  background: var(--primary-hover);
+}
+
+.error {
+  color: var(--danger);
+}
