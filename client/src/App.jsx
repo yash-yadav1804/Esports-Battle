@@ -3,8 +3,11 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Tournaments from "./pages/Tournaments";
 import TournamentDetails from "./pages/TournamentDetails";
+import AdminDashboard from "./pages/AdminDashboard";
+
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import AdminRoute from "./routes/AdminRoute";
 
 const App = () => {
   return (
@@ -31,6 +34,15 @@ const App = () => {
             <ProtectedRoute>
               <TournamentDetails />
             </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/dashboard"
+          element={
+            <AdminRoute>
+              <AdminDashboard />
+            </AdminRoute>
           }
         />
       </Routes>
