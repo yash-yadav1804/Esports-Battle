@@ -58,7 +58,7 @@ Body:
 
 ```json
 {
-  "email": "player@gmail.com",
+  "email": "player1@gmail.com",
   "password": "123456"
 }
 ```
@@ -72,7 +72,7 @@ Response:
   "user": {
     "id": "USER_ID",
     "name": "Yash Player",
-    "email": "player@gmail.com",
+    "email": "player1@gmail.com",
     "role": "player"
   }
 }
