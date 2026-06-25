@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api/axios";
 import styles from "./Login.module.css";
@@ -11,6 +11,14 @@ const Login = () => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      navigate("/tournaments");
+    }
+  }, [navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
