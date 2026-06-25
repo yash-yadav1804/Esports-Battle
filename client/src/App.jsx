@@ -7,6 +7,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import CreateTournament from "./pages/CreateTournament";
 import Leaderboard from "./pages/Leaderboard";
 import Profile from "./pages/Profile";
+import Notifications from "./pages/Notifications";
 
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -54,6 +55,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/notifications"
+          element={
+            <ProtectedRoute>
+              <Notifications />
             </ProtectedRoute>
           }
         />

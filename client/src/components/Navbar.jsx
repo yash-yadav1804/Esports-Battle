@@ -32,6 +32,9 @@ const Navbar = () => {
         <Link to="/profile" className={styles.link}>
           Profile
         </Link>
+        <Link to="/notifications" className={styles.link}>
+          Notifications
+        </Link>
         {user?.role === "admin" && (
           <>
             <Link to="/admin/dashboard" className={styles.link}>
