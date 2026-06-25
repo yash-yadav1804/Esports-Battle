@@ -33,7 +33,7 @@ Body:
 ```json
 {
   "name": "Yash Player",
-  "email": "player@gmail.com",
+  "email": "player1@gmail.com",
   "password": "123456",
   "ign": "YashOP",
   "bgmiUID": "9876543210"
