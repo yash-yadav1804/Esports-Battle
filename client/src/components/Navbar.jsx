@@ -31,9 +31,15 @@ const Navbar = () => {
         </Link>
 
         {user?.role === "admin" && (
-          <Link to="/admin/dashboard" className={styles.link}>
-            Admin Dashboard
-          </Link>
+          <>
+            <Link to="/admin/dashboard" className={styles.link}>
+              Admin Dashboard
+            </Link>
+
+            <Link to="/admin/create-tournament" className={styles.link}>
+              Create Tournament
+            </Link>
+          </>
         )}
 
         {token && user && (

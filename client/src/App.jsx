@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Tournaments from "./pages/Tournaments";
 import TournamentDetails from "./pages/TournamentDetails";
 import AdminDashboard from "./pages/AdminDashboard";
+import CreateTournament from "./pages/CreateTournament";
 
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -42,6 +43,14 @@ const App = () => {
           element={
             <AdminRoute>
               <AdminDashboard />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/create-tournament"
+          element={
+            <AdminRoute>
+              <CreateTournament />
             </AdminRoute>
           }
         />
