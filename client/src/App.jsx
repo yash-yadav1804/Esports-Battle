@@ -4,9 +4,11 @@ import Login from "./pages/Login";
 import Tournaments from "./pages/Tournaments";
 import TournamentDetails from "./pages/TournamentDetails";
 import AdminDashboard from "./pages/AdminDashboard";
+
 import CreateTournament from "./pages/CreateTournament";
 import Leaderboard from "./pages/Leaderboard";
 import Profile from "./pages/Profile";
+import CreateTeam from "./pages/CreateTeam";
 import Notifications from "./pages/Notifications";
 
 import Navbar from "./components/Navbar";
@@ -55,6 +57,23 @@ const App = () => {
           element={
             <ProtectedRoute>
               <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/teams/create"
+          element={
+            <ProtectedRoute>
+              <CreateTeam />
             </ProtectedRoute>
           }
         />
