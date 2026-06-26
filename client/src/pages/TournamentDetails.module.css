@@ -1,55 +1,19 @@
-.page {
-  min-height: 100vh;
-  padding: 40px;
-  background: var(--bg-main);
-}
-
-.backLink {
-  display: inline-block;
-  margin-bottom: 20px;
-  color: var(--link);
-  text-decoration: none;
-}
-
-.card {
-  background: var(--bg-card);
-  padding: 28px;
-  border-radius: 14px;
-  max-width: 720px;
-}
-
-.title {
-  margin-top: 0;
-  font-size: 34px;
-}
-
-.info {
-  margin: 12px 0;
-}
-
-.sectionTitle {
-  margin-top: 28px;
-}
-
-.teamList {
-  padding-left: 20px;
-}
-
-.linkButton {
-  display: inline-block;
-  margin-top: 20px;
-  padding: 10px 14px;
+.registerBtn {
+  margin: 20px 0;
+  padding: 12px 16px;
   background: var(--primary);
   color: white;
-  text-decoration: none;
+  border: none;
   border-radius: 8px;
+  cursor: pointer;
   font-weight: bold;
 }
 
-.linkButton:hover {
+.registerBtn:hover {
   background: var(--primary-hover);
 }
 
-.error {
-  color: var(--danger);
+.registerBtn:disabled {
+  background: #64748b;
+  cursor: not-allowed;
 }

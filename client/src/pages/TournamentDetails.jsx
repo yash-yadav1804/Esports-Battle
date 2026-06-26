@@ -8,25 +8,42 @@ const TournamentDetails = () => {
 
   const [tournament, setTournament] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [registerLoading, setRegisterLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const fetchTournament = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const res = await API.get(`/tournaments/${tournamentId}`);
+      setTournament(res.data);
+    } catch (error) {
+      setError(error.response?.data?.message || "Failed to fetch tournament");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchTournament = async () => {
-      try {
-        setLoading(true);
-        setError("");
-
-        const res = await API.get(`/tournaments/${tournamentId}`);
-        setTournament(res.data);
-      } catch (error) {
-        setError(error.response?.data?.message || "Failed to fetch tournament");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchTournament();
   }, [tournamentId]);
+
+  const registerTeam = async () => {
+    try {
+      setRegisterLoading(true);
+
+      const res = await API.post(`/tournaments/register/${tournamentId}`);
+
+      alert(res.data.message || "Team registered successfully");
+
+      fetchTournament();
+    } catch (error) {
+      alert(error.response?.data?.message || "Failed to register team");
+    } finally {
+      setRegisterLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -60,9 +77,25 @@ const TournamentDetails = () => {
         <p className={styles.info}>Prize Pool: ₹{tournament.prizePool}</p>
         <p className={styles.info}>Max Teams: {tournament.maxTeams}</p>
         <p className={styles.info}>Status: {tournament.status}</p>
+
+        <p className={styles.info}>
+          Registered Teams: {tournament.registeredTeams?.length || 0}/
+          {tournament.maxTeams}
+        </p>
+
         <p className={styles.info}>
           Start Date: {new Date(tournament.startDate).toLocaleDateString()}
         </p>
+
+        {tournament.status === "upcoming" && (
+          <button
+            className={styles.registerBtn}
+            onClick={registerTeam}
+            disabled={registerLoading}
+          >
+            {registerLoading ? "Registering..." : "Register My Team"}
+          </button>
+        )}
 
         <h2 className={styles.sectionTitle}>Registered Teams</h2>
 
