@@ -35,9 +35,13 @@ const Navbar = () => {
         <Link to="/teams/create" className={styles.link}>
           Create Team
         </Link>
+        <Link to="/team-requests" className={styles.link}>
+          Team Requests
+        </Link>
         <Link to="/profile" className={styles.link}>
           Profile
         </Link>
+
         <Link to="/notifications" className={styles.link}>
           Notifications
         </Link>

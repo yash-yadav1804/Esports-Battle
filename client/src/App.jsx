@@ -9,6 +9,7 @@ import Leaderboard from "./pages/Leaderboard";
 import Profile from "./pages/Profile";
 import CreateTeam from "./pages/CreateTeam";
 import Teams from "./pages/Teams";
+import TeamRequests from "./pages/TeamRequests";
 import Notifications from "./pages/Notifications";
 
 import Navbar from "./components/Navbar";
@@ -82,6 +83,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <Teams />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/team-requests"
+          element={
+            <ProtectedRoute>
+              <TeamRequests />
             </ProtectedRoute>
           }
         />
