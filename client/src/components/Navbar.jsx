@@ -29,6 +29,9 @@ const Navbar = () => {
         <Link to="/tournaments" className={styles.link}>
           Tournaments
         </Link>
+        <Link to="/teams" className={styles.link}>
+          Teams
+        </Link>
         <Link to="/teams/create" className={styles.link}>
           Create Team
         </Link>
