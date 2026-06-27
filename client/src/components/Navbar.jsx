@@ -21,6 +21,10 @@ const Navbar = () => {
     navigate("/login");
   };
 
+  const closeProfileDropdown = () => {
+    setIsProfileOpen(false);
+  };
+
   const getNavClass = ({ isActive }) => {
     return isActive ? `${styles.link} ${styles.activeLink}` : styles.link;
   };
@@ -62,6 +66,10 @@ const Navbar = () => {
             <NavLink to="/admin/create-tournament" className={getNavClass}>
               Create Tournament
             </NavLink>
+
+            <NavLink to="/admin/create-match-room" className={getNavClass}>
+              Create Match Room
+            </NavLink>
           </>
         )}
       </nav>
@@ -87,7 +95,7 @@ const Navbar = () => {
               <NavLink
                 to="/profile"
                 className={styles.dropdownLink}
-                onClick={() => setIsProfileOpen(false)}
+                onClick={closeProfileDropdown}
               >
                 My Profile
               </NavLink>
@@ -95,7 +103,7 @@ const Navbar = () => {
               <NavLink
                 to="/notifications"
                 className={styles.dropdownLink}
-                onClick={() => setIsProfileOpen(false)}
+                onClick={closeProfileDropdown}
               >
                 Notifications
               </NavLink>

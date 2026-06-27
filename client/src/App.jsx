@@ -10,6 +10,7 @@ import Profile from "./pages/Profile";
 import CreateTeam from "./pages/CreateTeam";
 import Teams from "./pages/Teams";
 import TeamRequests from "./pages/TeamRequests";
+import CreateMatchRoom from "./pages/CreateMatchRoom";
 import Notifications from "./pages/Notifications";
 
 import Navbar from "./components/Navbar";
@@ -92,6 +93,14 @@ const App = () => {
             <ProtectedRoute>
               <TeamRequests />
             </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/create-match-room"
+          element={
+            <AdminRoute>
+              <CreateMatchRoom />
+            </AdminRoute>
           }
         />
         <Route
