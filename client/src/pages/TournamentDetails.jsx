@@ -7,6 +7,7 @@ import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
 import ErrorState from "../components/ui/ErrorState";
 import LoadingState from "../components/ui/LoadingState";
+import { useToast } from "../components/ui/ToastProvider";
 
 import styles from "./TournamentDetails.module.css";
 
@@ -37,6 +38,7 @@ const getTournamentDetails = async (tournamentId) => {
 
 const TournamentDetails = () => {
   const { tournamentId } = useParams();
+  const toast = useToast();
 
   const [tournament, setTournament] = useState(null);
   const [myTeam, setMyTeam] = useState(null);
@@ -83,7 +85,9 @@ const TournamentDetails = () => {
       setTournament(data.tournament);
       setMyTeam(data.myTeam);
     } catch (error) {
-      alert(error.response?.data?.message || "Failed to refresh tournament");
+      toast.error(
+        error.response?.data?.message || "Failed to refresh tournament",
+      );
     }
   };
 
@@ -93,11 +97,11 @@ const TournamentDetails = () => {
 
       const res = await API.post(`/tournaments/register/${tournamentId}`);
 
-      alert(res.data.message || "Team registered successfully");
+      toast.success(res.data.message || "Team registered successfully");
 
       await refreshTournament();
     } catch (error) {
-      alert(error.response?.data?.message || "Failed to register team");
+      toast.error(error.response?.data?.message || "Failed to register team");
     } finally {
       setRegisterLoading(false);
     }
@@ -115,11 +119,15 @@ const TournamentDetails = () => {
 
       const res = await API.delete(`/tournaments/leave/${tournamentId}`);
 
-      alert(res.data.message || "Team removed from tournament successfully");
+      toast.success(
+        res.data.message || "Team removed from tournament successfully",
+      );
 
       await refreshTournament();
     } catch (error) {
-      alert(error.response?.data?.message || "Failed to leave tournament");
+      toast.error(
+        error.response?.data?.message || "Failed to leave tournament",
+      );
     } finally {
       setLeaveLoading(false);
     }
