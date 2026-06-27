@@ -1,8 +1,21 @@
 import { useEffect, useState } from "react";
 import API from "../api/axios";
+
+import Button from "../components/ui/Button";
+import Card from "../components/ui/Card";
+import EmptyState from "../components/ui/EmptyState";
+import ErrorState from "../components/ui/ErrorState";
+import LoadingState from "../components/ui/LoadingState";
+import { useToast } from "../components/ui/useToast";
+
 import styles from "./TeamRequests.module.css";
 
+const getUserId = (user) => {
+  return user?._id || user?.id;
+};
+
 const TeamRequests = () => {
+  const toast = useToast();
   const user = JSON.parse(localStorage.getItem("user"));
 
   const [team, setTeam] = useState(null);
@@ -14,39 +27,67 @@ const TeamRequests = () => {
 
   const refreshRequests = async (teamId) => {
     const requestsRes = await API.get(`/team-requests/team/${teamId}`);
-    setRequests(requestsRes.data.requests || requestsRes.data || []);
+
+    setRequests(
+      requestsRes.data.requests ||
+        requestsRes.data.teamRequests ||
+        requestsRes.data ||
+        [],
+    );
   };
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchTeamRequests = async () => {
       try {
         const teamRes = await API.get("/profile/my-team");
         const myTeam = teamRes.data.team;
 
+        if (!isMounted) return;
+
         setTeam(myTeam);
 
         if (!myTeam) {
-          setLoading(false);
           return;
         }
 
-        if (myTeam.igl?._id !== user?.id) {
-          setLoading(false);
+        const iglId = myTeam.igl?._id || myTeam.igl;
+        const currentUserId = getUserId(user);
+
+        if (String(iglId) !== String(currentUserId)) {
           return;
         }
 
-        await refreshRequests(myTeam._id);
+        const requestsRes = await API.get(`/team-requests/team/${myTeam._id}`);
+
+        if (!isMounted) return;
+
+        setRequests(
+          requestsRes.data.requests ||
+            requestsRes.data.teamRequests ||
+            requestsRes.data ||
+            [],
+        );
       } catch (error) {
+        if (!isMounted) return;
+
         setError(
           error.response?.data?.message || "Failed to fetch team requests",
         );
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchTeamRequests();
-  }, [user?.id]);
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const approveRequest = async (requestId) => {
     try {
@@ -54,11 +95,11 @@ const TeamRequests = () => {
 
       const res = await API.patch(`/team-requests/approve/${requestId}`);
 
-      alert(res.data.message || "Request approved");
+      toast.success(res.data.message || "Request approved successfully");
 
       await refreshRequests(team._id);
     } catch (error) {
-      alert(error.response?.data?.message || "Failed to approve request");
+      toast.error(error.response?.data?.message || "Failed to approve request");
     } finally {
       setActionLoading("");
     }
@@ -70,11 +111,11 @@ const TeamRequests = () => {
 
       const res = await API.patch(`/team-requests/reject/${requestId}`);
 
-      alert(res.data.message || "Request rejected");
+      toast.success(res.data.message || "Request rejected successfully");
 
       await refreshRequests(team._id);
     } catch (error) {
-      alert(error.response?.data?.message || "Failed to reject request");
+      toast.error(error.response?.data?.message || "Failed to reject request");
     } finally {
       setActionLoading("");
     }
@@ -82,85 +123,120 @@ const TeamRequests = () => {
 
   if (loading) {
     return (
-      <div className={styles.page}>
-        <h1>Loading team requests...</h1>
-      </div>
+      <main className={styles.page}>
+        <LoadingState
+          title="Loading team requests"
+          message="Fetching pending join requests for your team."
+        />
+      </main>
     );
   }
 
   if (error) {
     return (
-      <div className={styles.page}>
-        <h1>Error</h1>
-        <p className={styles.error}>{error}</p>
-      </div>
+      <main className={styles.page}>
+        <ErrorState title="Unable to load requests" message={error} />
+      </main>
     );
   }
 
   if (!team) {
     return (
-      <div className={styles.page}>
-        <div className={styles.card}>
-          <h1>No Team Found</h1>
-          <p>You are not in any team yet.</p>
-        </div>
-      </div>
+      <main className={styles.page}>
+        <EmptyState
+          title="No team found"
+          message="You need to create or join a team before managing requests."
+          actionLabel="Create Team"
+          actionTo="/teams/create"
+        />
+      </main>
     );
   }
 
-  if (team.igl?._id !== user?.id) {
+  const iglId = team.igl?._id || team.igl;
+  const currentUserId = getUserId(user);
+  const isIgl = String(iglId) === String(currentUserId);
+
+  if (!isIgl) {
     return (
-      <div className={styles.page}>
-        <div className={styles.card}>
-          <h1>Access Denied</h1>
-          <p>Only IGL can manage team join requests.</p>
-        </div>
-      </div>
+      <main className={styles.page}>
+        <ErrorState
+          title="Access denied"
+          message="Only the IGL or team captain can manage join requests."
+        />
+      </main>
     );
   }
 
   return (
-    <div className={styles.page}>
-      <h1 className={styles.title}>Team Requests</h1>
-      <p className={styles.subtitle}>Team: {team.teamName}</p>
+    <main className={styles.page}>
+      <section className={styles.header}>
+        <div>
+          <p className={styles.eyebrow}>Captain Panel</p>
+          <h1 className={styles.title}>Team Requests</h1>
+          <p className={styles.subtitle}>
+            Review players who want to join your team.
+          </p>
+        </div>
+
+        <div className={styles.teamBadge}>
+          Team: <strong>{team.teamName}</strong>
+        </div>
+      </section>
 
       {requests.length === 0 ? (
-        <div className={styles.card}>
-          <p>No pending requests found</p>
-        </div>
+        <EmptyState
+          title="No pending requests"
+          message="New join requests will appear here when players request to join your team."
+          actionLabel="View Teams"
+          actionTo="/teams"
+        />
       ) : (
-        <div className={styles.list}>
+        <section className={styles.grid}>
           {requests.map((request) => (
-            <div className={styles.card} key={request._id}>
-              <h2>{request.player?.name}</h2>
+            <Card className={styles.requestCard} key={request._id}>
+              <div className={styles.cardHeader}>
+                <div>
+                  <h2>{request.player?.name || "Unknown Player"}</h2>
+                  <p>{request.player?.email || "No email available"}</p>
+                </div>
 
-              <p>Email: {request.player?.email}</p>
-              <p>IGN: {request.player?.ign || "Not added"}</p>
-              <p>BGMI UID: {request.player?.bgmiUID || "Not added"}</p>
-              <p>Status: {request.status}</p>
+                <span className={styles.status}>{request.status}</span>
+              </div>
+
+              <div className={styles.infoGrid}>
+                <div className={styles.infoBox}>
+                  <span>IGN</span>
+                  <strong>{request.player?.ign || "Not added"}</strong>
+                </div>
+
+                <div className={styles.infoBox}>
+                  <span>BGMI UID</span>
+                  <strong>{request.player?.bgmiUID || "Not added"}</strong>
+                </div>
+              </div>
 
               <div className={styles.actions}>
-                <button
-                  className={styles.approveBtn}
+                <Button
                   onClick={() => approveRequest(request._id)}
                   disabled={actionLoading === request._id}
                 >
                   {actionLoading === request._id ? "Processing..." : "Approve"}
-                </button>
+                </Button>
 
-                <button
-                  className={styles.rejectBtn}
+                <Button
+                  variant="danger"
                   onClick={() => rejectRequest(request._id)}
                   disabled={actionLoading === request._id}
                 >
                   {actionLoading === request._id ? "Processing..." : "Reject"}
-                </button>
+                </Button>
               </div>
-            </div>
+            </Card>
           ))}
-        </div>
+        </section>
       )}
-    </div>
+    </main>
   );
 };
 
