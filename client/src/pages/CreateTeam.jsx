@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api/axios";
+import Button from "../components/ui/Button";
+import { useToast } from "../components/ui/useToast";
 import styles from "./CreateTeam.module.css";
 
 const CreateTeam = () => {
   const navigate = useNavigate();
+  const toast = useToast();
 
   const [teamName, setTeamName] = useState("");
   const [loading, setLoading] = useState(false);
@@ -18,23 +21,30 @@ const CreateTeam = () => {
       setError("");
 
       await API.post("/teams/create", {
-        teamName,
+        teamName: teamName.trim(),
       });
 
-      alert("Team created successfully");
+      toast.success("Team created successfully");
 
       navigate("/profile");
     } catch (error) {
-      setError(error.response?.data?.message || "Failed to create team");
+      const errorMessage =
+        error.response?.data?.message || "Failed to create team";
+
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className={styles.page}>
-      <div className={styles.card}>
+    <main className={styles.page}>
+      <section className={styles.card}>
+        <p className={styles.eyebrow}>Team Management</p>
+
         <h1 className={styles.title}>Create Team</h1>
+
         <p className={styles.subtitle}>
           Create your esports team and become the IGL.
         </p>
@@ -53,12 +63,12 @@ const CreateTeam = () => {
 
           {error && <p className={styles.error}>{error}</p>}
 
-          <button className={styles.button} type="submit" disabled={loading}>
+          <Button type="submit" disabled={loading}>
             {loading ? "Creating..." : "Create Team"}
-          </button>
+          </Button>
         </form>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 };
 
