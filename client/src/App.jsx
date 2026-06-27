@@ -11,6 +11,7 @@ import CreateTeam from "./pages/CreateTeam";
 import Teams from "./pages/Teams";
 import TeamRequests from "./pages/TeamRequests";
 import CreateMatchRoom from "./pages/CreateMatchRoom";
+import MatchRooms from "./pages/MatchRooms";
 import Notifications from "./pages/Notifications";
 
 import Navbar from "./components/Navbar";
@@ -101,6 +102,14 @@ const App = () => {
             <AdminRoute>
               <CreateMatchRoom />
             </AdminRoute>
+          }
+        />
+        <Route
+          path="/match-rooms"
+          element={
+            <ProtectedRoute>
+              <MatchRooms />
+            </ProtectedRoute>
           }
         />
         <Route
