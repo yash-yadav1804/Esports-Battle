@@ -65,3 +65,12 @@
   color: var(--danger);
   margin-bottom: 12px;
 }
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}

@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api/axios";
+import Button from "../components/ui/Button";
+import { useToast } from "../components/ui/useToast";
 import styles from "./CreateTournament.module.css";
-import { useToast } from "../components/ui/ToastProvider";
 
 const CreateTournament = () => {
   const navigate = useNavigate();
@@ -22,10 +23,10 @@ const CreateTournament = () => {
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
+    setFormData((currentData) => ({
+      ...currentData,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
 
   const handleCreateTournament = async (e) => {
@@ -36,7 +37,7 @@ const CreateTournament = () => {
       setError("");
 
       await API.post("/tournaments/createTournament", {
-        title: formData.title,
+        title: formData.title.trim(),
         game: formData.game,
         mode: formData.mode,
         entryFee: Number(formData.entryFee),
@@ -60,11 +61,12 @@ const CreateTournament = () => {
   };
 
   return (
-    <div className={styles.page}>
-      <div className={styles.card}>
+    <main className={styles.page}>
+      <section className={styles.card}>
+        <p className={styles.eyebrow}>Admin Panel</p>
         <h1 className={styles.title}>Create Tournament</h1>
         <p className={styles.subtitle}>
-          Admin can create a new esports tournament
+          Add a new esports tournament for players and teams.
         </p>
 
         <form onSubmit={handleCreateTournament}>
@@ -111,6 +113,7 @@ const CreateTournament = () => {
             placeholder="Enter entry fee"
             value={formData.entryFee}
             onChange={handleChange}
+            min="0"
             required
           />
 
@@ -122,6 +125,7 @@ const CreateTournament = () => {
             placeholder="Enter prize pool"
             value={formData.prizePool}
             onChange={handleChange}
+            min="0"
             required
           />
 
@@ -133,6 +137,7 @@ const CreateTournament = () => {
             placeholder="Enter max teams"
             value={formData.maxTeams}
             onChange={handleChange}
+            min="2"
             required
           />
 
@@ -148,12 +153,12 @@ const CreateTournament = () => {
 
           {error && <p className={styles.error}>{error}</p>}
 
-          <button className={styles.button} type="submit" disabled={loading}>
+          <Button type="submit" disabled={loading}>
             {loading ? "Creating..." : "Create Tournament"}
-          </button>
+          </Button>
         </form>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 };
 
