@@ -14,6 +14,7 @@ import CreateMatchRoom from "./pages/CreateMatchRoom";
 import MatchRooms from "./pages/MatchRooms";
 import SubmitResult from "./pages/SubmitResult";
 import PendingResults from "./pages/PendingResults";
+import MySubmissions from "./pages/MySubmissions";
 import Notifications from "./pages/Notifications";
 
 import Navbar from "./components/Navbar";
@@ -130,11 +131,20 @@ const App = () => {
             </AdminRoute>
           }
         />
+
         <Route
           path="/notifications"
           element={
             <ProtectedRoute>
               <Notifications />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/my-submissions"
+          element={
+            <ProtectedRoute>
+              <MySubmissions />
             </ProtectedRoute>
           }
         />

@@ -117,7 +117,13 @@ const Navbar = () => {
               >
                 Notifications
               </NavLink>
-
+              <NavLink
+                to="/my-submissions"
+                className={styles.dropdownLink}
+                onClick={closeProfileDropdown}
+              >
+                My Submissions
+              </NavLink>
               <button className={styles.logoutBtn} onClick={handleLogout}>
                 Logout
               </button>
