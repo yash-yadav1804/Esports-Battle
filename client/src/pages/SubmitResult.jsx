@@ -42,13 +42,15 @@ const SubmitResult = () => {
     const fetchData = async () => {
       try {
         const [tournamentsRes, matchRoomsRes] = await Promise.all([
-          API.get("/tournaments"),
+          API.get("/profile/my-tournaments"),
           API.get("/matchrooms"),
         ]);
 
         if (!isMounted) return;
 
-        setTournaments(tournamentsRes.data || []);
+        setTournaments(
+          tournamentsRes.data.tournaments || tournamentsRes.data || [],
+        );
         setMatchRooms(
           matchRoomsRes.data.matchRooms ||
             matchRoomsRes.data.rooms ||
