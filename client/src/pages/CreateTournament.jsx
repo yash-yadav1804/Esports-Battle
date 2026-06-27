@@ -2,9 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api/axios";
 import styles from "./CreateTournament.module.css";
+import { useToast } from "../components/ui/ToastProvider";
 
 const CreateTournament = () => {
   const navigate = useNavigate();
+  const toast = useToast();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -43,11 +45,15 @@ const CreateTournament = () => {
         startDate: formData.startDate,
       });
 
-      alert("Tournament created successfully");
+      toast.success("Tournament created successfully");
 
       navigate("/tournaments");
     } catch (error) {
-      setError(error.response?.data?.message || "Failed to create tournament");
+      const errorMessage =
+        error.response?.data?.message || "Failed to create tournament";
+
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
