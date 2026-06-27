@@ -1,9 +1,14 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { useToast } from "./ui/useToast";
 import styles from "./Navbar.module.css";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const toast = useToast();
+
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user"));
@@ -12,7 +17,12 @@ const Navbar = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
 
+    toast.info("You have been logged out");
     navigate("/login");
+  };
+
+  const getNavClass = ({ isActive }) => {
+    return isActive ? `${styles.link} ${styles.activeLink}` : styles.link;
   };
 
   if (location.pathname === "/login") {
@@ -20,57 +30,84 @@ const Navbar = () => {
   }
 
   return (
-    <nav className={styles.navbar}>
+    <header className={styles.navbar}>
       <Link to="/tournaments" className={styles.logo}>
+        <span className={styles.logoMark}>E</span>
         Esports Battle
       </Link>
 
-      <div className={styles.links}>
-        <Link to="/tournaments" className={styles.link}>
+      <nav className={styles.links}>
+        <NavLink to="/tournaments" className={getNavClass}>
           Tournaments
-        </Link>
-        <Link to="/teams" className={styles.link}>
-          Teams
-        </Link>
-        <Link to="/teams/create" className={styles.link}>
-          Create Team
-        </Link>
-        <Link to="/team-requests" className={styles.link}>
-          Team Requests
-        </Link>
-        <Link to="/profile" className={styles.link}>
-          Profile
-        </Link>
+        </NavLink>
 
-        <Link to="/notifications" className={styles.link}>
-          Notifications
-        </Link>
+        <NavLink to="/teams" className={getNavClass}>
+          Teams
+        </NavLink>
+
+        <NavLink to="/teams/create" className={getNavClass}>
+          Create Team
+        </NavLink>
+
+        <NavLink to="/team-requests" className={getNavClass}>
+          Team Requests
+        </NavLink>
+
         {user?.role === "admin" && (
           <>
-            <Link to="/admin/dashboard" className={styles.link}>
+            <NavLink to="/admin/dashboard" className={getNavClass}>
               Admin Dashboard
-            </Link>
+            </NavLink>
 
-            <Link to="/admin/create-tournament" className={styles.link}>
+            <NavLink to="/admin/create-tournament" className={getNavClass}>
               Create Tournament
-            </Link>
+            </NavLink>
           </>
         )}
+      </nav>
 
-        {token && user && (
-          <div className={styles.userBox}>
-            <span className={styles.userName}>{user.name}</span>
-            <span className={styles.role}>{user.role}</span>
-          </div>
-        )}
+      {token && user && (
+        <div className={styles.profileArea}>
+          <button
+            className={styles.profileButton}
+            onClick={() => setIsProfileOpen((currentValue) => !currentValue)}
+          >
+            <div className={styles.avatar}>
+              {user.name?.charAt(0)?.toUpperCase() || "U"}
+            </div>
 
-        {token && (
-          <button className={styles.logoutBtn} onClick={handleLogout}>
-            Logout
+            <div className={styles.userInfo}>
+              <strong>{user.name}</strong>
+              <span>{user.role}</span>
+            </div>
           </button>
-        )}
-      </div>
-    </nav>
+
+          {isProfileOpen && (
+            <div className={styles.dropdown}>
+              <NavLink
+                to="/profile"
+                className={styles.dropdownLink}
+                onClick={() => setIsProfileOpen(false)}
+              >
+                My Profile
+              </NavLink>
+
+              <NavLink
+                to="/notifications"
+                className={styles.dropdownLink}
+                onClick={() => setIsProfileOpen(false)}
+              >
+                Notifications
+              </NavLink>
+
+              <button className={styles.logoutBtn} onClick={handleLogout}>
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </header>
   );
 };
 

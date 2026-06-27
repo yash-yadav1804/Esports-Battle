@@ -1,64 +1,186 @@
 .navbar {
-  height: 70px;
-  background: #020617;
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  min-height: 76px;
   padding: 0 40px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  background: rgba(2, 6, 23, 0.92);
   border-bottom: 1px solid #1e293b;
+  backdrop-filter: blur(14px);
 }
 
 .logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   color: white;
   text-decoration: none;
-  font-size: 24px;
-  font-weight: bold;
+  font-size: 26px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.logoMark {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--primary);
+  color: #020617;
+  font-weight: 900;
 }
 
 .links {
+  flex: 1;
   display: flex;
+  justify-content: center;
+  gap: 8px;
   align-items: center;
-  gap: 20px;
 }
 
 .link {
-  color: #cbd5e1;
+  padding: 10px 12px;
+  color: var(--text-muted);
   text-decoration: none;
-  font-weight: 500;
+  border-radius: 10px;
+  font-weight: 700;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 .link:hover {
+  background: #0f172a;
   color: white;
 }
 
-.userBox {
+.activeLink {
+  background: rgba(34, 197, 94, 0.12);
+  color: var(--primary);
+}
+
+.profileArea {
+  position: relative;
+}
+
+.profileButton {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 14px;
+  cursor: pointer;
+  color: white;
 }
 
-.userName {
+.profileButton:hover {
+  border-color: var(--primary);
+}
+
+.avatar {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #020617;
+  font-weight: 900;
+}
+
+.userInfo {
+  display: grid;
+  text-align: left;
+  line-height: 1.2;
+}
+
+.userInfo strong {
   font-size: 14px;
-  font-weight: bold;
 }
 
-.role {
+.userInfo span {
+  color: var(--primary);
   font-size: 12px;
-  color: #22c55e;
   text-transform: capitalize;
+  font-weight: 700;
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: 220px;
+  padding: 10px;
+  background: #020617;
+  border: 1px solid #334155;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+}
+
+.dropdownLink,
+.logoutBtn {
+  width: 100%;
+  display: block;
+  padding: 11px 12px;
+  border-radius: 10px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.dropdownLink:hover,
+.logoutBtn:hover {
+  background: #0f172a;
+  color: white;
 }
 
 .logoutBtn {
-  padding: 8px 14px;
-  background: #ef4444;
-  border: none;
-  border-radius: 8px;
-  color: white;
-  cursor: pointer;
-  font-weight: bold;
+  color: #f87171;
 }
 
-.logoutBtn:hover {
-  background: #dc2626;
+@media (max-width: 1100px) {
+  .navbar {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 18px 24px;
+  }
+
+  .links {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .profileArea {
+    width: 100%;
+  }
+
+  .profileButton {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .dropdown {
+    left: 0;
+    right: auto;
+    width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .logo {
+    font-size: 22px;
+  }
+
+  .link {
+    font-size: 14px;
+  }
 }
