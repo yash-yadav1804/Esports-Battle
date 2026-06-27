@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import API from "../api/axios";
 import TournamentCard from "../components/ui/TournamentCard";
+import LoadingState from "../components/ui/LoadingState";
+import ErrorState from "../components/ui/ErrorState";
+import EmptyState from "../components/ui/EmptyState";
 import styles from "./Tournaments.module.css";
 
 const Tournaments = () => {
@@ -38,11 +41,13 @@ const Tournaments = () => {
       isMounted = false;
     };
   }, []);
-
   if (loading) {
     return (
       <main className={styles.page}>
-        <h1>Loading tournaments...</h1>
+        <LoadingState
+          title="Loading tournaments"
+          message="Fetching the latest BGMI tournaments for you."
+        />
       </main>
     );
   }
@@ -50,8 +55,7 @@ const Tournaments = () => {
   if (error) {
     return (
       <main className={styles.page}>
-        <h1>Error</h1>
-        <p className={styles.error}>{error}</p>
+        <ErrorState title="Unable to load tournaments" message={error} />
       </main>
     );
   }
@@ -70,9 +74,12 @@ const Tournaments = () => {
       </section>
 
       {tournaments.length === 0 ? (
-        <div className={styles.emptyBox}>
-          <p>No tournaments found.</p>
-        </div>
+        <EmptyState
+          title="No tournaments available"
+          message="New tournaments will appear here once the admin creates them."
+          actionLabel="Create Tournament"
+          actionTo="/admin/create-tournament"
+        />
       ) : (
         <section className={styles.grid}>
           {tournaments.map((tournament) => (
