@@ -13,6 +13,7 @@ import TeamRequests from "./pages/TeamRequests";
 import CreateMatchRoom from "./pages/CreateMatchRoom";
 import MatchRooms from "./pages/MatchRooms";
 import SubmitResult from "./pages/SubmitResult";
+import PendingResults from "./pages/PendingResults";
 import Notifications from "./pages/Notifications";
 
 import Navbar from "./components/Navbar";
@@ -119,6 +120,14 @@ const App = () => {
             <ProtectedRoute>
               <SubmitResult />
             </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/pending-results"
+          element={
+            <AdminRoute>
+              <PendingResults />
+            </AdminRoute>
           }
         />
         <Route

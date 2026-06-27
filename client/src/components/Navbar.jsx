@@ -77,6 +77,9 @@ const Navbar = () => {
             <NavLink to="/admin/create-match-room" className={getNavClass}>
               Create Match Room
             </NavLink>
+            <NavLink to="/admin/pending-results" className={getNavClass}>
+              Pending Results
+            </NavLink>
           </>
         )}
       </nav>
