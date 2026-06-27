@@ -12,6 +12,7 @@ import Teams from "./pages/Teams";
 import TeamRequests from "./pages/TeamRequests";
 import CreateMatchRoom from "./pages/CreateMatchRoom";
 import MatchRooms from "./pages/MatchRooms";
+import SubmitResult from "./pages/SubmitResult";
 import Notifications from "./pages/Notifications";
 
 import Navbar from "./components/Navbar";
@@ -109,6 +110,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <MatchRooms />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/submit-result"
+          element={
+            <ProtectedRoute>
+              <SubmitResult />
             </ProtectedRoute>
           }
         />

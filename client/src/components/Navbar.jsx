@@ -48,6 +48,9 @@ const Navbar = () => {
         <NavLink to="/match-rooms" className={getNavClass}>
           Match Rooms
         </NavLink>
+        <NavLink to="/submit-result" className={getNavClass}>
+          Submit Result
+        </NavLink>
 
         <NavLink to="/teams" className={getNavClass}>
           Teams

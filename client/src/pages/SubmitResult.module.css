@@ -1,0 +1,92 @@
+.page {
+  min-height: 100vh;
+  padding: 40px;
+  background:
+    radial-gradient(circle at top right, rgba(34, 197, 94, 0.12), transparent 30%),
+    var(--bg-main);
+}
+
+.header {
+  max-width: 860px;
+  margin-bottom: 30px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0;
+  font-size: 44px;
+  line-height: 1.1;
+}
+
+.subtitle {
+  max-width: 700px;
+  margin: 14px 0 0;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.formCard {
+  max-width: 760px;
+}
+
+.label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.input {
+  width: 100%;
+  padding: 13px 14px;
+  margin-bottom: 18px;
+  background: #020617;
+  border: 1px solid #334155;
+  color: white;
+  border-radius: 10px;
+  outline: none;
+}
+
+.input:focus {
+  border-color: var(--primary);
+}
+
+.input:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.twoColumn {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.helperText {
+  margin: -8px 0 18px;
+  color: #facc15;
+  font-size: 14px;
+}
+
+@media (max-width: 720px) {
+  .page {
+    padding: 24px;
+  }
+
+  .title {
+    font-size: 34px;
+  }
+
+  .twoColumn {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
