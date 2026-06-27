@@ -7,7 +7,7 @@ import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
 import ErrorState from "../components/ui/ErrorState";
 import LoadingState from "../components/ui/LoadingState";
-import { useToast } from "../components/ui/ToastProvider";
+import { useToast } from "../components/ui/useToast";
 
 import styles from "./TournamentDetails.module.css";
 
