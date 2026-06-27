@@ -1,7 +1,22 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import API from "../api/axios";
+
+import Badge from "../components/ui/Badge";
+import Button from "../components/ui/Button";
+import Card from "../components/ui/Card";
+import ErrorState from "../components/ui/ErrorState";
+import LoadingState from "../components/ui/LoadingState";
+
 import styles from "./TournamentDetails.module.css";
+
+const getStatusVariant = (status) => {
+  if (status === "live") return "warning";
+  if (status === "completed") return "danger";
+
+  return "success";
+};
+
 const getTournamentDetails = async (tournamentId) => {
   const tournamentRes = await API.get(`/tournaments/${tournamentId}`);
 
@@ -19,6 +34,7 @@ const getTournamentDetails = async (tournamentId) => {
     };
   }
 };
+
 const TournamentDetails = () => {
   const { tournamentId } = useParams();
 
@@ -112,7 +128,10 @@ const TournamentDetails = () => {
   if (loading) {
     return (
       <main className={styles.page}>
-        <h1>Loading tournament details...</h1>
+        <LoadingState
+          title="Loading tournament"
+          message="Fetching tournament details, registered teams, and your team status."
+        />
       </main>
     );
   }
@@ -120,8 +139,7 @@ const TournamentDetails = () => {
   if (error) {
     return (
       <main className={styles.page}>
-        <h1>Error</h1>
-        <p className={styles.error}>{error}</p>
+        <ErrorState title="Unable to load tournament" message={error} />
       </main>
     );
   }
@@ -129,7 +147,10 @@ const TournamentDetails = () => {
   if (!tournament) {
     return (
       <main className={styles.page}>
-        <h1>Tournament not found</h1>
+        <ErrorState
+          title="Tournament not found"
+          message="This tournament may have been deleted or the link is invalid."
+        />
       </main>
     );
   }
@@ -147,95 +168,108 @@ const TournamentDetails = () => {
         ← Back to Tournaments
       </Link>
 
-      <section className={styles.card}>
-        <div className={styles.header}>
-          <div>
-            <h1 className={styles.title}>{tournament.title}</h1>
+      <Card className={styles.detailsCard}>
+        <section className={styles.hero}>
+          <div className={styles.heroContent}>
+            <p className={styles.eyebrow}>Tournament Details</p>
+
+            <div className={styles.titleRow}>
+              <h1 className={styles.title}>{tournament.title}</h1>
+
+              <Badge variant={getStatusVariant(tournament.status)}>
+                {tournament.status}
+              </Badge>
+            </div>
+
             <p className={styles.subtitle}>
-              {tournament.game} • {tournament.mode}
+              {tournament.game} • {tournament.mode} • Competitive esports event
             </p>
           </div>
+        </section>
 
-          <span className={styles.status}>{tournament.status}</span>
-        </div>
-
-        <div className={styles.infoGrid}>
-          <div className={styles.infoBox}>
+        <section className={styles.statsGrid}>
+          <div className={styles.statBox}>
             <span>Entry Fee</span>
             <strong>₹{tournament.entryFee}</strong>
           </div>
 
-          <div className={styles.infoBox}>
+          <div className={styles.statBox}>
             <span>Prize Pool</span>
             <strong>₹{tournament.prizePool}</strong>
           </div>
 
-          <div className={styles.infoBox}>
+          <div className={styles.statBox}>
             <span>Teams</span>
             <strong>
               {registeredTeams.length}/{tournament.maxTeams}
             </strong>
           </div>
 
-          <div className={styles.infoBox}>
+          <div className={styles.statBox}>
             <span>Start Date</span>
             <strong>
               {new Date(tournament.startDate).toLocaleDateString()}
             </strong>
           </div>
-        </div>
+        </section>
 
         {tournament.status === "upcoming" && (
-          <div className={styles.actions}>
+          <section className={styles.actions}>
             {!isMyTeamRegistered ? (
-              <button
-                className={styles.registerBtn}
-                onClick={registerTeam}
-                disabled={registerLoading}
-              >
+              <Button onClick={registerTeam} disabled={registerLoading}>
                 {registerLoading ? "Registering..." : "Register My Team"}
-              </button>
+              </Button>
             ) : (
-              <button
-                className={styles.leaveBtn}
+              <Button
+                variant="danger"
                 onClick={leaveTournament}
                 disabled={leaveLoading}
               >
                 {leaveLoading ? "Leaving..." : "Leave Tournament"}
-              </button>
+              </Button>
             )}
-          </div>
+          </section>
         )}
 
         {isMyTeamRegistered && (
-          <p className={styles.successText}>
+          <div className={styles.successBox}>
             Your team is registered in this tournament ✅
-          </p>
+          </div>
         )}
 
-        <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>Registered Teams</h2>
+        <section className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <div>
+              <h2 className={styles.sectionTitle}>Registered Teams</h2>
+              <p className={styles.sectionSubtitle}>
+                Teams currently participating in this tournament.
+              </p>
+            </div>
 
-          <Link
-            className={styles.linkButton}
-            to={`/leaderboard/${tournament._id}`}
-          >
-            View Leaderboard
-          </Link>
-        </div>
+            <Link
+              className={styles.leaderboardLink}
+              to={`/leaderboard/${tournament._id}`}
+            >
+              View Leaderboard
+            </Link>
+          </div>
 
-        {registeredTeams.length === 0 ? (
-          <p className={styles.emptyText}>No teams registered yet.</p>
-        ) : (
-          <ul className={styles.teamList}>
-            {registeredTeams.map((team) => (
-              <li key={team?._id || team}>
-                {team?.teamName || "Unknown Team"}
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+          {registeredTeams.length === 0 ? (
+            <div className={styles.emptyBox}>
+              No teams registered yet. Be the first team to join.
+            </div>
+          ) : (
+            <div className={styles.teamGrid}>
+              {registeredTeams.map((team, index) => (
+                <div className={styles.teamCard} key={team?._id || team}>
+                  <span className={styles.teamRank}>#{index + 1}</span>
+                  <strong>{team?.teamName || "Unknown Team"}</strong>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      </Card>
     </main>
   );
 };
