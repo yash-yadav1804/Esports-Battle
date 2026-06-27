@@ -1,54 +1,55 @@
 .page {
   min-height: 100vh;
   padding: 40px;
-  background: var(--bg-main);
+  background:
+    radial-gradient(circle at top left, rgba(34, 197, 94, 0.12), transparent 28%),
+    var(--bg-main);
+}
+
+.hero {
+  max-width: 950px;
+  margin-bottom: 34px;
+  padding: 34px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #111827, #020617);
+  border: 1px solid #334155;
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: var(--primary);
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-size: 13px;
 }
 
 .title {
-  font-size: 36px;
-  margin-bottom: 28px;
+  margin: 0;
+  font-size: 44px;
+  line-height: 1.1;
+}
+
+.subtitle {
+  max-width: 620px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 14px 0 0;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 420px));
-  gap: 28px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 380px));
+  gap: 24px;
 }
 
-.card {
+.emptyBox {
+  max-width: 520px;
   background: var(--bg-card);
-  padding: 26px;
-  border-radius: 14px;
-}
-
-.cardTitle {
-  font-size: 26px;
-  margin-bottom: 20px;
-}
-
-.info {
-  color: var(--text-main);
-  margin: 12px 0;
-}
-
-.status {
-  text-transform: capitalize;
-  font-weight: bold;
-}
-
-.linkButton {
-  display: inline-block;
-  margin-top: 18px;
-  padding: 10px 14px;
-  background: var(--primary);
-  color: white;
-  text-decoration: none;
-  border-radius: 8px;
-  font-weight: bold;
-}
-
-.linkButton:hover {
-  background: var(--primary-hover);
+  border: 1px solid #334155;
+  border-radius: 16px;
+  padding: 24px;
+  color: var(--text-muted);
 }
 
 .error {

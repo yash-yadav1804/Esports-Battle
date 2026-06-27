@@ -2,25 +2,23 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import API from "../api/axios";
 import styles from "./TournamentDetails.module.css";
-
 const getTournamentDetails = async (tournamentId) => {
   const tournamentRes = await API.get(`/tournaments/${tournamentId}`);
 
-  let myTeam = null;
-
   try {
     const teamRes = await API.get("/profile/my-team");
-    myTeam = teamRes.data.team;
+
+    return {
+      tournament: tournamentRes.data,
+      myTeam: teamRes.data.team,
+    };
   } catch {
-    myTeam = null;
+    return {
+      tournament: tournamentRes.data,
+      myTeam: null,
+    };
   }
-
-  return {
-    tournament: tournamentRes.data,
-    myTeam,
-  };
 };
-
 const TournamentDetails = () => {
   const { tournamentId } = useParams();
 
