@@ -39,6 +39,11 @@ const getTournamentDetails = async (tournamentId) => {
 const TournamentDetails = () => {
   const { tournamentId } = useParams();
   const toast = useToast();
+  const user = JSON.parse(localStorage.getItem("user"));
+  const isAdmin = user?.role === "admin";
+
+  const [startLoading, setStartLoading] = useState(false);
+  const [completeLoading, setCompleteLoading] = useState(false);
 
   const [tournament, setTournament] = useState(null);
   const [myTeam, setMyTeam] = useState(null);
@@ -162,6 +167,53 @@ const TournamentDetails = () => {
       </main>
     );
   }
+  const startTournament = async () => {
+    const confirmStart = window.confirm(
+      "Are you sure you want to start this tournament?",
+    );
+
+    if (!confirmStart) return;
+
+    try {
+      setStartLoading(true);
+
+      const res = await API.post(`/tournaments/start/${tournamentId}`);
+
+      toast.success(res.data.message || "Tournament started successfully");
+
+      await refreshTournament();
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Failed to start tournament",
+      );
+    } finally {
+      setStartLoading(false);
+    }
+  };
+
+  const completeTournament = async () => {
+    const confirmComplete = window.confirm(
+      "Are you sure you want to complete this tournament?",
+    );
+
+    if (!confirmComplete) return;
+
+    try {
+      setCompleteLoading(true);
+
+      const res = await API.post(`/tournaments/complete/${tournamentId}`);
+
+      toast.success(res.data.message || "Tournament completed successfully");
+
+      await refreshTournament();
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Failed to complete tournament",
+      );
+    } finally {
+      setCompleteLoading(false);
+    }
+  };
 
   const registeredTeams = tournament.registeredTeams || [];
 
@@ -243,6 +295,41 @@ const TournamentDetails = () => {
           <div className={styles.successBox}>
             Your team is registered in this tournament ✅
           </div>
+        )}
+        {isAdmin && (
+          <section className={styles.adminPanel}>
+            <div>
+              <p className={styles.adminEyebrow}>Admin Controls</p>
+              <h2 className={styles.adminTitle}>Tournament Actions</h2>
+              <p className={styles.adminSubtitle}>
+                Start or complete this tournament based on its current status.
+              </p>
+            </div>
+
+            <div className={styles.adminActions}>
+              {tournament.status === "upcoming" && (
+                <Button onClick={startTournament} disabled={startLoading}>
+                  {startLoading ? "Starting..." : "Start Tournament"}
+                </Button>
+              )}
+
+              {tournament.status === "live" && (
+                <Button
+                  variant="danger"
+                  onClick={completeTournament}
+                  disabled={completeLoading}
+                >
+                  {completeLoading ? "Completing..." : "Complete Tournament"}
+                </Button>
+              )}
+
+              {tournament.status === "completed" && (
+                <span className={styles.completedText}>
+                  Tournament already completed ✅
+                </span>
+              )}
+            </div>
+          </section>
         )}
 
         <section className={styles.section}>
