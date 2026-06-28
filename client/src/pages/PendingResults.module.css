@@ -1,13 +1,15 @@
 .page {
+  width: 100%;
   min-height: 100vh;
   padding: 40px;
+  box-sizing: border-box;
   background:
     radial-gradient(circle at top right, rgba(34, 197, 94, 0.12), transparent 30%),
     var(--bg-main);
 }
 
 .header {
-  max-width: 900px;
+  width: 100%;
   margin-bottom: 34px;
 }
 
@@ -27,22 +29,25 @@
 }
 
 .subtitle {
-  max-width: 720px;
+  max-width: 760px;
   margin: 14px 0 0;
   color: var(--text-muted);
   line-height: 1.6;
 }
 
 .grid {
+  width: 100%;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 520px));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 24px;
 }
 
 .resultCard {
   display: grid;
   gap: 20px;
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .resultCard:hover {
@@ -70,11 +75,13 @@
 .meta {
   margin: 8px 0 0;
   color: var(--text-muted);
+  line-height: 1.5;
 }
 
 .statsGrid {
+  width: 100%;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 12px;
 }
 
@@ -179,6 +186,7 @@
   outline: none;
   font-family: inherit;
   line-height: 1.5;
+  box-sizing: border-box;
 }
 
 .textarea:focus {
@@ -229,6 +237,12 @@
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 1100px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 

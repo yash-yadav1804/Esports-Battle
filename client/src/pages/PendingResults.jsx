@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import API from "../api/axios";
 
 import Button from "../components/ui/Button";
@@ -50,7 +50,7 @@ const PendingResults = () => {
     adminNote: "",
   });
 
-  const fetchPendingSubmissions = useCallback(async () => {
+  const fetchPendingSubmissions = async () => {
     try {
       const res = await API.get("/result-submissions/pending");
 
@@ -70,11 +70,46 @@ const PendingResults = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  };
 
   useEffect(() => {
-    fetchPendingSubmissions();
-  }, [fetchPendingSubmissions]);
+    let isMounted = true;
+
+    const loadPendingSubmissions = async () => {
+      try {
+        const res = await API.get("/result-submissions/pending");
+
+        if (!isMounted) return;
+
+        const data =
+          res.data.submissions ||
+          res.data.pendingSubmissions ||
+          res.data.results ||
+          res.data ||
+          [];
+
+        setSubmissions(Array.isArray(data) ? data : []);
+        setError("");
+      } catch (error) {
+        if (!isMounted) return;
+
+        setError(
+          error.response?.data?.message ||
+            "Failed to fetch pending submissions",
+        );
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadPendingSubmissions();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const approveSubmission = async (submissionId) => {
     try {
