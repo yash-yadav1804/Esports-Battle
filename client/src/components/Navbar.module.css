@@ -2,20 +2,27 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  min-height: 76px;
-  padding: 0 40px;
+  min-height: 82px;
+  padding: 0 48px;
   display: flex;
   align-items: center;
   gap: 28px;
-  background: rgba(2, 6, 23, 0.92);
+  background: rgba(2, 6, 23, 0.94);
   border-bottom: 1px solid #1e293b;
   backdrop-filter: blur(14px);
+}
+
+.navTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
 }
 
 .logo {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   color: white;
   text-decoration: none;
   font-size: 26px;
@@ -24,18 +31,46 @@
 }
 
 .logoMark {
-  width: 34px;
-  height: 34px;
+  width: 38px;
+  height: 38px;
   display: grid;
   place-items: center;
-  border-radius: 10px;
+  border-radius: 12px;
   background: var(--primary);
   color: #020617;
   font-weight: 900;
 }
 
+.menuToggle {
+  display: none;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  background: #0f172a;
+  border: 1px solid #334155;
+  color: white;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.menuToggle:hover {
+  border-color: var(--primary);
+}
+
+.navContent {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
 .links {
   flex: 1;
+  min-width: 0;
   display: flex;
   justify-content: center;
   gap: 8px;
@@ -46,18 +81,23 @@
   padding: 10px 12px;
   color: var(--text-muted);
   text-decoration: none;
-  border-radius: 10px;
-  font-weight: 700;
-  transition: background 0.2s ease, color 0.2s ease;
+  border-radius: 12px;
+  font-weight: 800;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
   background: transparent;
   border: none;
   cursor: pointer;
   font-size: 15px;
+  white-space: nowrap;
 }
 
 .link:hover {
   background: #0f172a;
   color: white;
+  transform: translateY(-1px);
 }
 
 .activeLink {
@@ -65,9 +105,14 @@
   color: var(--primary);
 }
 
+.menuButton {
+  font-family: inherit;
+}
+
 .adminMenu,
 .profileArea {
   position: relative;
+  flex-shrink: 0;
 }
 
 .profileButton {
@@ -77,24 +122,29 @@
   padding: 8px 10px;
   background: #0f172a;
   border: 1px solid #334155;
-  border-radius: 14px;
+  border-radius: 16px;
   cursor: pointer;
   color: white;
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .profileButton:hover {
   border-color: var(--primary);
+  transform: translateY(-1px);
 }
 
 .avatar {
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   display: grid;
   place-items: center;
   border-radius: 50%;
   background: var(--primary);
   color: #020617;
   font-weight: 900;
+  flex-shrink: 0;
 }
 
 .userInfo {
@@ -104,14 +154,18 @@
 }
 
 .userInfo strong {
+  max-width: 120px;
+  overflow: hidden;
   font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .userInfo span {
   color: var(--primary);
   font-size: 12px;
   text-transform: capitalize;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .dropdown,
@@ -122,7 +176,7 @@
   background: #020617;
   border: 1px solid #334155;
   border-radius: 16px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 24px 55px rgba(0, 0, 0, 0.45);
 }
 
 .dropdown {
@@ -132,7 +186,7 @@
 
 .adminDropdown {
   left: 0;
-  width: 250px;
+  width: 260px;
 }
 
 .dropdownLink,
@@ -147,8 +201,9 @@
   text-align: left;
   text-decoration: none;
   cursor: pointer;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 14px;
+  box-sizing: border-box;
 }
 
 .dropdownLink:hover,
@@ -161,17 +216,73 @@
   color: #f87171;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1280px) {
   .navbar {
-    align-items: flex-start;
-    flex-direction: column;
-    padding: 18px 24px;
+    padding: 0 28px;
+    gap: 18px;
+  }
+
+  .logo {
+    font-size: 22px;
+  }
+
+  .link {
+    padding: 9px 10px;
+    font-size: 14px;
+  }
+
+  .userInfo strong {
+    max-width: 90px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .navbar {
+    min-height: auto;
+    padding: 16px 24px;
+    display: block;
+  }
+
+  .navTop {
+    width: 100%;
+  }
+
+  .menuToggle {
+    display: grid;
+  }
+
+  .navContent {
+    display: none;
+    width: 100%;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #1e293b;
+  }
+
+  .navContentOpen {
+    display: grid;
+    gap: 16px;
   }
 
   .links {
     width: 100%;
-    justify-content: flex-start;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .link {
+    width: 100%;
+    text-align: left;
+    box-sizing: border-box;
+  }
+
+  .adminMenu {
+    width: 100%;
+  }
+
+  .adminMenu .link {
+    text-align: left;
   }
 
   .profileArea {
@@ -180,7 +291,11 @@
 
   .profileButton {
     width: 100%;
-    justify-content: space-between;
+    justify-content: flex-start;
+  }
+
+  .userInfo strong {
+    max-width: none;
   }
 
   .dropdown,
@@ -188,24 +303,25 @@
     position: static;
     width: 100%;
     margin-top: 10px;
-  }
-
-  .adminMenu {
-    width: 100%;
-  }
-
-  .adminMenu button {
-    width: 100%;
-    text-align: left;
+    box-sizing: border-box;
   }
 }
 
-@media (max-width: 520px) {
-  .logo {
-    font-size: 22px;
+@media (max-width: 620px) {
+  .navbar {
+    padding: 14px 18px;
   }
 
-  .link {
-    font-size: 14px;
+  .logo {
+    font-size: 20px;
+  }
+
+  .logoMark {
+    width: 34px;
+    height: 34px;
+  }
+
+  .links {
+    grid-template-columns: 1fr;
   }
 }
