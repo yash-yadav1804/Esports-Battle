@@ -44,7 +44,9 @@ const Navbar = () => {
         <NavLink to="/tournaments" className={getNavClass}>
           Tournaments
         </NavLink>
-
+        <NavLink to="/history" className={getNavClass}>
+          History
+        </NavLink>
         <NavLink to="/match-rooms" className={getNavClass}>
           Match Rooms
         </NavLink>

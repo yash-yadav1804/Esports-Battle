@@ -22,6 +22,7 @@ import PendingResults from "./pages/PendingResults";
 import ManageTournaments from "./pages/ManageTournaments";
 import ManageUsers from "./pages/ManageUsers";
 import ManageTeams from "./pages/ManageTeams";
+import TournamentHistory from "./pages/TournamentHistory";
 
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -42,6 +43,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <Tournaments />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/history"
+          element={
+            <ProtectedRoute>
+              <TournamentHistory />
             </ProtectedRoute>
           }
         />
