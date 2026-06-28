@@ -2,7 +2,7 @@
   min-height: 100vh;
   padding: 40px;
   background:
-    radial-gradient(circle at top right, rgba(34, 197, 94, 0.12), transparent 30%),
+    radial-gradient(circle at top left, rgba(34, 197, 94, 0.12), transparent 30%),
     var(--bg-main);
 }
 
@@ -27,7 +27,7 @@
 }
 
 .subtitle {
-  max-width: 760px;
+  max-width: 720px;
   margin: 14px 0 0;
   color: var(--text-muted);
   line-height: 1.6;
@@ -39,37 +39,45 @@
   gap: 24px;
 }
 
-.tournamentCard {
+.userCard {
   display: grid;
   gap: 20px;
   transition: transform 0.2s ease, border-color 0.2s ease;
 }
 
-.tournamentCard:hover {
+.userCard:hover {
   transform: translateY(-4px);
   border-color: var(--primary);
 }
 
+.cardHeader {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+}
+
+.avatar {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  background: var(--primary);
+  color: #020617;
+  font-size: 22px;
+  font-weight: 900;
+}
+
 .cardHeader h2 {
   margin: 0;
-  font-size: 26px;
+  font-size: 24px;
 }
 
-.status {
-  display: inline-block;
-  margin: 0 0 10px;
-  padding: 7px 11px;
-  background: rgba(34, 197, 94, 0.12);
-  color: var(--primary);
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 800;
-  text-transform: capitalize;
-}
-
-.meta {
-  margin: 8px 0 0;
+.cardHeader p {
+  margin: 6px 0 0;
   color: var(--text-muted);
+  word-break: break-word;
 }
 
 .infoGrid {
@@ -93,50 +101,8 @@
 }
 
 .infoBox strong {
-  font-size: 18px;
+  font-size: 16px;
   word-break: break-word;
-}
-
-.actions {
-  display: flex;
-  gap: 12px;
-}
-
-.actions button {
-  flex: 1;
-}
-
-.editTitle {
-  margin: 0;
-  font-size: 24px;
-}
-
-.label {
-  display: block;
-  margin-bottom: 8px;
-  color: var(--text-muted);
-  font-weight: 700;
-}
-
-.input {
-  width: 100%;
-  padding: 13px 14px;
-  margin-bottom: 16px;
-  background: #020617;
-  border: 1px solid #334155;
-  color: white;
-  border-radius: 10px;
-  outline: none;
-}
-
-.input:focus {
-  border-color: var(--primary);
-}
-
-.twoColumn {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
 }
 
 @media (max-width: 720px) {
@@ -148,12 +114,16 @@
     font-size: 34px;
   }
 
-  .infoGrid,
-  .twoColumn {
-    grid-template-columns: 1fr;
+  .cardHeader {
+    grid-template-columns: auto 1fr;
   }
 
-  .actions {
-    flex-direction: column;
+  .cardHeader span {
+    grid-column: 1 / -1;
+    width: fit-content;
+  }
+
+  .infoGrid {
+    grid-template-columns: 1fr;
   }
 }

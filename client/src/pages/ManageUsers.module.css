@@ -1,13 +1,15 @@
 .page {
+  width: 100%;
   min-height: 100vh;
   padding: 40px;
+  box-sizing: border-box;
   background:
     radial-gradient(circle at top left, rgba(34, 197, 94, 0.12), transparent 30%),
     var(--bg-main);
 }
 
 .header {
-  max-width: 900px;
+  width: 100%;
   margin-bottom: 34px;
 }
 
@@ -27,22 +29,25 @@
 }
 
 .subtitle {
-  max-width: 720px;
+  max-width: 760px;
   margin: 14px 0 0;
   color: var(--text-muted);
   line-height: 1.6;
 }
 
 .grid {
+  width: 100%;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 520px));
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
   gap: 24px;
 }
 
 .userCard {
   display: grid;
   gap: 20px;
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .userCard:hover {
@@ -81,8 +86,9 @@
 }
 
 .infoGrid {
+  width: 100%;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 12px;
 }
 
@@ -105,6 +111,12 @@
   word-break: break-word;
 }
 
+@media (max-width: 1100px) {
+  .infoGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 720px) {
   .page {
     padding: 24px;
@@ -114,6 +126,11 @@
     font-size: 34px;
   }
 
+  .grid,
+  .infoGrid {
+    grid-template-columns: 1fr;
+  }
+
   .cardHeader {
     grid-template-columns: auto 1fr;
   }
@@ -121,9 +138,5 @@
   .cardHeader span {
     grid-column: 1 / -1;
     width: fit-content;
-  }
-
-  .infoGrid {
-    grid-template-columns: 1fr;
   }
 }
