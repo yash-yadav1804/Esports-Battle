@@ -7,6 +7,7 @@ import EmptyState from "../components/ui/EmptyState";
 import ErrorState from "../components/ui/ErrorState";
 import LoadingState from "../components/ui/LoadingState";
 import { useToast } from "../components/ui/useToast";
+import ConfirmDialog from "../components/ui/ConfirmDialog";
 
 import styles from "./ManageTeams.module.css";
 
@@ -23,6 +24,11 @@ const ManageTeams = () => {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState("");
   const [error, setError] = useState("");
+  const [deleteDialog, setDeleteDialog] = useState({
+    isOpen: false,
+    teamId: "",
+    teamName: "",
+  });
 
   const fetchTeams = async () => {
     try {
@@ -113,20 +119,31 @@ const ManageTeams = () => {
     }
   };
 
-  const deleteTeam = async (teamId) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this team?",
-    );
+  const openDeleteDialog = (team) => {
+    setDeleteDialog({
+      isOpen: true,
+      teamId: team._id,
+      teamName: team.teamName,
+    });
+  };
 
-    if (!confirmDelete) return;
+  const closeDeleteDialog = () => {
+    setDeleteDialog({
+      isOpen: false,
+      teamId: "",
+      teamName: "",
+    });
+  };
 
+  const confirmDeleteTeam = async () => {
     try {
-      setActionLoading(teamId);
+      setActionLoading(deleteDialog.teamId);
 
-      const res = await API.delete(`/admin/teams/${teamId}`);
+      const res = await API.delete(`/admin/teams/${deleteDialog.teamId}`);
 
       toast.success(res.data.message || "Team deleted successfully");
 
+      closeDeleteDialog();
       await fetchTeams();
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to delete team");
@@ -229,7 +246,7 @@ const ManageTeams = () => {
 
                       <Button
                         variant="danger"
-                        onClick={() => deleteTeam(team._id)}
+                        onClick={() => openDeleteDialog(team)}
                         disabled={actionLoading === team._id}
                       >
                         {actionLoading === team._id ? "Deleting..." : "Delete"}
@@ -278,6 +295,16 @@ const ManageTeams = () => {
           })}
         </section>
       )}
+      <ConfirmDialog
+        isOpen={deleteDialog.isOpen}
+        title="Delete Team?"
+        message={`Are you sure you want to delete ${deleteDialog.teamName}?`}
+        confirmLabel="Delete Team"
+        variant="danger"
+        loading={actionLoading === deleteDialog.teamId}
+        onConfirm={confirmDeleteTeam}
+        onCancel={closeDeleteDialog}
+      />
     </main>
   );
 };

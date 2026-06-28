@@ -7,6 +7,7 @@ import EmptyState from "../components/ui/EmptyState";
 import ErrorState from "../components/ui/ErrorState";
 import LoadingState from "../components/ui/LoadingState";
 import { useToast } from "../components/ui/useToast";
+import ConfirmDialog from "../components/ui/ConfirmDialog";
 
 import styles from "./ManageTournaments.module.css";
 
@@ -28,6 +29,11 @@ const ManageTournaments = () => {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState("");
   const [error, setError] = useState("");
+  const [deleteDialog, setDeleteDialog] = useState({
+    isOpen: false,
+    tournamentId: "",
+    tournamentName: "",
+  });
 
   const fetchTournaments = async () => {
     try {
@@ -141,20 +147,33 @@ const ManageTournaments = () => {
     }
   };
 
-  const deleteTournament = async (tournamentId) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this tournament? Related match rooms, match results, and prizes will also be deleted.",
-    );
+  const openDeleteDialog = (tournament) => {
+    setDeleteDialog({
+      isOpen: true,
+      tournamentId: tournament._id,
+      tournamentName: tournament.title,
+    });
+  };
 
-    if (!confirmDelete) return;
+  const closeDeleteDialog = () => {
+    setDeleteDialog({
+      isOpen: false,
+      tournamentId: "",
+      tournamentName: "",
+    });
+  };
 
+  const confirmDeleteTournament = async () => {
     try {
-      setActionLoading(tournamentId);
+      setActionLoading(deleteDialog.tournamentId);
 
-      const res = await API.delete(`/admin/tournaments/${tournamentId}`);
+      const res = await API.delete(
+        `/admin/tournaments/${deleteDialog.tournamentId}`,
+      );
 
       toast.success(res.data.message || "Tournament deleted successfully");
 
+      closeDeleteDialog();
       await fetchTournaments();
     } catch (error) {
       toast.error(
@@ -263,7 +282,7 @@ const ManageTournaments = () => {
 
                       <Button
                         variant="danger"
-                        onClick={() => deleteTournament(tournament._id)}
+                        onClick={() => openDeleteDialog(tournament)}
                         disabled={actionLoading === tournament._id}
                       >
                         {actionLoading === tournament._id
@@ -387,6 +406,16 @@ const ManageTournaments = () => {
           })}
         </section>
       )}
+      <ConfirmDialog
+        isOpen={deleteDialog.isOpen}
+        title="Delete Tournament?"
+        message={`Deleting ${deleteDialog.tournamentName} will also delete related match rooms, match results, and prize data.`}
+        confirmLabel="Delete Tournament"
+        variant="danger"
+        loading={actionLoading === deleteDialog.tournamentId}
+        onConfirm={confirmDeleteTournament}
+        onCancel={closeDeleteDialog}
+      />
     </main>
   );
 };

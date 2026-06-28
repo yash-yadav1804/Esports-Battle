@@ -8,6 +8,7 @@ import EmptyState from "../components/ui/EmptyState";
 import ErrorState from "../components/ui/ErrorState";
 import LoadingState from "../components/ui/LoadingState";
 import { useToast } from "../components/ui/useToast";
+import ConfirmDialog from "../components/ui/ConfirmDialog";
 
 import styles from "./ManageUsers.module.css";
 
@@ -28,6 +29,11 @@ const ManageUsers = () => {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState("");
   const [error, setError] = useState("");
+  const [deleteDialog, setDeleteDialog] = useState({
+    isOpen: false,
+    userId: "",
+    userName: "",
+  });
 
   const fetchUsers = async () => {
     try {
@@ -70,28 +76,38 @@ const ManageUsers = () => {
       isMounted = false;
     };
   }, []);
-
-  const deleteUser = async (userId) => {
+  const openDeleteDialog = (user) => {
     const currentUserId = getUserId(currentUser);
 
-    if (String(userId) === String(currentUserId)) {
+    if (String(getUserId(user)) === String(currentUserId)) {
       toast.error("You cannot delete your own logged-in account");
       return;
     }
 
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this user?",
-    );
+    setDeleteDialog({
+      isOpen: true,
+      userId: user._id,
+      userName: user.name,
+    });
+  };
 
-    if (!confirmDelete) return;
+  const closeDeleteDialog = () => {
+    setDeleteDialog({
+      isOpen: false,
+      userId: "",
+      userName: "",
+    });
+  };
 
+  const confirmDeleteUser = async () => {
     try {
-      setActionLoading(userId);
+      setActionLoading(deleteDialog.userId);
 
-      const res = await API.delete(`/admin/users/${userId}`);
+      const res = await API.delete(`/admin/users/${deleteDialog.userId}`);
 
       toast.success(res.data.message || "User deleted successfully");
 
+      closeDeleteDialog();
       await fetchUsers();
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to delete user");
@@ -184,7 +200,7 @@ const ManageUsers = () => {
 
                 <Button
                   variant="danger"
-                  onClick={() => deleteUser(user._id)}
+                  onClick={() => openDeleteDialog(user)}
                   disabled={isCurrentUser || actionLoading === user._id}
                 >
                   {actionLoading === user._id
@@ -198,6 +214,16 @@ const ManageUsers = () => {
           })}
         </section>
       )}
+      <ConfirmDialog
+        isOpen={deleteDialog.isOpen}
+        title="Delete User?"
+        message={`Are you sure you want to delete ${deleteDialog.userName}? This action cannot be undone.`}
+        confirmLabel="Delete User"
+        variant="danger"
+        loading={actionLoading === deleteDialog.userId}
+        onConfirm={confirmDeleteUser}
+        onCancel={closeDeleteDialog}
+      />
     </main>
   );
 };
