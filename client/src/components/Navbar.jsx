@@ -72,6 +72,9 @@ const Navbar = () => {
             <NavLink to="/admin/manage-users" className={getNavClass}>
               Manage Users
             </NavLink>
+            <NavLink to="/admin/manage-teams" className={getNavClass}>
+              Manage Teams
+            </NavLink>
             <NavLink to="/admin/create-tournament" className={getNavClass}>
               Create Tournament
             </NavLink>
