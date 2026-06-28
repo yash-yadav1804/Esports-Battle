@@ -1,17 +1,17 @@
-.page {
+css .page {
+  width: 100%;
   min-height: 100vh;
-  padding: 40px;
-  background:
-    radial-gradient(circle at top right, rgba(34, 197, 94, 0.12), transparent 30%),
-    var(--bg-main);
+  padding: 40px 48px;
+  box-sizing: border-box;
+  background: radial-gradient(circle at top right, rgba(34, 197, 94, 0.12), transparent 30%), var(--bg-main);
 }
 
 .backLink {
   display: inline-block;
   margin-bottom: 20px;
-  color: var(--link);
+  color: var(--primary);
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 800;
 }
 
 .backLink:hover {
@@ -19,25 +19,24 @@
 }
 
 .detailsCard {
-  max-width: 1000px;
+  width: 100%;
   padding: 0;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .hero {
-  min-height: 260px;
-  padding: 34px;
+  min-height: 300px;
+  padding: 38px;
   display: flex;
   align-items: flex-end;
-  background:
-    linear-gradient(90deg, rgba(2, 6, 23, 0.92), rgba(2, 6, 23, 0.45)),
-    url("/images/bgmi-card.jpg");
+  background: linear-gradient(90deg, rgba(2, 6, 23, 0.95), rgba(2, 6, 23, 0.55)), url("/images/bgmi-card.jpg");
   background-size: cover;
   background-position: center;
 }
 
 .heroContent {
-  max-width: 760px;
+  max-width: 900px;
 }
 
 .eyebrow {
@@ -58,24 +57,28 @@
 
 .title {
   margin: 0;
-  font-size: 42px;
+  font-size: 46px;
   line-height: 1.1;
 }
 
 .subtitle {
   margin: 12px 0 0;
   color: var(--text-muted);
-  font-size: 16px;
+  font-size: 17px;
+  line-height: 1.6;
 }
 
 .statsGrid {
+  width: 100%;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
   padding: 24px;
+  box-sizing: border-box;
 }
 
 .statBox {
+  min-width: 0;
   background: #020617;
   border: 1px solid #334155;
   border-radius: 14px;
@@ -90,11 +93,24 @@
 }
 
 .statBox strong {
+  display: block;
   font-size: 22px;
+  line-height: 1.3;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: break-word;
 }
 
 .actions {
   padding: 0 24px 20px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.actions button,
+.actions a {
+  min-width: 180px;
 }
 
 .successBox {
@@ -104,115 +120,8 @@
   border: 1px solid rgba(34, 197, 94, 0.35);
   border-radius: 12px;
   color: var(--primary);
-  font-weight: 700;
-}
-
-.section {
-  padding: 24px;
-  border-top: 1px solid #334155;
-}
-
-.sectionHeader {
-  display: flex;
-  justify-content: space-between;
-  gap: 18px;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.sectionTitle {
-  margin: 0;
-  font-size: 26px;
-}
-
-.sectionSubtitle {
-  margin: 6px 0 0;
-  color: var(--text-muted);
-}
-
-.leaderboardLink {
-  padding: 11px 16px;
-  background: var(--primary);
-  color: white;
-  border-radius: 10px;
-  text-decoration: none;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.leaderboardLink:hover {
-  background: var(--primary-hover);
-}
-
-.emptyBox {
-  padding: 18px;
-  background: #020617;
-  border: 1px solid #334155;
-  border-radius: 12px;
-  color: var(--text-muted);
-}
-
-.teamGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 14px;
-}
-
-.teamCard {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px;
-  background: #020617;
-  border: 1px solid #334155;
-  border-radius: 12px;
-  text-transform: capitalize;
-}
-
-.teamRank {
-  width: 34px;
-  height: 34px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: rgba(34, 197, 94, 0.12);
-  color: var(--primary);
-  font-size: 13px;
   font-weight: 800;
-}
-
-.error {
-  color: var(--danger);
-}
-
-@media (max-width: 760px) {
-  .page {
-    padding: 24px;
-  }
-
-  .hero {
-    min-height: 220px;
-    padding: 24px;
-  }
-
-  .title {
-    font-size: 32px;
-  }
-
-  .statsGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .sectionHeader {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-}
-
-@media (max-width: 460px) {
-  .statsGrid {
-    grid-template-columns: 1fr;
-  }
+  line-height: 1.5;
 }
 
 .adminPanel {
@@ -251,6 +160,7 @@
   display: flex;
   gap: 12px;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .completedText {
@@ -258,7 +168,98 @@
   font-weight: 800;
 }
 
-@media (max-width: 720px) {
+.section {
+  padding: 24px;
+  border-top: 1px solid #334155;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 26px;
+}
+
+.sectionSubtitle {
+  margin: 6px 0 0;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.leaderboardLink {
+  flex-shrink: 0;
+  padding: 11px 16px;
+  background: var(--primary);
+  color: #020617;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 900;
+  white-space: nowrap;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.leaderboardLink:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+}
+
+.emptyBox {
+  padding: 18px;
+  background: #020617;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.teamGrid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.teamCard {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  background: #020617;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  text-transform: capitalize;
+  overflow-wrap: break-word;
+}
+
+.teamRank {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(34, 197, 94, 0.12);
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.error {
+  color: var(--danger);
+}
+
+@media (max-width: 1100px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .adminPanel {
     flex-direction: column;
     align-items: flex-start;
@@ -269,6 +270,63 @@
   }
 
   .adminActions button {
+    flex: 1;
+  }
+}
+
+@media (max-width: 760px) {
+  .page {
+    padding: 24px;
+  }
+
+  .hero {
+    min-height: 240px;
+    padding: 24px;
+  }
+
+  .title {
+    font-size: 34px;
+  }
+
+  .statsGrid {
+    padding: 18px;
+    grid-template-columns: 1fr;
+  }
+
+  .actions {
+    padding: 0 18px 18px;
+    flex-direction: column;
+  }
+
+  .actions button,
+  .actions a {
     width: 100%;
+  }
+
+  .successBox,
+  .adminPanel {
+    margin: 0 18px 18px;
+  }
+
+  .section {
+    padding: 18px;
+  }
+
+  .sectionHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .leaderboardLink {
+    width: 100%;
+    text-align: center;
+  }
+
+  .adminActions {
+    flex-direction: column;
+  }
+
+  .teamGrid {
+    grid-template-columns: 1fr;
   }
 }
