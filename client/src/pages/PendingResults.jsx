@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import API from "../api/axios";
 
 import Button from "../components/ui/Button";
@@ -10,6 +10,31 @@ import { useToast } from "../components/ui/useToast";
 
 import styles from "./PendingResults.module.css";
 
+const getSubmissionId = (submission) => {
+  return submission?._id || submission?.id;
+};
+
+const getTeamName = (submission) => {
+  return submission?.team?.teamName || submission?.teamName || "Unknown Team";
+};
+
+const getTournamentName = (submission) => {
+  return (
+    submission?.tournament?.title ||
+    submission?.tournamentName ||
+    "Unknown Tournament"
+  );
+};
+
+const getMatchRoomName = (submission) => {
+  return (
+    submission?.matchRoom?.roomName ||
+    submission?.matchRoom?.title ||
+    submission?.matchRoomName ||
+    "Match Room"
+  );
+};
+
 const PendingResults = () => {
   const toast = useToast();
 
@@ -18,51 +43,38 @@ const PendingResults = () => {
   const [actionLoading, setActionLoading] = useState("");
   const [error, setError] = useState("");
 
-  const fetchPendingSubmissions = async () => {
+  const [rejectModal, setRejectModal] = useState({
+    isOpen: false,
+    submissionId: "",
+    teamName: "",
+    adminNote: "",
+  });
+
+  const fetchPendingSubmissions = useCallback(async () => {
     try {
       const res = await API.get("/result-submissions/pending");
 
-      setSubmissions(res.data.submissions || []);
+      const data =
+        res.data.submissions ||
+        res.data.pendingSubmissions ||
+        res.data.results ||
+        res.data ||
+        [];
+
+      setSubmissions(Array.isArray(data) ? data : []);
       setError("");
     } catch (error) {
       setError(
-        error.response?.data?.message || "Failed to fetch pending results",
+        error.response?.data?.message || "Failed to fetch pending submissions",
       );
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    let isMounted = true;
-
-    const loadSubmissions = async () => {
-      try {
-        const res = await API.get("/result-submissions/pending");
-
-        if (!isMounted) return;
-
-        setSubmissions(res.data.submissions || []);
-        setError("");
-      } catch (error) {
-        if (!isMounted) return;
-
-        setError(
-          error.response?.data?.message || "Failed to fetch pending results",
-        );
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    loadSubmissions();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+    fetchPendingSubmissions();
+  }, [fetchPendingSubmissions]);
 
   const approveSubmission = async (submissionId) => {
     try {
@@ -82,26 +94,50 @@ const PendingResults = () => {
     }
   };
 
-  const rejectSubmission = async (submissionId) => {
-    const adminNote = window.prompt(
-      "Reason for rejection?",
-      "Submitted result could not be verified.",
-    );
+  const openRejectModal = (submission) => {
+    setRejectModal({
+      isOpen: true,
+      submissionId: getSubmissionId(submission),
+      teamName: getTeamName(submission),
+      adminNote: "",
+    });
+  };
 
-    if (adminNote === null) return;
+  const closeRejectModal = () => {
+    setRejectModal({
+      isOpen: false,
+      submissionId: "",
+      teamName: "",
+      adminNote: "",
+    });
+  };
+
+  const handleRejectNoteChange = (e) => {
+    setRejectModal((currentModal) => ({
+      ...currentModal,
+      adminNote: e.target.value,
+    }));
+  };
+
+  const rejectSubmission = async () => {
+    if (!rejectModal.adminNote.trim()) {
+      toast.error("Please add a rejection reason");
+      return;
+    }
 
     try {
-      setActionLoading(submissionId);
+      setActionLoading(rejectModal.submissionId);
 
       const res = await API.patch(
-        `/result-submissions/reject/${submissionId}`,
+        `/result-submissions/reject/${rejectModal.submissionId}`,
         {
-          adminNote,
+          adminNote: rejectModal.adminNote.trim(),
         },
       );
 
       toast.success(res.data.message || "Result rejected successfully");
 
+      closeRejectModal();
       await fetchPendingSubmissions();
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to reject result");
@@ -115,7 +151,7 @@ const PendingResults = () => {
       <main className={styles.page}>
         <LoadingState
           title="Loading pending results"
-          message="Fetching result submissions waiting for admin approval."
+          message="Fetching player result submissions for admin review."
         />
       </main>
     );
@@ -124,7 +160,7 @@ const PendingResults = () => {
   if (error) {
     return (
       <main className={styles.page}>
-        <ErrorState title="Unable to load pending results" message={error} />
+        <ErrorState title="Unable to load submissions" message={error} />
       </main>
     );
   }
@@ -132,103 +168,141 @@ const PendingResults = () => {
   return (
     <main className={styles.page}>
       <section className={styles.header}>
-        <p className={styles.eyebrow}>Admin Verification</p>
+        <p className={styles.eyebrow}>Admin Result Review</p>
         <h1 className={styles.title}>Pending Results</h1>
         <p className={styles.subtitle}>
-          Review submitted kills and placement. Approved results will create
-          match results and update the leaderboard.
+          Review submitted kills and placement before adding results to the
+          final leaderboard.
         </p>
       </section>
 
       {submissions.length === 0 ? (
         <EmptyState
-          title="No pending results"
-          message="Player result submissions will appear here after they submit match performance."
-          actionLabel="View Match Rooms"
-          actionTo="/match-rooms"
+          title="No pending submissions"
+          message="Player result submissions waiting for approval will appear here."
         />
       ) : (
         <section className={styles.grid}>
-          {submissions.map((submission) => (
-            <Card className={styles.resultCard} key={submission._id}>
-              <div className={styles.cardHeader}>
-                <div>
-                  <p className={styles.matchLabel}>
-                    Match #{submission.matchRoom?.matchNumber || "N/A"}
-                  </p>
+          {submissions.map((submission) => {
+            const submissionId = getSubmissionId(submission);
 
-                  <h2>{submission.team?.teamName || "Unknown Team"}</h2>
-
-                  <p className={styles.meta}>
-                    {submission.tournament?.title || "Unknown Tournament"}
-                  </p>
+            return (
+              <Card className={styles.resultCard} key={submissionId}>
+                <div className={styles.cardHeader}>
+                  <div>
+                    <p className={styles.status}>Pending Review</p>
+                    <h2>{getTeamName(submission)}</h2>
+                    <p className={styles.meta}>
+                      {getTournamentName(submission)} •{" "}
+                      {getMatchRoomName(submission)}
+                    </p>
+                  </div>
                 </div>
 
-                <span className={styles.status}>{submission.status}</span>
-              </div>
+                <div className={styles.statsGrid}>
+                  <div className={styles.statBox}>
+                    <span>Kills</span>
+                    <strong>{submission.kills ?? 0}</strong>
+                  </div>
 
-              <div className={styles.infoGrid}>
-                <div className={styles.infoBox}>
-                  <span>Kills</span>
-                  <strong>{submission.kills}</strong>
+                  <div className={styles.statBox}>
+                    <span>Position</span>
+                    <strong>#{submission.position ?? "N/A"}</strong>
+                  </div>
+
+                  <div className={styles.statBox}>
+                    <span>Status</span>
+                    <strong>{submission.status || "pending"}</strong>
+                  </div>
+
+                  <div className={styles.statBox}>
+                    <span>Submitted At</span>
+                    <strong>
+                      {submission.createdAt
+                        ? new Date(submission.createdAt).toLocaleDateString()
+                        : "N/A"}
+                    </strong>
+                  </div>
                 </div>
 
-                <div className={styles.infoBox}>
-                  <span>Position</span>
-                  <strong>#{submission.position}</strong>
+                {submission.submittedBy && (
+                  <div className={styles.submittedBy}>
+                    <span>Submitted By</span>
+                    <strong>
+                      {submission.submittedBy?.name ||
+                        submission.submittedBy?.email ||
+                        "Player"}
+                    </strong>
+                  </div>
+                )}
+
+                <div className={styles.actions}>
+                  <Button
+                    onClick={() => approveSubmission(submissionId)}
+                    disabled={actionLoading === submissionId}
+                  >
+                    {actionLoading === submissionId
+                      ? "Approving..."
+                      : "Approve"}
+                  </Button>
+
+                  <Button
+                    variant="danger"
+                    onClick={() => openRejectModal(submission)}
+                    disabled={actionLoading === submissionId}
+                  >
+                    Reject
+                  </Button>
                 </div>
-
-                <div className={styles.infoBox}>
-                  <span>Room ID</span>
-                  <strong>{submission.matchRoom?.roomId || "N/A"}</strong>
-                </div>
-
-                <div className={styles.infoBox}>
-                  <span>Submitted By</span>
-                  <strong>{submission.submittedBy?.name || "Unknown"}</strong>
-                </div>
-              </div>
-
-              <div className={styles.playerBox}>
-                <p>
-                  <strong>Email:</strong>{" "}
-                  {submission.submittedBy?.email || "Not available"}
-                </p>
-
-                <p>
-                  <strong>IGN:</strong>{" "}
-                  {submission.submittedBy?.ign || "Not added"}
-                </p>
-
-                <p>
-                  <strong>BGMI UID:</strong>{" "}
-                  {submission.submittedBy?.bgmiUID || "Not added"}
-                </p>
-              </div>
-
-              <div className={styles.actions}>
-                <Button
-                  onClick={() => approveSubmission(submission._id)}
-                  disabled={actionLoading === submission._id}
-                >
-                  {actionLoading === submission._id
-                    ? "Processing..."
-                    : "Approve"}
-                </Button>
-
-                <Button
-                  variant="danger"
-                  onClick={() => rejectSubmission(submission._id)}
-                  disabled={actionLoading === submission._id}
-                >
-                  {actionLoading === submission._id
-                    ? "Processing..."
-                    : "Reject"}
-                </Button>
-              </div>
-            </Card>
-          ))}
+              </Card>
+            );
+          })}
         </section>
+      )}
+
+      {rejectModal.isOpen && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.rejectModal}>
+            <div className={styles.modalIcon}>!</div>
+
+            <h2>Reject Result?</h2>
+
+            <p>
+              Add a clear reason for rejecting{" "}
+              <strong>{rejectModal.teamName}</strong> result submission.
+            </p>
+
+            <label className={styles.label}>Rejection Note</label>
+
+            <textarea
+              className={styles.textarea}
+              value={rejectModal.adminNote}
+              onChange={handleRejectNoteChange}
+              placeholder="Example: Kill count proof was unclear or placement does not match match record."
+              rows="5"
+            />
+
+            <div className={styles.modalActions}>
+              <button
+                className={styles.cancelBtn}
+                onClick={closeRejectModal}
+                disabled={actionLoading === rejectModal.submissionId}
+              >
+                Cancel
+              </button>
+
+              <button
+                className={styles.rejectBtn}
+                onClick={rejectSubmission}
+                disabled={actionLoading === rejectModal.submissionId}
+              >
+                {actionLoading === rejectModal.submissionId
+                  ? "Rejecting..."
+                  : "Reject Result"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </main>
   );
