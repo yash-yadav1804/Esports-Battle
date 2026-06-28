@@ -10,13 +10,28 @@ import { useToast } from "../components/ui/useToast";
 
 import styles from "./SubmitResult.module.css";
 
+const getTournamentId = (tournament) => {
+  return tournament?._id || tournament?.id;
+};
+
+const getRoomId = (room) => {
+  return room?._id || room?.id;
+};
+
 const getRoomTournamentId = (room) => {
   return (
-    room.tournament?._id ||
-    room.tournament ||
-    room.tournamentId?._id ||
-    room.tournamentId
+    room?.tournament?._id ||
+    room?.tournament ||
+    room?.tournamentId?._id ||
+    room?.tournamentId
   );
+};
+
+const getRoomLabel = (room) => {
+  const matchNumber = room?.matchNumber || room?.matchNo || "N/A";
+  const roomId = room?.roomId || room?.roomCode || "N/A";
+
+  return `Match #${matchNumber} — Room ${roomId}`;
 };
 
 const SubmitResult = () => {
@@ -25,10 +40,6 @@ const SubmitResult = () => {
   const [tournaments, setTournaments] = useState([]);
   const [matchRooms, setMatchRooms] = useState([]);
 
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
-
   const [formData, setFormData] = useState({
     tournamentId: "",
     matchRoomId: "",
@@ -36,10 +47,31 @@ const SubmitResult = () => {
     position: "",
   });
 
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  const selectedTournament = useMemo(() => {
+    return tournaments.find(
+      (tournament) =>
+        String(getTournamentId(tournament)) === formData.tournamentId,
+    );
+  }, [tournaments, formData.tournamentId]);
+
+  const filteredMatchRooms = useMemo(() => {
+    if (!formData.tournamentId) return [];
+
+    return matchRooms.filter((room) => {
+      return (
+        String(getRoomTournamentId(room)) === String(formData.tournamentId)
+      );
+    });
+  }, [matchRooms, formData.tournamentId]);
+
   useEffect(() => {
     let isMounted = true;
 
-    const fetchData = async () => {
+    const fetchSubmitData = async () => {
       try {
         const [tournamentsRes, matchRoomsRes] = await Promise.all([
           API.get("/profile/my-tournaments"),
@@ -48,20 +80,28 @@ const SubmitResult = () => {
 
         if (!isMounted) return;
 
-        setTournaments(
-          tournamentsRes.data.tournaments || tournamentsRes.data || [],
-        );
-        setMatchRooms(
+        const tournamentData =
+          tournamentsRes.data.tournaments ||
+          tournamentsRes.data.myTournaments ||
+          tournamentsRes.data ||
+          [];
+
+        const matchRoomData =
           matchRoomsRes.data.matchRooms ||
-            matchRoomsRes.data.rooms ||
-            matchRoomsRes.data ||
-            [],
-        );
+          matchRoomsRes.data.rooms ||
+          matchRoomsRes.data ||
+          [];
+
+        setTournaments(Array.isArray(tournamentData) ? tournamentData : []);
+        setMatchRooms(Array.isArray(matchRoomData) ? matchRoomData : []);
         setError("");
       } catch (error) {
         if (!isMounted) return;
 
-        setError(error.response?.data?.message || "Failed to load result form");
+        setError(
+          error.response?.data?.message ||
+            "Failed to load tournaments and match rooms",
+        );
       } finally {
         if (isMounted) {
           setLoading(false);
@@ -69,34 +109,60 @@ const SubmitResult = () => {
       }
     };
 
-    fetchData();
+    fetchSubmitData();
 
     return () => {
       isMounted = false;
     };
   }, []);
 
-  const filteredMatchRooms = useMemo(() => {
-    if (!formData.tournamentId) return [];
-
-    return matchRooms.filter((room) => {
-      const roomTournamentId = getRoomTournamentId(room);
-      return String(roomTournamentId) === String(formData.tournamentId);
-    });
-  }, [formData.tournamentId, matchRooms]);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    setFormData((currentData) => ({
-      ...currentData,
-      [name]: value,
-      ...(name === "tournamentId" ? { matchRoomId: "" } : {}),
-    }));
+    setFormData((currentData) => {
+      if (name === "tournamentId") {
+        return {
+          ...currentData,
+          tournamentId: value,
+          matchRoomId: "",
+        };
+      }
+
+      return {
+        ...currentData,
+        [name]: value,
+      };
+    });
   };
 
-  const handleSubmitResult = async (e) => {
+  const validateForm = () => {
+    if (!formData.tournamentId) {
+      toast.error("Please select a tournament");
+      return false;
+    }
+
+    if (!formData.matchRoomId) {
+      toast.error("Please select a match room");
+      return false;
+    }
+
+    if (formData.kills === "" || Number(formData.kills) < 0) {
+      toast.error("Please enter valid kills");
+      return false;
+    }
+
+    if (!formData.position || Number(formData.position) <= 0) {
+      toast.error("Please enter a valid position");
+      return false;
+    }
+
+    return true;
+  };
+
+  const submitResult = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) return;
 
     try {
       setSubmitting(true);
@@ -110,9 +176,7 @@ const SubmitResult = () => {
 
       const res = await API.post("/result-submissions/submit", payload);
 
-      toast.success(
-        res.data.message || "Result submitted successfully for admin approval",
-      );
+      toast.success(res.data.message || "Result submitted for admin review");
 
       setFormData({
         tournamentId: "",
@@ -131,8 +195,8 @@ const SubmitResult = () => {
     return (
       <main className={styles.page}>
         <LoadingState
-          title="Loading result form"
-          message="Fetching tournaments and match rooms."
+          title="Loading submit form"
+          message="Fetching your registered tournaments and match rooms."
         />
       </main>
     );
@@ -146,112 +210,227 @@ const SubmitResult = () => {
     );
   }
 
-  if (tournaments.length === 0) {
-    return (
-      <main className={styles.page}>
-        <EmptyState
-          title="No tournaments found"
-          message="You can submit results only after tournaments are created."
-          actionLabel="View Tournaments"
-          actionTo="/tournaments"
-        />
-      </main>
-    );
-  }
-
   return (
     <main className={styles.page}>
       <section className={styles.header}>
         <p className={styles.eyebrow}>Player Match Report</p>
         <h1 className={styles.title}>Submit Match Result</h1>
         <p className={styles.subtitle}>
-          Submit your team's kills and placement for admin verification. Once
-          approved, points will be added to the leaderboard.
+          Submit your team&apos;s kills and placement for admin verification.
+          Once approved, points will be added to the leaderboard.
         </p>
       </section>
 
-      <Card className={styles.formCard}>
-        <form onSubmit={handleSubmitResult}>
-          <label className={styles.label}>Tournament</label>
-          <select
-            className={styles.input}
-            name="tournamentId"
-            value={formData.tournamentId}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select tournament</option>
+      {tournaments.length === 0 ? (
+        <EmptyState
+          title="No registered tournaments"
+          message="Your team must register in a tournament before you can submit a result."
+          actionLabel="View Tournaments"
+          actionTo="/tournaments"
+        />
+      ) : (
+        <section className={styles.contentGrid}>
+          <Card className={styles.formCard}>
+            <div className={styles.cardHeader}>
+              <div>
+                <p className={styles.cardEyebrow}>Result Details</p>
+                <h2>Match Performance</h2>
+              </div>
 
-            {tournaments.map((tournament) => (
-              <option value={tournament._id} key={tournament._id}>
-                {tournament.title} — {tournament.status}
-              </option>
-            ))}
-          </select>
-
-          <label className={styles.label}>Match Room</label>
-          <select
-            className={styles.input}
-            name="matchRoomId"
-            value={formData.matchRoomId}
-            onChange={handleChange}
-            disabled={!formData.tournamentId}
-            required
-          >
-            <option value="">
-              {formData.tournamentId
-                ? "Select match room"
-                : "Select tournament first"}
-            </option>
-
-            {filteredMatchRooms.map((room) => (
-              <option value={room._id} key={room._id}>
-                Match #{room.matchNumber} — {room.map} — Room {room.roomId}
-              </option>
-            ))}
-          </select>
-
-          {formData.tournamentId && filteredMatchRooms.length === 0 && (
-            <p className={styles.helperText}>
-              No match rooms found for this tournament yet.
-            </p>
-          )}
-
-          <div className={styles.twoColumn}>
-            <div>
-              <label className={styles.label}>Kills</label>
-              <input
-                className={styles.input}
-                type="number"
-                name="kills"
-                placeholder="Example: 8"
-                value={formData.kills}
-                onChange={handleChange}
-                min="0"
-                required
-              />
+              <span className={styles.reviewBadge}>Admin Review</span>
             </div>
 
-            <div>
-              <label className={styles.label}>Position</label>
-              <input
-                className={styles.input}
-                type="number"
-                name="position"
-                placeholder="Example: 2"
-                value={formData.position}
-                onChange={handleChange}
-                min="1"
-                required
-              />
-            </div>
-          </div>
+            <form className={styles.form} onSubmit={submitResult}>
+              <div className={styles.fieldGroup}>
+                <label className={styles.label} htmlFor="tournamentId">
+                  Tournament
+                </label>
 
-          <Button type="submit" disabled={submitting}>
-            {submitting ? "Submitting..." : "Submit Result"}
-          </Button>
-        </form>
-      </Card>
+                <select
+                  id="tournamentId"
+                  className={styles.input}
+                  name="tournamentId"
+                  value={formData.tournamentId}
+                  onChange={handleChange}
+                >
+                  <option value="">Select tournament</option>
+
+                  {tournaments.map((tournament) => (
+                    <option
+                      key={getTournamentId(tournament)}
+                      value={getTournamentId(tournament)}
+                    >
+                      {tournament.title} — {tournament.status}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className={styles.fieldGroup}>
+                <label className={styles.label} htmlFor="matchRoomId">
+                  Match Room
+                </label>
+
+                <select
+                  id="matchRoomId"
+                  className={styles.input}
+                  name="matchRoomId"
+                  value={formData.matchRoomId}
+                  onChange={handleChange}
+                  disabled={!formData.tournamentId}
+                >
+                  <option value="">
+                    {formData.tournamentId
+                      ? "Select match room"
+                      : "Select tournament first"}
+                  </option>
+
+                  {filteredMatchRooms.map((room) => (
+                    <option key={getRoomId(room)} value={getRoomId(room)}>
+                      {getRoomLabel(room)}
+                    </option>
+                  ))}
+                </select>
+
+                {formData.tournamentId && filteredMatchRooms.length === 0 && (
+                  <p className={styles.helperText}>
+                    No match room found for this tournament yet.
+                  </p>
+                )}
+              </div>
+
+              <div className={styles.twoColumn}>
+                <div className={styles.fieldGroup}>
+                  <label className={styles.label} htmlFor="kills">
+                    Kills
+                  </label>
+
+                  <input
+                    id="kills"
+                    className={styles.input}
+                    type="number"
+                    name="kills"
+                    min="0"
+                    value={formData.kills}
+                    onChange={handleChange}
+                    placeholder="Example: 8"
+                  />
+                </div>
+
+                <div className={styles.fieldGroup}>
+                  <label className={styles.label} htmlFor="position">
+                    Position
+                  </label>
+
+                  <input
+                    id="position"
+                    className={styles.input}
+                    type="number"
+                    name="position"
+                    min="1"
+                    value={formData.position}
+                    onChange={handleChange}
+                    placeholder="Example: 1"
+                  />
+                </div>
+              </div>
+
+              <Button type="submit" disabled={submitting}>
+                {submitting ? "Submitting..." : "Submit Result"}
+              </Button>
+            </form>
+          </Card>
+
+          <aside className={styles.sidePanel}>
+            <Card className={styles.selectedCard}>
+              <p className={styles.cardEyebrow}>Selected Tournament</p>
+
+              {selectedTournament ? (
+                <>
+                  <h2>{selectedTournament.title}</h2>
+                  <p className={styles.sideMeta}>
+                    {selectedTournament.game} • {selectedTournament.mode}
+                  </p>
+
+                  <div className={styles.miniGrid}>
+                    <div>
+                      <span>Status</span>
+                      <strong>{selectedTournament.status}</strong>
+                    </div>
+
+                    <div>
+                      <span>Prize Pool</span>
+                      <strong>₹{selectedTournament.prizePool || 0}</strong>
+                    </div>
+
+                    <div>
+                      <span>Entry Fee</span>
+                      <strong>₹{selectedTournament.entryFee || 0}</strong>
+                    </div>
+
+                    <div>
+                      <span>Rooms</span>
+                      <strong>{filteredMatchRooms.length}</strong>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <p className={styles.sideMeta}>
+                  Select a tournament to see its quick details here.
+                </p>
+              )}
+            </Card>
+
+            <Card className={styles.rulesCard}>
+              <p className={styles.cardEyebrow}>Scoring Rules</p>
+              <h2>How points are calculated</h2>
+
+              <div className={styles.rulesList}>
+                <div>
+                  <span>Kill Points</span>
+                  <strong>2 points per kill</strong>
+                </div>
+
+                <div>
+                  <span>1st Position</span>
+                  <strong>15 placement points</strong>
+                </div>
+
+                <div>
+                  <span>2nd Position</span>
+                  <strong>12 placement points</strong>
+                </div>
+
+                <div>
+                  <span>3rd Position</span>
+                  <strong>10 placement points</strong>
+                </div>
+              </div>
+            </Card>
+
+            <Card className={styles.processCard}>
+              <p className={styles.cardEyebrow}>Review Process</p>
+
+              <div className={styles.timeline}>
+                <div>
+                  <span>1</span>
+                  <p>Player submits kills and position.</p>
+                </div>
+
+                <div>
+                  <span>2</span>
+                  <p>Admin reviews submitted result.</p>
+                </div>
+
+                <div>
+                  <span>3</span>
+                  <p>Approved result updates leaderboard.</p>
+                </div>
+              </div>
+            </Card>
+          </aside>
+        </section>
+      )}
     </main>
   );
 };
