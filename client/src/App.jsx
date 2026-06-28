@@ -20,6 +20,7 @@ import CreateTournament from "./pages/CreateTournament";
 import CreateMatchRoom from "./pages/CreateMatchRoom";
 import PendingResults from "./pages/PendingResults";
 import ManageTournaments from "./pages/ManageTournaments";
+import ManageUsers from "./pages/ManageUsers";
 
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -144,6 +145,14 @@ const App = () => {
           element={
             <AdminRoute>
               <AdminDashboard />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/manage-users"
+          element={
+            <AdminRoute>
+              <ManageUsers />
             </AdminRoute>
           }
         />

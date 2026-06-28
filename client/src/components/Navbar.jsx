@@ -69,7 +69,9 @@ const Navbar = () => {
             <NavLink to="/admin/dashboard" className={getNavClass}>
               Admin Dashboard
             </NavLink>
-
+            <NavLink to="/admin/manage-users" className={getNavClass}>
+              Manage Users
+            </NavLink>
             <NavLink to="/admin/create-tournament" className={getNavClass}>
               Create Tournament
             </NavLink>
