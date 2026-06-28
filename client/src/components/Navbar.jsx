@@ -3,15 +3,26 @@ import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useToast } from "./ui/useToast";
 import styles from "./Navbar.module.css";
 
+const getStoredUser = () => {
+  try {
+    return JSON.parse(localStorage.getItem("user"));
+  } catch {
+    return null;
+  }
+};
+
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const toast = useToast();
 
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isAdminOpen, setIsAdminOpen] = useState(false);
 
   const token = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = getStoredUser();
+
+  const isAdmin = user?.role === "admin";
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -21,13 +32,16 @@ const Navbar = () => {
     navigate("/login");
   };
 
-  const closeProfileDropdown = () => {
+  const closeDropdowns = () => {
     setIsProfileOpen(false);
+    setIsAdminOpen(false);
   };
 
   const getNavClass = ({ isActive }) => {
     return isActive ? `${styles.link} ${styles.activeLink}` : styles.link;
   };
+
+  const adminPathActive = location.pathname.startsWith("/admin");
 
   if (location.pathname === "/login") {
     return null;
@@ -35,7 +49,7 @@ const Navbar = () => {
 
   return (
     <header className={styles.navbar}>
-      <Link to="/tournaments" className={styles.logo}>
+      <Link to="/tournaments" className={styles.logo} onClick={closeDropdowns}>
         <span className={styles.logoMark}>E</span>
         Esports Battle
       </Link>
@@ -44,12 +58,15 @@ const Navbar = () => {
         <NavLink to="/tournaments" className={getNavClass}>
           Tournaments
         </NavLink>
+
         <NavLink to="/history" className={getNavClass}>
           History
         </NavLink>
+
         <NavLink to="/match-rooms" className={getNavClass}>
           Match Rooms
         </NavLink>
+
         <NavLink to="/submit-result" className={getNavClass}>
           Submit Result
         </NavLink>
@@ -66,31 +83,80 @@ const Navbar = () => {
           Team Requests
         </NavLink>
 
-        {user?.role === "admin" && (
-          <>
-            <NavLink to="/admin/dashboard" className={getNavClass}>
-              Admin Dashboard
-            </NavLink>
-            <NavLink to="/admin/manage-users" className={getNavClass}>
-              Manage Users
-            </NavLink>
-            <NavLink to="/admin/manage-teams" className={getNavClass}>
-              Manage Teams
-            </NavLink>
-            <NavLink to="/admin/create-tournament" className={getNavClass}>
-              Create Tournament
-            </NavLink>
-            <NavLink to="/admin/manage-tournaments" className={getNavClass}>
-              Manage Tournaments
-            </NavLink>
+        {isAdmin && (
+          <div className={styles.adminMenu}>
+            <button
+              className={`${styles.link} ${
+                adminPathActive ? styles.activeLink : ""
+              }`}
+              onClick={() => {
+                setIsAdminOpen((currentValue) => !currentValue);
+                setIsProfileOpen(false);
+              }}
+            >
+              Admin ▾
+            </button>
 
-            <NavLink to="/admin/create-match-room" className={getNavClass}>
-              Create Match Room
-            </NavLink>
-            <NavLink to="/admin/pending-results" className={getNavClass}>
-              Pending Results
-            </NavLink>
-          </>
+            {isAdminOpen && (
+              <div className={styles.adminDropdown}>
+                <NavLink
+                  to="/admin/dashboard"
+                  className={styles.dropdownLink}
+                  onClick={closeDropdowns}
+                >
+                  Dashboard
+                </NavLink>
+
+                <NavLink
+                  to="/admin/manage-users"
+                  className={styles.dropdownLink}
+                  onClick={closeDropdowns}
+                >
+                  Manage Users
+                </NavLink>
+
+                <NavLink
+                  to="/admin/manage-teams"
+                  className={styles.dropdownLink}
+                  onClick={closeDropdowns}
+                >
+                  Manage Teams
+                </NavLink>
+
+                <NavLink
+                  to="/admin/create-tournament"
+                  className={styles.dropdownLink}
+                  onClick={closeDropdowns}
+                >
+                  Create Tournament
+                </NavLink>
+
+                <NavLink
+                  to="/admin/manage-tournaments"
+                  className={styles.dropdownLink}
+                  onClick={closeDropdowns}
+                >
+                  Manage Tournaments
+                </NavLink>
+
+                <NavLink
+                  to="/admin/create-match-room"
+                  className={styles.dropdownLink}
+                  onClick={closeDropdowns}
+                >
+                  Create Match Room
+                </NavLink>
+
+                <NavLink
+                  to="/admin/pending-results"
+                  className={styles.dropdownLink}
+                  onClick={closeDropdowns}
+                >
+                  Pending Results
+                </NavLink>
+              </div>
+            )}
+          </div>
         )}
       </nav>
 
@@ -98,7 +164,10 @@ const Navbar = () => {
         <div className={styles.profileArea}>
           <button
             className={styles.profileButton}
-            onClick={() => setIsProfileOpen((currentValue) => !currentValue)}
+            onClick={() => {
+              setIsProfileOpen((currentValue) => !currentValue);
+              setIsAdminOpen(false);
+            }}
           >
             <div className={styles.avatar}>
               {user.name?.charAt(0)?.toUpperCase() || "U"}
@@ -115,7 +184,7 @@ const Navbar = () => {
               <NavLink
                 to="/profile"
                 className={styles.dropdownLink}
-                onClick={closeProfileDropdown}
+                onClick={closeDropdowns}
               >
                 My Profile
               </NavLink>
@@ -123,17 +192,19 @@ const Navbar = () => {
               <NavLink
                 to="/notifications"
                 className={styles.dropdownLink}
-                onClick={closeProfileDropdown}
+                onClick={closeDropdowns}
               >
                 Notifications
               </NavLink>
+
               <NavLink
                 to="/my-submissions"
                 className={styles.dropdownLink}
-                onClick={closeProfileDropdown}
+                onClick={closeDropdowns}
               >
                 My Submissions
               </NavLink>
+
               <button className={styles.logoutBtn} onClick={handleLogout}>
                 Logout
               </button>
