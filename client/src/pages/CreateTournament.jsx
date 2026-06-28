@@ -1,12 +1,13 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useMemo, useState } from "react";
 import API from "../api/axios";
+
 import Button from "../components/ui/Button";
+import Card from "../components/ui/Card";
 import { useToast } from "../components/ui/useToast";
+
 import styles from "./CreateTournament.module.css";
 
 const CreateTournament = () => {
-  const navigate = useNavigate();
   const toast = useToast();
 
   const [formData, setFormData] = useState({
@@ -22,21 +23,76 @@ const CreateTournament = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const estimatedSlots = useMemo(() => {
+    if (!formData.maxTeams) return "Not set";
+    return `${formData.maxTeams} teams`;
+  }, [formData.maxTeams]);
+
   const handleChange = (e) => {
+    const { name, value } = e.target;
+
     setFormData((currentData) => ({
       ...currentData,
-      [e.target.name]: e.target.value,
+      [name]: value,
     }));
   };
 
-  const handleCreateTournament = async (e) => {
+  const validateForm = () => {
+    if (!formData.title.trim()) {
+      setError("Tournament title is required");
+      toast.error("Please enter tournament title");
+      return false;
+    }
+
+    if (!formData.game.trim()) {
+      setError("Game is required");
+      toast.error("Please select game");
+      return false;
+    }
+
+    if (!formData.mode.trim()) {
+      setError("Mode is required");
+      toast.error("Please select mode");
+      return false;
+    }
+
+    if (formData.entryFee === "" || Number(formData.entryFee) < 0) {
+      setError("Entry fee must be valid");
+      toast.error("Please enter a valid entry fee");
+      return false;
+    }
+
+    if (formData.prizePool === "" || Number(formData.prizePool) <= 0) {
+      setError("Prize pool must be greater than 0");
+      toast.error("Please enter a valid prize pool");
+      return false;
+    }
+
+    if (!formData.maxTeams || Number(formData.maxTeams) <= 0) {
+      setError("Max teams must be greater than 0");
+      toast.error("Please enter valid max teams");
+      return false;
+    }
+
+    if (!formData.startDate) {
+      setError("Start date is required");
+      toast.error("Please select tournament start date");
+      return false;
+    }
+
+    setError("");
+    return true;
+  };
+
+  const createTournament = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) return;
 
     try {
       setLoading(true);
-      setError("");
 
-      await API.post("/tournaments/createTournament", {
+      const payload = {
         title: formData.title.trim(),
         game: formData.game,
         mode: formData.mode,
@@ -44,17 +100,27 @@ const CreateTournament = () => {
         prizePool: Number(formData.prizePool),
         maxTeams: Number(formData.maxTeams),
         startDate: formData.startDate,
+      };
+
+      const res = await API.post("/tournaments/createTournament", payload);
+
+      toast.success(res.data.message || "Tournament created successfully");
+
+      setFormData({
+        title: "",
+        game: "BGMI",
+        mode: "Squad",
+        entryFee: "",
+        prizePool: "",
+        maxTeams: "",
+        startDate: "",
       });
-
-      toast.success("Tournament created successfully");
-
-      navigate("/tournaments");
     } catch (error) {
-      const errorMessage =
+      const message =
         error.response?.data?.message || "Failed to create tournament";
 
-      setError(errorMessage);
-      toast.error(errorMessage);
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -62,101 +128,255 @@ const CreateTournament = () => {
 
   return (
     <main className={styles.page}>
-      <section className={styles.card}>
+      <section className={styles.header}>
         <p className={styles.eyebrow}>Admin Panel</p>
         <h1 className={styles.title}>Create Tournament</h1>
         <p className={styles.subtitle}>
-          Add a new esports tournament for players and teams.
+          Configure tournament details, team slots, prize pool, and start date
+          before opening registration for players.
         </p>
+      </section>
 
-        <form onSubmit={handleCreateTournament}>
-          <label className={styles.label}>Tournament Title</label>
-          <input
-            className={styles.input}
-            type="text"
-            name="title"
-            placeholder="Enter tournament title"
-            value={formData.title}
-            onChange={handleChange}
-            required
-          />
+      <section className={styles.contentGrid}>
+        <Card className={styles.formCard}>
+          <div className={styles.cardHeader}>
+            <div>
+              <p className={styles.cardEyebrow}>Tournament Setup</p>
+              <h2>Basic Details</h2>
+            </div>
 
-          <label className={styles.label}>Game</label>
-          <select
-            className={styles.input}
-            name="game"
-            value={formData.game}
-            onChange={handleChange}
-          >
-            <option value="BGMI">BGMI</option>
-            <option value="PUBG">PUBG</option>
-            <option value="FREE FIRE">FREE FIRE</option>
-          </select>
-
-          <label className={styles.label}>Mode</label>
-          <select
-            className={styles.input}
-            name="mode"
-            value={formData.mode}
-            onChange={handleChange}
-          >
-            <option value="Solo">Solo</option>
-            <option value="Duo">Duo</option>
-            <option value="Squad">Squad</option>
-          </select>
-
-          <label className={styles.label}>Entry Fee</label>
-          <input
-            className={styles.input}
-            type="number"
-            name="entryFee"
-            placeholder="Enter entry fee"
-            value={formData.entryFee}
-            onChange={handleChange}
-            min="0"
-            required
-          />
-
-          <label className={styles.label}>Prize Pool</label>
-          <input
-            className={styles.input}
-            type="number"
-            name="prizePool"
-            placeholder="Enter prize pool"
-            value={formData.prizePool}
-            onChange={handleChange}
-            min="0"
-            required
-          />
-
-          <label className={styles.label}>Max Teams</label>
-          <input
-            className={styles.input}
-            type="number"
-            name="maxTeams"
-            placeholder="Enter max teams"
-            value={formData.maxTeams}
-            onChange={handleChange}
-            min="2"
-            required
-          />
-
-          <label className={styles.label}>Start Date</label>
-          <input
-            className={styles.input}
-            type="date"
-            name="startDate"
-            value={formData.startDate}
-            onChange={handleChange}
-            required
-          />
+            <span className={styles.badge}>Admin Only</span>
+          </div>
 
           {error && <p className={styles.error}>{error}</p>}
 
-          <Button type="submit" disabled={loading}>
-            {loading ? "Creating..." : "Create Tournament"}
-          </Button>
-        </form>
+          <form className={styles.form} onSubmit={createTournament}>
+            <div className={styles.fullField}>
+              <label className={styles.label} htmlFor="title">
+                Tournament Title
+              </label>
+
+              <input
+                id="title"
+                className={styles.input}
+                type="text"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                placeholder="Example: BGMI Summer Championship"
+              />
+            </div>
+
+            <div className={styles.twoColumn}>
+              <div>
+                <label className={styles.label} htmlFor="game">
+                  Game
+                </label>
+
+                <select
+                  id="game"
+                  className={styles.input}
+                  name="game"
+                  value={formData.game}
+                  onChange={handleChange}
+                >
+                  <option value="BGMI">BGMI</option>
+                  <option value="PUBG">PUBG</option>
+                  <option value="FREE FIRE">FREE FIRE</option>
+                  <option value="COD MOBILE">COD MOBILE</option>
+                </select>
+              </div>
+
+              <div>
+                <label className={styles.label} htmlFor="mode">
+                  Mode
+                </label>
+
+                <select
+                  id="mode"
+                  className={styles.input}
+                  name="mode"
+                  value={formData.mode}
+                  onChange={handleChange}
+                >
+                  <option value="Solo">Solo</option>
+                  <option value="Duo">Duo</option>
+                  <option value="Squad">Squad</option>
+                </select>
+              </div>
+            </div>
+
+            <div className={styles.twoColumn}>
+              <div>
+                <label className={styles.label} htmlFor="entryFee">
+                  Entry Fee
+                </label>
+
+                <input
+                  id="entryFee"
+                  className={styles.input}
+                  type="number"
+                  min="0"
+                  name="entryFee"
+                  value={formData.entryFee}
+                  onChange={handleChange}
+                  placeholder="Example: 100"
+                />
+              </div>
+
+              <div>
+                <label className={styles.label} htmlFor="prizePool">
+                  Prize Pool
+                </label>
+
+                <input
+                  id="prizePool"
+                  className={styles.input}
+                  type="number"
+                  min="1"
+                  name="prizePool"
+                  value={formData.prizePool}
+                  onChange={handleChange}
+                  placeholder="Example: 5000"
+                />
+              </div>
+            </div>
+
+            <div className={styles.twoColumn}>
+              <div>
+                <label className={styles.label} htmlFor="maxTeams">
+                  Max Teams
+                </label>
+
+                <input
+                  id="maxTeams"
+                  className={styles.input}
+                  type="number"
+                  min="1"
+                  name="maxTeams"
+                  value={formData.maxTeams}
+                  onChange={handleChange}
+                  placeholder="Example: 16"
+                />
+              </div>
+
+              <div>
+                <label className={styles.label} htmlFor="startDate">
+                  Start Date
+                </label>
+
+                <input
+                  id="startDate"
+                  className={styles.input}
+                  type="date"
+                  name="startDate"
+                  value={formData.startDate}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+
+            <Button type="submit" disabled={loading}>
+              {loading ? "Creating Tournament..." : "Create Tournament"}
+            </Button>
+          </form>
+        </Card>
+
+        <Card className={styles.previewCard}>
+          <p className={styles.cardEyebrow}>Live Preview</p>
+
+          <div className={styles.previewHeader}>
+            <h2>{formData.title || "Tournament Title"}</h2>
+            <span>Upcoming</span>
+          </div>
+
+          <p className={styles.sideMeta}>
+            {formData.game} • {formData.mode}
+          </p>
+
+          <div className={styles.miniGrid}>
+            <div>
+              <span>Entry Fee</span>
+              <strong>₹{formData.entryFee || 0}</strong>
+            </div>
+
+            <div>
+              <span>Prize Pool</span>
+              <strong>₹{formData.prizePool || 0}</strong>
+            </div>
+
+            <div>
+              <span>Slots</span>
+              <strong>{estimatedSlots}</strong>
+            </div>
+
+            <div>
+              <span>Start Date</span>
+              <strong>{formData.startDate || "Not set"}</strong>
+            </div>
+          </div>
+
+          <div className={styles.previewNote}>
+            This preview helps you confirm what players will see before the
+            tournament is created.
+          </div>
+        </Card>
+      </section>
+
+      <section className={styles.supportGrid}>
+        <Card className={styles.infoCard}>
+          <p className={styles.cardEyebrow}>Admin Checklist</p>
+          <h2>Before publishing</h2>
+
+          <div className={styles.checkList}>
+            <div>
+              <span>01</span>
+              <p>Use a clear tournament title.</p>
+            </div>
+
+            <div>
+              <span>02</span>
+              <p>Confirm entry fee and prize pool carefully.</p>
+            </div>
+
+            <div>
+              <span>03</span>
+              <p>Set max teams according to match capacity.</p>
+            </div>
+
+            <div>
+              <span>04</span>
+              <p>Create match rooms after registration starts.</p>
+            </div>
+          </div>
+        </Card>
+
+        <Card className={styles.infoCard}>
+          <p className={styles.cardEyebrow}>Tournament Flow</p>
+          <h2>How it works</h2>
+
+          <div className={styles.flowSteps}>
+            <div>
+              <strong>Create</strong>
+              <p>Admin creates tournament with basic details.</p>
+            </div>
+
+            <div>
+              <strong>Register</strong>
+              <p>Players register their team in the tournament.</p>
+            </div>
+
+            <div>
+              <strong>Play</strong>
+              <p>Admin creates match room and teams play the match.</p>
+            </div>
+
+            <div>
+              <strong>Results</strong>
+              <p>Admin approves results and leaderboard gets updated.</p>
+            </div>
+          </div>
+        </Card>
       </section>
     </main>
   );
