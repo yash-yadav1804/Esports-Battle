@@ -1,0 +1,307 @@
+css .page {
+  width: 100%;
+  min-height: 100vh;
+  padding: 40px 48px;
+  box-sizing: border-box;
+  background: radial-gradient(circle at top left, rgba(34, 197, 94, 0.12), transparent 30%), radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.08), transparent 28%), var(--bg-main);
+}
+
+.header {
+  width: 100%;
+  margin-bottom: 34px;
+}
+
+.eyebrow,
+.cardEyebrow {
+  margin: 0 0 8px;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0;
+  font-size: 44px;
+  line-height: 1.1;
+}
+
+.subtitle {
+  max-width: 860px;
+  margin: 14px 0 0;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.dashboardColumns {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(420px, 0.9fr) minmax(520px, 1.1fr);
+  gap: 26px;
+  align-items: start;
+}
+
+.column {
+  display: grid;
+  gap: 26px;
+  align-content: start;
+}
+
+.profileCard,
+.teamCard,
+.sectionCard,
+.stateCard {
+  display: grid;
+  gap: 22px;
+  padding: 28px;
+  background: var(--bg-card);
+  border: 1px solid #334155;
+  border-radius: 22px;
+  box-sizing: border-box;
+}
+
+.profileTop {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 16px;
+  align-items: center;
+}
+
+.cardHeader {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.avatar {
+  width: 72px;
+  height: 72px;
+  display: grid;
+  place-items: center;
+  border-radius: 20px;
+  background: var(--primary);
+  color: #020617;
+  font-size: 32px;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+
+.smallAvatar {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: rgba(34, 197, 94, 0.14);
+  color: var(--primary);
+  font-size: 18px;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+
+.profileTop h2,
+.cardHeader h2 {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.15;
+  text-transform: capitalize;
+}
+
+.profileTop p,
+.cardHeader p {
+  margin: 6px 0 0;
+  color: var(--text-muted);
+  overflow-wrap: break-word;
+  line-height: 1.5;
+}
+
+.roleBadge,
+.statusBadge,
+.pointsBadge {
+  width: fit-content;
+  padding: 7px 12px;
+  background: rgba(34, 197, 94, 0.12);
+  color: var(--primary);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.pointsBadge {
+  background: rgba(250, 204, 21, 0.12);
+  color: #facc15;
+}
+
+.infoGrid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.infoBox {
+  min-width: 0;
+  padding: 14px;
+  background: #020617;
+  border: 1px solid #334155;
+  border-radius: 12px;
+}
+
+.infoBox span {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.infoBox strong {
+  display: block;
+  font-size: 17px;
+  line-height: 1.35;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: break-word;
+  text-transform: capitalize;
+}
+
+.playerList {
+  display: grid;
+  gap: 14px;
+}
+
+.playerList h3 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.list {
+  display: grid;
+  gap: 14px;
+}
+
+.listItem,
+.tournamentItem,
+.historyItem {
+  min-width: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+  padding: 16px;
+  background: #020617;
+  border: 1px solid #334155;
+  border-radius: 14px;
+}
+
+.listItem {
+  justify-content: flex-start;
+}
+
+.listItem strong,
+.tournamentItem strong,
+.historyItem strong {
+  display: block;
+  font-size: 17px;
+  line-height: 1.35;
+  text-transform: capitalize;
+  overflow-wrap: break-word;
+}
+
+.listItem p,
+.tournamentItem p,
+.historyItem p {
+  margin: 5px 0 0;
+  color: var(--text-muted);
+  line-height: 1.5;
+  overflow-wrap: break-word;
+}
+
+.emptyBox {
+  padding: 18px;
+  background: #020617;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.stateCard {
+  max-width: 720px;
+}
+
+.stateCard h1 {
+  margin: 0;
+  font-size: 34px;
+}
+
+.stateCard p {
+  margin: 10px 0 0;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.error {
+  margin: 0;
+  padding: 14px 16px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #f87171 !important;
+  border-radius: 12px;
+  line-height: 1.5;
+}
+
+@media (max-width: 1100px) {
+  .dashboardColumns {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .page {
+    padding: 24px;
+  }
+
+  .title {
+    font-size: 34px;
+  }
+
+  .profileCard,
+  .teamCard,
+  .sectionCard,
+  .stateCard {
+    padding: 24px;
+  }
+
+  .profileTop {
+    grid-template-columns: auto 1fr;
+  }
+
+  .roleBadge {
+    grid-column: 1 / -1;
+  }
+
+  .cardHeader {
+    flex-direction: column;
+  }
+
+  .infoGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .listItem,
+  .tournamentItem,
+  .historyItem {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .avatar {
+    width: 62px;
+    height: 62px;
+    font-size: 28px;
+  }
+}
