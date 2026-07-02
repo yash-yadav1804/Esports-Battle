@@ -23,6 +23,8 @@ import ManageTournaments from "./pages/ManageTournaments";
 import ManageUsers from "./pages/ManageUsers";
 import ManageTeams from "./pages/ManageTeams";
 import TournamentHistory from "./pages/TournamentHistory";
+import OrganizerApplication from "./pages/OrganizerApplication";
+import AdminOrganizerRequests from "./pages/AdminOrganizerRequests";
 
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -207,6 +209,22 @@ const App = () => {
           element={
             <AdminRoute>
               <PendingResults />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/organizer/apply"
+          element={
+            <ProtectedRoute>
+              <OrganizerApplication />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/organizer-requests"
+          element={
+            <AdminRoute>
+              <AdminOrganizerRequests />
             </AdminRoute>
           }
         />
