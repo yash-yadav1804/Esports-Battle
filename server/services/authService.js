@@ -3,6 +3,11 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 const ApiError = require("../utils/ApiError");
 const generateToken = require("../utils/generateToken");
+const { ROLES } = require("../constants/roles");
+
+const nameRegex = /^[a-zA-Z ]{2,50}$/;
+const bgmiUIDRegex = /^[0-9]{8,12}$/;
+const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{6,}$/;
 
 const sanitizeUser = (user) => {
   return {
@@ -18,10 +23,28 @@ const sanitizeUser = (user) => {
 };
 
 const registerUser = async (userData) => {
-  const { name, email, password, ign, bgmiUID, role } = userData;
+  const { name, email, password, ign, bgmiUID } = userData;
 
-  if (!name || !email || !password) {
-    throw new ApiError(400, "Name, email and password are required");
+  if (!name || !email || !password || !ign || !bgmiUID) {
+    throw new ApiError(
+      400,
+      "Name, email, password, IGN and BGMI UID are required",
+    );
+  }
+
+  if (!nameRegex.test(name.trim())) {
+    throw new ApiError(400, "Name should contain only letters and spaces");
+  }
+
+  if (!passwordRegex.test(password)) {
+    throw new ApiError(
+      400,
+      "Password must be at least 6 characters and include one letter and one number",
+    );
+  }
+
+  if (!bgmiUIDRegex.test(bgmiUID.trim())) {
+    throw new ApiError(400, "BGMI UID must be 8 to 12 digits");
   }
 
   const normalizedEmail = email.toLowerCase().trim();
@@ -39,9 +62,9 @@ const registerUser = async (userData) => {
     name: name.trim(),
     email: normalizedEmail,
     password: hashedPassword,
-    ign: ign?.trim() || "",
-    bgmiUID: bgmiUID?.trim() || "",
-    role: role || "player",
+    ign: ign.trim(),
+    bgmiUID: bgmiUID.trim(),
+    role: ROLES.PLAYER,
   });
 
   const token = generateToken(user._id);

@@ -9,7 +9,6 @@ const Login = () => {
   const toast = useToast();
 
   const [authMode, setAuthMode] = useState("login");
-  const [selectedRole, setSelectedRole] = useState("player");
 
   const [formData, setFormData] = useState({
     name: "",
@@ -42,39 +41,34 @@ const Login = () => {
     setError("");
   };
 
-  const selectRole = (role) => {
-    setSelectedRole(role);
-    setError("");
-  };
-
-  const getUserFromResponse = (data) => {
-    return (
-      data.user ||
-      data.loggedInUser || {
-        _id: data.userId || data._id,
-        name: data.name,
-        email: data.email,
-        role: data.role || selectedRole,
-        ign: data.ign,
-        bgmiUID: data.bgmiUID,
-      }
-    );
-  };
-
   const saveAuthData = (responseData) => {
     const authData = responseData.data || responseData;
 
     const token = authData.token || authData.accessToken;
-    const user = authData.user || getUserFromResponse(authData);
+    const user = authData.user;
 
-    if (!token) {
-      throw new Error("Token not received from server");
+    if (!token || !user) {
+      throw new Error("Invalid auth response from server");
     }
 
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(user));
 
     return user;
+  };
+
+  const redirectUserByRole = (user) => {
+    if (user.role === "admin" || user.role === "superAdmin") {
+      navigate("/admin/dashboard");
+      return;
+    }
+
+    if (user.role === "organizer") {
+      navigate("/tournaments");
+      return;
+    }
+
+    navigate("/tournaments");
   };
 
   const validateLogin = () => {
@@ -107,8 +101,13 @@ const Login = () => {
       return false;
     }
 
-    if (formData.password.length < 6) {
-      setError("Password must be at least 6 characters");
+    if (!formData.ign.trim()) {
+      setError("IGN is required");
+      return false;
+    }
+
+    if (!formData.bgmiUID.trim()) {
+      setError("BGMI UID is required");
       return false;
     }
 
@@ -125,22 +124,8 @@ const Login = () => {
 
     const user = saveAuthData(res.data);
 
-    if (user.role !== selectedRole) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-
-      throw new Error(
-        `This account is registered as ${user.role}. Please select Login as ${user.role}.`,
-      );
-    }
-
     toast.success(`Logged in as ${user.role}`);
-
-    if (user.role === "admin") {
-      navigate("/admin/dashboard");
-    } else {
-      navigate("/tournaments");
-    }
+    redirectUserByRole(user);
   };
 
   const handleSignup = async () => {
@@ -150,38 +135,16 @@ const Login = () => {
       name: formData.name.trim(),
       email: formData.email.trim(),
       password: formData.password,
-      role: selectedRole,
       ign: formData.ign.trim(),
       bgmiUID: formData.bgmiUID.trim(),
     };
 
     const res = await API.post("/auth/register", payload);
 
-    const token = res.data.token || res.data.accessToken;
+    const user = saveAuthData(res.data);
 
-    if (token) {
-      const user = saveAuthData(res.data);
-
-      toast.success(`Account created as ${user.role}`);
-
-      if (user.role === "admin") {
-        navigate("/admin/dashboard");
-      } else {
-        navigate("/tournaments");
-      }
-
-      return;
-    }
-
-    toast.success("Account created successfully. Please login now.");
-    setAuthMode("login");
-    setFormData({
-      name: "",
-      email: formData.email,
-      password: "",
-      ign: "",
-      bgmiUID: "",
-    });
+    toast.success("Player account created successfully");
+    redirectUserByRole(user);
   };
 
   const handleSubmit = async (e) => {
@@ -222,27 +185,27 @@ const Login = () => {
 
           <p>
             Players can create teams, register for tournaments, submit results,
-            and track leaderboards. Admins can manage tournaments, users, match
-            rooms, and result approvals.
+            and track leaderboards. Approved organizers and admins can manage
+            tournaments, match rooms, and results.
           </p>
 
           <div className={styles.featureGrid}>
             <div>
               <span>01</span>
-              <strong>Team Registration</strong>
-              <p>Create or join esports teams.</p>
+              <strong>Players</strong>
+              <p>Create teams and join tournaments.</p>
             </div>
 
             <div>
               <span>02</span>
-              <strong>Admin Controls</strong>
-              <p>Manage tournaments and results.</p>
+              <strong>Organizers</strong>
+              <p>Host tournaments after approval.</p>
             </div>
 
             <div>
               <span>03</span>
-              <strong>Leaderboard</strong>
-              <p>Track approved match points.</p>
+              <strong>Admins</strong>
+              <p>Control platform and approvals.</p>
             </div>
           </div>
         </div>
@@ -266,39 +229,17 @@ const Login = () => {
             </button>
           </div>
 
-          <div className={styles.roleSelector}>
-            <button
-              type="button"
-              className={selectedRole === "player" ? styles.activeRole : ""}
-              onClick={() => selectRole("player")}
-            >
-              Player
-            </button>
-
-            <button
-              type="button"
-              className={selectedRole === "admin" ? styles.activeRole : ""}
-              onClick={() => selectRole("admin")}
-            >
-              Admin
-            </button>
-          </div>
-
           <div className={styles.cardHeader}>
             <p className={styles.eyebrow}>
-              {isLoginMode ? "Welcome Back" : "Create Account"}
+              {isLoginMode ? "Welcome Back" : "Create Player Account"}
             </p>
 
-            <h2>
-              {isLoginMode
-                ? `Login as ${selectedRole}`
-                : `Signup as ${selectedRole}`}
-            </h2>
+            <h2>{isLoginMode ? "Login to Account" : "Signup as Player"}</h2>
 
             <p>
               {isLoginMode
-                ? "Access your esports dashboard with your registered account."
-                : "Create your account and start using the platform."}
+                ? "Enter your email and password. We will automatically open your dashboard based on your role."
+                : "Create a player account first. You can request organizer access later from your profile."}
             </p>
           </div>
 
@@ -367,8 +308,8 @@ const Login = () => {
                   ? "Logging in..."
                   : "Creating account..."
                 : isLoginMode
-                  ? `Login as ${selectedRole}`
-                  : `Signup as ${selectedRole}`}
+                  ? "Login"
+                  : "Create Player Account"}
             </button>
           </form>
 
@@ -378,7 +319,7 @@ const Login = () => {
               type="button"
               onClick={() => switchAuthMode(isLoginMode ? "signup" : "login")}
             >
-              {isLoginMode ? "Create one" : "Login here"}
+              {isLoginMode ? "Create player account" : "Login here"}
             </button>
           </p>
         </div>
