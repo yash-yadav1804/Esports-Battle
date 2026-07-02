@@ -9,6 +9,7 @@ const {
   startTournament,
   completeTournament,
   getTournamentHistory,
+  getMyCreatedTournaments,
 } = require("../controllers/tournamentController");
 
 const protect = require("../middleware/authMiddleware");
@@ -19,11 +20,18 @@ const router = express.Router();
 router.post(
   "/createTournament",
   protect,
-  authorizeRoles("admin"),
+  authorizeRoles("organizer", "admin", "superAdmin"),
   createTournament,
 );
 
 router.get("/", getAllTournaments);
+
+router.get(
+  "/my-created",
+  protect,
+  authorizeRoles("organizer", "admin", "superAdmin"),
+  getMyCreatedTournaments,
+);
 
 router.get("/history/completed", getTournamentHistory);
 
@@ -34,14 +42,14 @@ router.post("/leave/:tournamentId", protect, leaveTournament);
 router.patch(
   "/start/:tournamentId",
   protect,
-  authorizeRoles("admin"),
+  authorizeRoles("organizer", "admin", "superAdmin"),
   startTournament,
 );
 
 router.patch(
   "/complete/:tournamentId",
   protect,
-  authorizeRoles("admin"),
+  authorizeRoles("organizer", "admin", "superAdmin"),
   completeTournament,
 );
 
