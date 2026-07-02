@@ -1,73 +1,38 @@
-const MatchRoom = require("../models/MatchRoom");
-const Tournament = require("../models/Tournament");
+const asyncHandler = require("../utils/asyncHandler");
+const ApiResponse = require("../utils/ApiResponse");
+const matchRoomService = require("../services/matchRoomService");
 
-const createMatchRoom = async (req, res) => {
-  try {
-    const { tournamentId } = req.params;
-    const { roomId, roomPassword, matchNumber } = req.body;
+const createMatchRoom = asyncHandler(async (req, res) => {
+  const room = await matchRoomService.createMatchRoom(
+    req.params.tournamentId,
+    req.body,
+    req.user,
+  );
 
-    if (!roomId || !roomPassword) {
-      return res.status(400).json({
-        message: "Please fill all required fields",
-      });
-    }
+  res.status(201).json({
+    message: "Match room created successfully",
+    room,
+  });
+});
 
-    const tournament = await Tournament.findById(tournamentId);
+const getAllMatchRooms = asyncHandler(async (req, res) => {
+  const rooms = await matchRoomService.getAllMatchRooms();
 
-    if (!tournament) {
-      return res.status(404).json({
-        message: "Tournament not found",
-      });
-    }
+  res.status(200).json(rooms);
+});
 
-    if (tournament.status === "completed") {
-      return res.status(400).json({
-        message: "Tournament already completed",
-      });
-    }
+const getMyCreatedMatchRooms = asyncHandler(async (req, res) => {
+  const rooms = await matchRoomService.getMyCreatedMatchRooms(req.user);
 
-    const existingRoom = await MatchRoom.findOne({ roomId });
-
-    if (existingRoom) {
-      return res.status(400).json({
-        message: "Room ID already exists",
-      });
-    }
-
-    const room = await MatchRoom.create({
-      roomId,
-      roomPassword,
-      matchNumber,
-      tournament: tournament._id,
-      createdBy: req.user._id,
-    });
-
-    res.status(201).json({
-      message: "Match room created successfully",
-      room,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
-  }
-};
-
-const getAllMatchRooms = async (req, res) => {
-  try {
-    const rooms = await MatchRoom.find()
-      .populate("tournament", "title game")
-      .populate("createdBy", "name");
-
-    res.status(200).json(rooms);
-  } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
-  }
-};
+  res
+    .status(200)
+    .json(
+      new ApiResponse(200, rooms, "Created match rooms fetched successfully"),
+    );
+});
 
 module.exports = {
   createMatchRoom,
   getAllMatchRooms,
+  getMyCreatedMatchRooms,
 };

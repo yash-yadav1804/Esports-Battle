@@ -11,12 +11,24 @@ const matchRoomSchema = new mongoose.Schema(
     roomPassword: {
       type: String,
       required: true,
+      trim: true,
     },
 
     matchNumber: {
       type: Number,
       required: true,
       default: 1,
+    },
+
+    map: {
+      type: String,
+      enum: ["Erangel", "Miramar", "Sanhok", "Vikendi", "Livik", "Karakin"],
+      default: "Erangel",
+    },
+
+    matchTime: {
+      type: Date,
+      required: true,
     },
 
     tournament: {
