@@ -23,7 +23,13 @@ const Navbar = () => {
   const token = localStorage.getItem("token");
   const user = getStoredUser();
 
-  const isAdmin = user?.role === "admin";
+  const role = user?.role;
+
+  const isPlayer = role === "player";
+  const isOrganizer = role === "organizer";
+  const isAdmin = role === "admin" || role === "superAdmin";
+
+  const canCreateTournament = isOrganizer || isAdmin;
   const adminPathActive = location.pathname.startsWith("/admin");
 
   const closeDropdowns = () => {
@@ -125,13 +131,25 @@ const Navbar = () => {
             Teams
           </NavLink>
 
-          <NavLink
-            to="/teams/create"
-            className={getNavClass}
-            onClick={closeEverything}
-          >
-            Create Team
-          </NavLink>
+          {canCreateTournament && (
+            <NavLink
+              to="/admin/create-tournament"
+              className={getNavClass}
+              onClick={closeEverything}
+            >
+              Create Tournament
+            </NavLink>
+          )}
+
+          {isPlayer && (
+            <NavLink
+              to="/organizer/apply"
+              className={getNavClass}
+              onClick={closeEverything}
+            >
+              Become Organizer
+            </NavLink>
+          )}
 
           <NavLink
             to="/team-requests"
@@ -163,6 +181,14 @@ const Navbar = () => {
                     onClick={closeEverything}
                   >
                     Dashboard
+                  </NavLink>
+
+                  <NavLink
+                    to="/admin/organizer-requests"
+                    className={styles.dropdownLink}
+                    onClick={closeEverything}
+                  >
+                    Organizer Requests
                   </NavLink>
 
                   <NavLink
@@ -262,6 +288,16 @@ const Navbar = () => {
                 >
                   My Submissions
                 </NavLink>
+
+                {isPlayer && (
+                  <NavLink
+                    to="/organizer/apply"
+                    className={styles.dropdownLink}
+                    onClick={closeEverything}
+                  >
+                    Organizer Application
+                  </NavLink>
+                )}
 
                 <button className={styles.logoutBtn} onClick={handleLogout}>
                   Logout
