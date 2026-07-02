@@ -19,6 +19,7 @@ const teamRequestRoutes = require("./routes/teamRequestRoutes");
 const prizeRoutes = require("./routes/prizeRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const resultSubmissionRoutes = require("./routes/resultSubmissionRoutes");
+const organizerRequestRoutes = require("./routes/organizerRequestRoutes");
 
 const ApiResponse = require("./utils/ApiResponse");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
@@ -59,6 +60,7 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/team-requests", teamRequestRoutes);
 app.use("/api/prizes", prizeRoutes);
 app.use("/api/result-submissions", resultSubmissionRoutes);
+app.use("/api/organizer-requests", organizerRequestRoutes);
 
 // Error middlewares must be after all routes
 app.use(notFound);
