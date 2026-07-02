@@ -13,8 +13,21 @@ const getTournamentId = (tournament) => {
   return tournament?._id || tournament?.id;
 };
 
+const getResponseData = (response) => {
+  return response.data?.data || response.data;
+};
+
+const getStoredUser = () => {
+  try {
+    return JSON.parse(localStorage.getItem("user"));
+  } catch {
+    return null;
+  }
+};
+
 const CreateMatchRoom = () => {
   const toast = useToast();
+  const user = getStoredUser();
 
   const [tournaments, setTournaments] = useState([]);
   const [formData, setFormData] = useState({
@@ -40,21 +53,26 @@ const CreateMatchRoom = () => {
   useEffect(() => {
     let isMounted = true;
 
-    const fetchTournaments = async () => {
+    const fetchCreatedTournaments = async () => {
       try {
-        const res = await API.get("/tournaments");
+        const response = await API.get("/tournaments/my-created");
 
         if (!isMounted) return;
 
-        const data = res.data.tournaments || res.data || [];
+        const data = getResponseData(response);
 
-        setTournaments(Array.isArray(data) ? data : []);
+        const availableTournaments = Array.isArray(data)
+          ? data.filter((tournament) => tournament.status !== "completed")
+          : [];
+
+        setTournaments(availableTournaments);
         setError("");
       } catch (error) {
         if (!isMounted) return;
 
         setError(
-          error.response?.data?.message || "Failed to fetch tournaments",
+          error.response?.data?.message ||
+            "Failed to fetch your created tournaments",
         );
       } finally {
         if (isMounted) {
@@ -63,7 +81,7 @@ const CreateMatchRoom = () => {
       }
     };
 
-    fetchTournaments();
+    fetchCreatedTournaments();
 
     return () => {
       isMounted = false;
@@ -95,8 +113,8 @@ const CreateMatchRoom = () => {
       return false;
     }
 
-    if (!formData.roomId.trim()) {
-      toast.error("Please enter room ID");
+    if (!formData.roomId || Number(formData.roomId) <= 0) {
+      toast.error("Please enter a valid room ID");
       return false;
     }
 
@@ -124,17 +142,17 @@ const CreateMatchRoom = () => {
       const payload = {
         matchNumber: Number(formData.matchNumber),
         map: formData.map,
-        roomId: formData.roomId.trim(),
+        roomId: Number(formData.roomId),
         roomPassword: formData.roomPassword.trim(),
         matchTime: formData.matchTime,
       };
 
-      const res = await API.post(
+      const response = await API.post(
         `/matchrooms/create/${formData.tournamentId}`,
         payload,
       );
 
-      toast.success(res.data.message || "Match room created successfully");
+      toast.success(response.data.message || "Match room created successfully");
 
       setFormData({
         tournamentId: "",
@@ -158,7 +176,7 @@ const CreateMatchRoom = () => {
       <main className={styles.page}>
         <LoadingState
           title="Loading tournaments"
-          message="Fetching tournaments for match room creation."
+          message="Fetching tournaments you are allowed to manage."
         />
       </main>
     );
@@ -175,11 +193,11 @@ const CreateMatchRoom = () => {
   return (
     <main className={styles.page}>
       <section className={styles.header}>
-        <p className={styles.eyebrow}>Admin Match Control</p>
+        <p className={styles.eyebrow}>Match Room Control</p>
         <h1 className={styles.title}>Create Match Room</h1>
         <p className={styles.subtitle}>
-          Add private room details for a tournament so registered teams can join
-          the match on time.
+          Create private room details for tournaments you are allowed to manage.
+          Organizers can create rooms only for their own tournaments.
         </p>
       </section>
 
@@ -191,128 +209,136 @@ const CreateMatchRoom = () => {
               <h2>Match Room Setup</h2>
             </div>
 
-            <span className={styles.badge}>Admin Only</span>
+            <span className={styles.badge}>{user?.role || "user"}</span>
           </div>
 
-          <form className={styles.form} onSubmit={createMatchRoom}>
-            <div className={styles.fullField}>
-              <label className={styles.label} htmlFor="tournamentId">
-                Tournament
-              </label>
-
-              <select
-                id="tournamentId"
-                className={styles.input}
-                name="tournamentId"
-                value={formData.tournamentId}
-                onChange={handleChange}
-              >
-                <option value="">Select tournament</option>
-
-                {tournaments.map((tournament) => (
-                  <option
-                    key={getTournamentId(tournament)}
-                    value={getTournamentId(tournament)}
-                  >
-                    {tournament.title} — {tournament.status}
-                  </option>
-                ))}
-              </select>
+          {tournaments.length === 0 ? (
+            <div className={styles.emptyBox}>
+              No manageable tournaments found. Create a tournament first, then
+              create match rooms for it.
             </div>
-
-            <div className={styles.twoColumn}>
-              <div>
-                <label className={styles.label} htmlFor="matchNumber">
-                  Match Number
-                </label>
-
-                <input
-                  id="matchNumber"
-                  className={styles.input}
-                  type="number"
-                  min="1"
-                  name="matchNumber"
-                  value={formData.matchNumber}
-                  onChange={handleChange}
-                  placeholder="Example: 1"
-                />
-              </div>
-
-              <div>
-                <label className={styles.label} htmlFor="map">
-                  Map
+          ) : (
+            <form className={styles.form} onSubmit={createMatchRoom}>
+              <div className={styles.fullField}>
+                <label className={styles.label} htmlFor="tournamentId">
+                  Tournament
                 </label>
 
                 <select
-                  id="map"
+                  id="tournamentId"
                   className={styles.input}
-                  name="map"
-                  value={formData.map}
+                  name="tournamentId"
+                  value={formData.tournamentId}
                   onChange={handleChange}
                 >
-                  <option value="Erangel">Erangel</option>
-                  <option value="Miramar">Miramar</option>
-                  <option value="Sanhok">Sanhok</option>
-                  <option value="Vikendi">Vikendi</option>
-                  <option value="Livik">Livik</option>
-                  <option value="Karakin">Karakin</option>
+                  <option value="">Select tournament</option>
+
+                  {tournaments.map((tournament) => (
+                    <option
+                      key={getTournamentId(tournament)}
+                      value={getTournamentId(tournament)}
+                    >
+                      {tournament.title} — {tournament.status}
+                    </option>
+                  ))}
                 </select>
               </div>
-            </div>
 
-            <div className={styles.twoColumn}>
-              <div>
-                <label className={styles.label} htmlFor="roomId">
-                  Room ID
+              <div className={styles.twoColumn}>
+                <div>
+                  <label className={styles.label} htmlFor="matchNumber">
+                    Match Number
+                  </label>
+
+                  <input
+                    id="matchNumber"
+                    className={styles.input}
+                    type="number"
+                    min="1"
+                    name="matchNumber"
+                    value={formData.matchNumber}
+                    onChange={handleChange}
+                    placeholder="Example: 1"
+                  />
+                </div>
+
+                <div>
+                  <label className={styles.label} htmlFor="map">
+                    Map
+                  </label>
+
+                  <select
+                    id="map"
+                    className={styles.input}
+                    name="map"
+                    value={formData.map}
+                    onChange={handleChange}
+                  >
+                    <option value="Erangel">Erangel</option>
+                    <option value="Miramar">Miramar</option>
+                    <option value="Sanhok">Sanhok</option>
+                    <option value="Vikendi">Vikendi</option>
+                    <option value="Livik">Livik</option>
+                    <option value="Karakin">Karakin</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className={styles.twoColumn}>
+                <div>
+                  <label className={styles.label} htmlFor="roomId">
+                    Room ID
+                  </label>
+
+                  <input
+                    id="roomId"
+                    className={styles.input}
+                    type="number"
+                    min="1"
+                    name="roomId"
+                    value={formData.roomId}
+                    onChange={handleChange}
+                    placeholder="Enter room ID"
+                  />
+                </div>
+
+                <div>
+                  <label className={styles.label} htmlFor="roomPassword">
+                    Room Password
+                  </label>
+
+                  <input
+                    id="roomPassword"
+                    className={styles.input}
+                    type="text"
+                    name="roomPassword"
+                    value={formData.roomPassword}
+                    onChange={handleChange}
+                    placeholder="Enter room password"
+                  />
+                </div>
+              </div>
+
+              <div className={styles.fullField}>
+                <label className={styles.label} htmlFor="matchTime">
+                  Match Time
                 </label>
 
                 <input
-                  id="roomId"
+                  id="matchTime"
                   className={styles.input}
-                  type="text"
-                  name="roomId"
-                  value={formData.roomId}
+                  type="datetime-local"
+                  name="matchTime"
+                  value={formData.matchTime}
                   onChange={handleChange}
-                  placeholder="Enter room ID"
                 />
               </div>
 
-              <div>
-                <label className={styles.label} htmlFor="roomPassword">
-                  Room Password
-                </label>
-
-                <input
-                  id="roomPassword"
-                  className={styles.input}
-                  type="text"
-                  name="roomPassword"
-                  value={formData.roomPassword}
-                  onChange={handleChange}
-                  placeholder="Enter room password"
-                />
-              </div>
-            </div>
-
-            <div className={styles.fullField}>
-              <label className={styles.label} htmlFor="matchTime">
-                Match Time
-              </label>
-
-              <input
-                id="matchTime"
-                className={styles.input}
-                type="datetime-local"
-                name="matchTime"
-                value={formData.matchTime}
-                onChange={handleChange}
-              />
-            </div>
-
-            <Button type="submit" disabled={creating}>
-              {creating ? "Creating Match Room..." : "Create Match Room"}
-            </Button>
-          </form>
+              <Button type="submit" disabled={creating}>
+                {creating ? "Creating Match Room..." : "Create Match Room"}
+              </Button>
+            </form>
+          )}
         </Card>
 
         <aside className={styles.sidePanel}>
@@ -360,28 +386,28 @@ const CreateMatchRoom = () => {
           </Card>
 
           <Card className={styles.rulesCard}>
-            <p className={styles.cardEyebrow}>Room Checklist</p>
-            <h2>Before creating room</h2>
+            <p className={styles.cardEyebrow}>Permission Rule</p>
+            <h2>Ownership Based Access</h2>
 
             <div className={styles.checkList}>
               <div>
                 <span>01</span>
-                <p>Select the correct tournament.</p>
+                <p>Organizer can create rooms only for own tournaments.</p>
               </div>
 
               <div>
                 <span>02</span>
-                <p>Use accurate room ID and password.</p>
+                <p>Admin and SuperAdmin can manage all tournaments.</p>
               </div>
 
               <div>
                 <span>03</span>
-                <p>Set match time clearly for all teams.</p>
+                <p>Players cannot create match rooms.</p>
               </div>
 
               <div>
                 <span>04</span>
-                <p>Share room details only with registered teams.</p>
+                <p>Completed tournaments are hidden from room creation.</p>
               </div>
             </div>
           </Card>
@@ -389,8 +415,9 @@ const CreateMatchRoom = () => {
           <Card className={styles.tipsCard}>
             <p className={styles.cardEyebrow}>Admin Note</p>
             <p className={styles.sideMeta}>
-              After room creation, players can view match room details and
-              submit their match results after the game.
+              Match room data includes room ID, password, map, match number, and
+              match time. Players can use this information before submitting
+              results.
             </p>
           </Card>
         </aside>

@@ -25,6 +25,7 @@ import ManageTeams from "./pages/ManageTeams";
 import TournamentHistory from "./pages/TournamentHistory";
 import OrganizerApplication from "./pages/OrganizerApplication";
 import AdminOrganizerRequests from "./pages/AdminOrganizerRequests";
+import RoleRoute from "./routes/RoleRoute";
 
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -180,9 +181,9 @@ const App = () => {
         <Route
           path="/admin/create-tournament"
           element={
-            <AdminRoute>
+            <RoleRoute allowedRoles={["organizer", "admin", "superAdmin"]}>
               <CreateTournament />
-            </AdminRoute>
+            </RoleRoute>
           }
         />
 
@@ -198,9 +199,9 @@ const App = () => {
         <Route
           path="/admin/create-match-room"
           element={
-            <AdminRoute>
+            <RoleRoute allowedRoles={["organizer", "admin", "superAdmin"]}>
               <CreateMatchRoom />
-            </AdminRoute>
+            </RoleRoute>
           }
         />
 
