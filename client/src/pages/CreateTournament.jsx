@@ -7,8 +7,17 @@ import { useToast } from "../components/ui/useToast";
 
 import styles from "./CreateTournament.module.css";
 
+const getStoredUser = () => {
+  try {
+    return JSON.parse(localStorage.getItem("user"));
+  } catch {
+    return null;
+  }
+};
+
 const CreateTournament = () => {
   const toast = useToast();
+  const user = getStoredUser();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -102,9 +111,9 @@ const CreateTournament = () => {
         startDate: formData.startDate,
       };
 
-      const res = await API.post("/tournaments/createTournament", payload);
+      const response = await API.post("/tournaments/createTournament", payload);
 
-      toast.success(res.data.message || "Tournament created successfully");
+      toast.success(response.data.message || "Tournament created successfully");
 
       setFormData({
         title: "",
@@ -129,11 +138,12 @@ const CreateTournament = () => {
   return (
     <main className={styles.page}>
       <section className={styles.header}>
-        <p className={styles.eyebrow}>Admin Panel</p>
+        <p className={styles.eyebrow}>Tournament Management</p>
         <h1 className={styles.title}>Create Tournament</h1>
         <p className={styles.subtitle}>
-          Configure tournament details, team slots, prize pool, and start date
-          before opening registration for players.
+          Create a tournament with team slots, entry fee, prize pool, and start
+          date. Organizers can create and manage their own tournaments, while
+          admins can manage all platform tournaments.
         </p>
       </section>
 
@@ -145,7 +155,7 @@ const CreateTournament = () => {
               <h2>Basic Details</h2>
             </div>
 
-            <span className={styles.badge}>Admin Only</span>
+            <span className={styles.badge}>{user?.role || "user"}</span>
           </div>
 
           {error && <p className={styles.error}>{error}</p>}
@@ -183,7 +193,6 @@ const CreateTournament = () => {
                   <option value="BGMI">BGMI</option>
                   <option value="PUBG">PUBG</option>
                   <option value="FREE FIRE">FREE FIRE</option>
-                  <option value="COD MOBILE">COD MOBILE</option>
                 </select>
               </div>
 
@@ -317,36 +326,36 @@ const CreateTournament = () => {
           </div>
 
           <div className={styles.previewNote}>
-            This preview helps you confirm what players will see before the
-            tournament is created.
+            This preview helps confirm what players will see before the
+            tournament is published.
           </div>
         </Card>
       </section>
 
       <section className={styles.supportGrid}>
         <Card className={styles.infoCard}>
-          <p className={styles.cardEyebrow}>Admin Checklist</p>
-          <h2>Before publishing</h2>
+          <p className={styles.cardEyebrow}>Ownership Rule</p>
+          <h2>Organizer Permissions</h2>
 
           <div className={styles.checkList}>
             <div>
               <span>01</span>
-              <p>Use a clear tournament title.</p>
+              <p>Organizer can create tournaments after approval.</p>
             </div>
 
             <div>
               <span>02</span>
-              <p>Confirm entry fee and prize pool carefully.</p>
+              <p>Organizer can manage only tournaments created by them.</p>
             </div>
 
             <div>
               <span>03</span>
-              <p>Set max teams according to match capacity.</p>
+              <p>Admin and SuperAdmin can manage all tournaments.</p>
             </div>
 
             <div>
               <span>04</span>
-              <p>Create match rooms after registration starts.</p>
+              <p>Player cannot access tournament creation.</p>
             </div>
           </div>
         </Card>
@@ -358,22 +367,22 @@ const CreateTournament = () => {
           <div className={styles.flowSteps}>
             <div>
               <strong>Create</strong>
-              <p>Admin creates tournament with basic details.</p>
+              <p>Organizer creates tournament with basic details.</p>
             </div>
 
             <div>
               <strong>Register</strong>
-              <p>Players register their team in the tournament.</p>
+              <p>Players register their teams in the tournament.</p>
             </div>
 
             <div>
               <strong>Play</strong>
-              <p>Admin creates match room and teams play the match.</p>
+              <p>Organizer creates match room and teams play.</p>
             </div>
 
             <div>
               <strong>Results</strong>
-              <p>Admin approves results and leaderboard gets updated.</p>
+              <p>Results are approved and leaderboard gets updated.</p>
             </div>
           </div>
         </Card>

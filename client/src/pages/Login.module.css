@@ -1,60 +1,319 @@
 .page {
+  width: 100%;
   min-height: 100vh;
-  background: var(--bg-main);
+  padding: 40px 48px;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at top left, rgba(34, 197, 94, 0.16), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.12), transparent 28%),
+    var(--bg-main);
+}
+
+.authShell {
+  width: min(100%, 1180px);
+  display: grid;
+  grid-template-columns: minmax(420px, 1.1fr) minmax(380px, 0.9fr);
+  gap: 28px;
+  align-items: stretch;
+}
+
+.brandPanel,
+.card {
+  background: rgba(15, 23, 42, 0.96);
+  border: 1px solid #334155;
+  border-radius: 26px;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.45);
+  box-sizing: border-box;
+}
+
+.brandPanel {
+  padding: 38px;
+  display: grid;
+  align-content: center;
+  gap: 24px;
+  overflow: hidden;
+  position: relative;
+}
+
+.brandPanel::before {
+  content: "";
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  right: -90px;
+  top: -90px;
+  background: rgba(34, 197, 94, 0.16);
+  filter: blur(20px);
+  border-radius: 50%;
+}
+
+.logoRow {
   display: flex;
-  justify-content: center;
   align-items: center;
-  padding: 24px;
+  gap: 12px;
+  color: white;
+  font-size: 24px;
+  font-weight: 900;
+  position: relative;
+}
+
+.logoMark {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: var(--primary);
+  color: #020617;
+  font-weight: 900;
+}
+
+.brandPanel h1 {
+  max-width: 620px;
+  margin: 0;
+  font-size: 48px;
+  line-height: 1.05;
+  position: relative;
+}
+
+.brandPanel>p {
+  max-width: 680px;
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.7;
+  position: relative;
+}
+
+.featureGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  position: relative;
+}
+
+.featureGrid div {
+  min-width: 0;
+  padding: 16px;
+  background: #020617;
+  border: 1px solid #334155;
+  border-radius: 16px;
+}
+
+.featureGrid span {
+  display: inline-block;
+  margin-bottom: 12px;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.featureGrid strong {
+  display: block;
+  line-height: 1.35;
+}
+
+.featureGrid p {
+  margin: 8px 0 0;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 .card {
-  width: 100%;
-  max-width: 420px;
-  background: var(--bg-card);
-  padding: 28px;
-  border-radius: 14px;
+  padding: 30px;
+  position: relative;
+  overflow: hidden;
 }
 
-.title {
-  margin: 0 0 8px;
-  font-size: 32px;
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  height: 5px;
+  background: linear-gradient(90deg, var(--primary), #22c55e, #38bdf8);
 }
 
-.subtitle {
+.modeTabs,
+.roleSelector {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.modeTabs {
+  margin-bottom: 12px;
+}
+
+.roleSelector {
+  margin-bottom: 26px;
+}
+
+.modeTabs button,
+.roleSelector button {
+  min-height: 46px;
+  background: #020617;
+  border: 1px solid #334155;
   color: var(--text-muted);
-  margin-bottom: 24px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 900;
+  font: inherit;
+}
+
+.modeTabs button:hover,
+.roleSelector button:hover {
+  border-color: var(--primary);
+  color: white;
+}
+
+.activeTab,
+.activeRole {
+  background: rgba(34, 197, 94, 0.12) !important;
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+}
+
+.cardHeader {
+  margin-bottom: 22px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.cardHeader h2 {
+  margin: 0;
+  font-size: 34px;
+  line-height: 1.1;
+  text-transform: capitalize;
+}
+
+.cardHeader p {
+  margin: 10px 0 0;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.form {
+  display: grid;
+  gap: 14px;
 }
 
 .input {
   width: 100%;
-  padding: 12px;
-  margin-bottom: 14px;
-  border: none;
-  border-radius: 8px;
+  min-height: 52px;
+  padding: 13px 14px;
+  background: #020617;
+  border: 1px solid #334155;
+  color: white;
+  border-radius: 12px;
   outline: none;
+  box-sizing: border-box;
+  font: inherit;
+}
+
+.input::placeholder {
+  color: #64748b;
+}
+
+.input:focus {
+  border-color: var(--primary);
 }
 
 .button {
   width: 100%;
-  padding: 12px;
+  min-height: 52px;
+  padding: 13px 16px;
+  margin-top: 4px;
   background: var(--primary);
-  color: white;
+  color: #020617;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
-  font-weight: bold;
+  font-weight: 900;
+  font-size: 16px;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
 }
 
 .button:hover {
   background: var(--primary-hover);
+  transform: translateY(-2px);
 }
 
 .button:disabled {
   background: #64748b;
+  color: white;
   cursor: not-allowed;
+  transform: none;
 }
 
 .error {
-  color: var(--danger);
-  margin-bottom: 12px;
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #f87171;
+  border-radius: 12px;
+  line-height: 1.5;
+}
+
+.switchText {
+  margin: 20px 0 0;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.5;
+}
+
+.switchText button {
+  background: transparent;
+  border: none;
+  color: var(--primary);
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.switchText button:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 980px) {
+  .authShell {
+    grid-template-columns: 1fr;
+  }
+
+  .brandPanel h1 {
+    font-size: 40px;
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 24px;
+  }
+
+  .brandPanel,
+  .card {
+    padding: 26px;
+  }
+
+  .brandPanel h1 {
+    font-size: 34px;
+  }
+
+  .featureGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .cardHeader h2 {
+    font-size: 30px;
+  }
 }
