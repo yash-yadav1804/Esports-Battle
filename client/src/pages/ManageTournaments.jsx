@@ -11,8 +11,21 @@ import ConfirmDialog from "../components/ui/ConfirmDialog";
 
 import styles from "./ManageTournaments.module.css";
 
+const getResponseData = (response) => {
+  return response.data?.data || response.data;
+};
+
+const getStoredUser = () => {
+  try {
+    return JSON.parse(localStorage.getItem("user"));
+  } catch {
+    return null;
+  }
+};
+
 const ManageTournaments = () => {
   const toast = useToast();
+  const user = getStoredUser();
 
   const [tournaments, setTournaments] = useState([]);
   const [editingTournamentId, setEditingTournamentId] = useState("");
@@ -35,29 +48,17 @@ const ManageTournaments = () => {
     tournamentName: "",
   });
 
-  const fetchTournaments = async () => {
-    try {
-      const res = await API.get("/tournaments");
-
-      setTournaments(res.data || []);
-      setError("");
-    } catch (error) {
-      setError(error.response?.data?.message || "Failed to fetch tournaments");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
     let isMounted = true;
 
     const loadTournaments = async () => {
       try {
-        const res = await API.get("/tournaments");
+        const response = await API.get("/tournaments/my-created");
 
         if (!isMounted) return;
 
-        setTournaments(res.data || []);
+        const data = getResponseData(response);
+        setTournaments(Array.isArray(data) ? data : []);
         setError("");
       } catch (error) {
         if (!isMounted) return;
@@ -79,6 +80,13 @@ const ManageTournaments = () => {
     };
   }, []);
 
+  const refreshTournaments = async () => {
+    const response = await API.get("/tournaments/my-created");
+    const data = getResponseData(response);
+
+    setTournaments(Array.isArray(data) ? data : []);
+  };
+
   const startEditing = (tournament) => {
     setEditingTournamentId(tournament._id);
 
@@ -97,6 +105,7 @@ const ManageTournaments = () => {
 
   const cancelEditing = () => {
     setEditingTournamentId("");
+
     setEditData({
       title: "",
       game: "",
@@ -129,15 +138,15 @@ const ManageTournaments = () => {
         startDate: editData.startDate,
       };
 
-      const res = await API.patch(
-        `/admin/tournaments/${tournamentId}`,
+      const response = await API.patch(
+        `/tournaments/manage/${tournamentId}`,
         payload,
       );
 
-      toast.success(res.data.message || "Tournament updated successfully");
+      toast.success(response.data.message || "Tournament updated successfully");
 
       cancelEditing();
-      await fetchTournaments();
+      await refreshTournaments();
     } catch (error) {
       toast.error(
         error.response?.data?.message || "Failed to update tournament",
@@ -167,14 +176,14 @@ const ManageTournaments = () => {
     try {
       setActionLoading(deleteDialog.tournamentId);
 
-      const res = await API.delete(
-        `/admin/tournaments/${deleteDialog.tournamentId}`,
+      const response = await API.delete(
+        `/tournaments/manage/${deleteDialog.tournamentId}`,
       );
 
-      toast.success(res.data.message || "Tournament deleted successfully");
+      toast.success(response.data.message || "Tournament deleted successfully");
 
       closeDeleteDialog();
-      await fetchTournaments();
+      await refreshTournaments();
     } catch (error) {
       toast.error(
         error.response?.data?.message || "Failed to delete tournament",
@@ -189,7 +198,7 @@ const ManageTournaments = () => {
       <main className={styles.page}>
         <LoadingState
           title="Loading tournaments"
-          message="Fetching tournaments for admin management."
+          message="Fetching tournaments you are allowed to manage."
         />
       </main>
     );
@@ -206,11 +215,12 @@ const ManageTournaments = () => {
   return (
     <main className={styles.page}>
       <section className={styles.header}>
-        <p className={styles.eyebrow}>Admin Tournament Control</p>
+        <p className={styles.eyebrow}>Tournament Management</p>
         <h1 className={styles.title}>Manage Tournaments</h1>
         <p className={styles.subtitle}>
-          Update tournament details or delete tournaments along with their
-          related match rooms, match results, and prize data.
+          {user?.role === "organizer"
+            ? "Manage tournaments created by you. Organizer access is ownership-based."
+            : "Manage platform tournaments. Admin and SuperAdmin can manage all tournaments."}
         </p>
       </section>
 
@@ -219,7 +229,7 @@ const ManageTournaments = () => {
           title="No tournaments found"
           message="Create a tournament first to manage it here."
           actionLabel="Create Tournament"
-          actionTo="/admin/create-tournament"
+          actionTo="/tournaments/create"
         />
       ) : (
         <section className={styles.grid}>
@@ -232,8 +242,18 @@ const ManageTournaments = () => {
                   <>
                     <div className={styles.cardHeader}>
                       <div>
-                        <p className={styles.status}>{tournament.status}</p>
+                        <div className={styles.statusRow}>
+                          <p className={styles.status}>{tournament.status}</p>
+
+                          {tournament.createdBy && (
+                            <span className={styles.ownerBadge}>
+                              By {tournament.createdBy.name || "Unknown"}
+                            </span>
+                          )}
+                        </div>
+
                         <h2>{tournament.title}</h2>
+
                         <p className={styles.meta}>
                           {tournament.game} • {tournament.mode}
                         </p>
@@ -406,6 +426,7 @@ const ManageTournaments = () => {
           })}
         </section>
       )}
+
       <ConfirmDialog
         isOpen={deleteDialog.isOpen}
         title="Delete Tournament?"

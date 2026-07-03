@@ -41,7 +41,7 @@ const getMyCreatedTournaments = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         tournaments,
-        "Created tournaments fetched successfully",
+        "Manageable tournaments fetched successfully",
       ),
     );
 });
@@ -52,6 +52,27 @@ const getTournamentById = asyncHandler(async (req, res) => {
   );
 
   res.status(200).json(tournament);
+});
+
+const updateTournament = asyncHandler(async (req, res) => {
+  const tournament = await tournamentService.updateTournament(
+    req.params.tournamentId,
+    req.body,
+    req.user,
+  );
+
+  res.status(200).json({
+    message: "Tournament updated successfully",
+    tournament,
+  });
+});
+
+const deleteTournament = asyncHandler(async (req, res) => {
+  await tournamentService.deleteTournament(req.params.tournamentId, req.user);
+
+  res.status(200).json({
+    message: "Tournament and related data deleted successfully",
+  });
 });
 
 const leaveTournament = asyncHandler(async (req, res) => {
@@ -107,6 +128,8 @@ module.exports = {
   getAllTournaments,
   getMyCreatedTournaments,
   getTournamentById,
+  updateTournament,
+  deleteTournament,
   leaveTournament,
   startTournament,
   completeTournament,

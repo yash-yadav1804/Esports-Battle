@@ -10,6 +10,8 @@ const {
   completeTournament,
   getTournamentHistory,
   getMyCreatedTournaments,
+  updateTournament,
+  deleteTournament,
 } = require("../controllers/tournamentController");
 
 const protect = require("../middleware/authMiddleware");
@@ -31,6 +33,20 @@ router.get(
   protect,
   authorizeRoles("organizer", "admin", "superAdmin"),
   getMyCreatedTournaments,
+);
+
+router.patch(
+  "/manage/:tournamentId",
+  protect,
+  authorizeRoles("organizer", "admin", "superAdmin"),
+  updateTournament,
+);
+
+router.delete(
+  "/manage/:tournamentId",
+  protect,
+  authorizeRoles("organizer", "admin", "superAdmin"),
+  deleteTournament,
 );
 
 router.get("/history/completed", getTournamentHistory);

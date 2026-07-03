@@ -73,6 +73,24 @@
   text-transform: capitalize;
 }
 
+.statusRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.ownerBadge {
+  display: inline-block;
+  padding: 7px 11px;
+  background: rgba(59, 130, 246, 0.12);
+  color: #93c5fd;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
 .meta {
   margin: 8px 0 0;
   color: var(--text-muted);

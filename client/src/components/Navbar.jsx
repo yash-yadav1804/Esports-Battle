@@ -216,7 +216,7 @@ const Navbar = () => {
                   </NavLink>
 
                   <NavLink
-                    to="/admin/manage-tournaments"
+                    to="/tournaments/manage"
                     className={styles.dropdownLink}
                     onClick={closeEverything}
                   >

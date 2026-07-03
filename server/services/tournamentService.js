@@ -373,7 +373,95 @@ const getTournamentHistory = async () => {
 
   return history;
 };
+const updateTournament = async (tournamentId, updateData, currentUser) => {
+  const tournament = await Tournament.findById(tournamentId);
 
+  if (!tournament) {
+    throw new ApiError(404, "Tournament not found");
+  }
+
+  ensureCanManageTournament(tournament, currentUser);
+
+  if (tournament.status === "completed") {
+    throw new ApiError(400, "Completed tournament cannot be updated");
+  }
+
+  const { title, game, mode, entryFee, prizePool, maxTeams, startDate } =
+    updateData;
+
+  if (title !== undefined) {
+    const trimmedTitle = title.trim();
+
+    const existingTournament = await Tournament.findOne({
+      title: trimmedTitle,
+      _id: { $ne: tournamentId },
+    });
+
+    if (existingTournament) {
+      throw new ApiError(400, "Tournament title already exists");
+    }
+
+    tournament.title = trimmedTitle;
+  }
+
+  if (game !== undefined) tournament.game = game;
+  if (mode !== undefined) tournament.mode = mode;
+
+  if (entryFee !== undefined) {
+    if (Number(entryFee) < 0) {
+      throw new ApiError(400, "Entry fee cannot be negative");
+    }
+
+    tournament.entryFee = Number(entryFee);
+  }
+
+  if (prizePool !== undefined) {
+    if (Number(prizePool) < 0) {
+      throw new ApiError(400, "Prize pool cannot be negative");
+    }
+
+    tournament.prizePool = Number(prizePool);
+  }
+
+  if (maxTeams !== undefined) {
+    if (Number(maxTeams) <= 0) {
+      throw new ApiError(400, "Max teams must be greater than 0");
+    }
+
+    if (Number(maxTeams) < tournament.registeredTeams.length) {
+      throw new ApiError(
+        400,
+        "Max teams cannot be less than already registered teams",
+      );
+    }
+
+    tournament.maxTeams = Number(maxTeams);
+  }
+
+  if (startDate !== undefined) tournament.startDate = startDate;
+
+  await tournament.save();
+
+  return tournament;
+};
+
+const deleteTournament = async (tournamentId, currentUser) => {
+  const tournament = await Tournament.findById(tournamentId);
+
+  if (!tournament) {
+    throw new ApiError(404, "Tournament not found");
+  }
+
+  ensureCanManageTournament(tournament, currentUser);
+
+  await MatchRoom.deleteMany({ tournament: tournamentId });
+  await MatchResult.deleteMany({ tournament: tournamentId });
+  await PrizeDistribution.deleteMany({ tournament: tournamentId });
+
+  await tournament.deleteOne();
+
+  return tournament;
+};
 module.exports = {
   createTournament,
   registerTeam,
@@ -384,4 +472,6 @@ module.exports = {
   startTournament,
   completeTournament,
   getTournamentHistory,
+  updateTournament,
+  deleteTournament,
 };

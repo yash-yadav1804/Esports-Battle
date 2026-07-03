@@ -188,11 +188,11 @@ const App = () => {
         />
 
         <Route
-          path="/admin/manage-tournaments"
+          path="/tournaments/manage"
           element={
-            <AdminRoute>
+            <RoleRoute allowedRoles={["organizer", "admin", "superAdmin"]}>
               <ManageTournaments />
-            </AdminRoute>
+            </RoleRoute>
           }
         />
 
