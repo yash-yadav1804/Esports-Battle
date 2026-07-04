@@ -3,10 +3,10 @@
   top: 0;
   z-index: 100;
   min-height: 82px;
-  padding: 0 48px;
+  padding: 0 clamp(20px, 3vw, 48px);
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 26px;
   background: rgba(2, 6, 23, 0.94);
   border-bottom: 1px solid #1e293b;
   backdrop-filter: blur(14px);
@@ -25,7 +25,7 @@
   gap: 12px;
   color: white;
   text-decoration: none;
-  font-size: 26px;
+  font-size: clamp(21px, 1.7vw, 28px);
   font-weight: 900;
   white-space: nowrap;
 }
@@ -39,6 +39,7 @@
   background: var(--primary);
   color: #020617;
   font-weight: 900;
+  flex-shrink: 0;
 }
 
 .menuToggle {
@@ -65,19 +66,20 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
+  gap: 22px;
 }
 
 .links {
   flex: 1;
   min-width: 0;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 8px;
   align-items: center;
 }
 
 .link {
+  flex-shrink: 0;
   padding: 10px 12px;
   color: var(--text-muted);
   text-decoration: none;
@@ -110,6 +112,7 @@
 }
 
 .adminMenu,
+.managementMenu,
 .profileArea {
   position: relative;
   flex-shrink: 0;
@@ -169,7 +172,8 @@
 }
 
 .dropdown,
-.adminDropdown {
+.adminDropdown,
+.managementDropdown {
   position: absolute;
   top: calc(100% + 12px);
   padding: 10px;
@@ -181,12 +185,13 @@
 
 .dropdown {
   right: 0;
-  width: 230px;
+  width: 240px;
 }
 
-.adminDropdown {
+.adminDropdown,
+.managementDropdown {
   left: 0;
-  width: 260px;
+  width: 270px;
 }
 
 .dropdownLink,
@@ -216,27 +221,7 @@
   color: #f87171;
 }
 
-@media (max-width: 1280px) {
-  .navbar {
-    padding: 0 28px;
-    gap: 18px;
-  }
-
-  .logo {
-    font-size: 22px;
-  }
-
-  .link {
-    padding: 9px 10px;
-    font-size: 14px;
-  }
-
-  .userInfo strong {
-    max-width: 90px;
-  }
-}
-
-@media (max-width: 1100px) {
+@media (max-width: 1250px) {
   .navbar {
     min-height: auto;
     padding: 16px 24px;
@@ -277,14 +262,8 @@
     box-sizing: border-box;
   }
 
-  .adminMenu {
-    width: 100%;
-  }
-
-  .adminMenu .link {
-    text-align: left;
-  }
-
+  .adminMenu,
+  .managementMenu,
   .profileArea {
     width: 100%;
   }
@@ -299,7 +278,8 @@
   }
 
   .dropdown,
-  .adminDropdown {
+  .adminDropdown,
+  .managementDropdown {
     position: static;
     width: 100%;
     margin-top: 10px;

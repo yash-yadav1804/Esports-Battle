@@ -19,6 +19,7 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
+  const [isManagementOpen, setIsManagementOpen] = useState(false);
 
   const token = localStorage.getItem("token");
   const user = getStoredUser();
@@ -29,18 +30,26 @@ const Navbar = () => {
   const isOrganizer = role === "organizer";
   const isAdmin = role === "admin" || role === "superAdmin";
 
-  const canCreateTournament = isOrganizer || isAdmin;
+  const canManageTournaments = isOrganizer || isAdmin;
+
   const adminPathActive = location.pathname.startsWith("/admin");
+
+  const managementPathActive =
+    location.pathname.startsWith("/tournaments/create") ||
+    location.pathname.startsWith("/tournaments/manage") ||
+    location.pathname.startsWith("/match-rooms/create");
 
   const closeDropdowns = () => {
     setIsProfileOpen(false);
     setIsAdminOpen(false);
+    setIsManagementOpen(false);
   };
 
   const closeEverything = () => {
     setIsMenuOpen(false);
     setIsProfileOpen(false);
     setIsAdminOpen(false);
+    setIsManagementOpen(false);
   };
 
   const handleLogout = () => {
@@ -75,6 +84,7 @@ const Navbar = () => {
 
         <button
           className={styles.menuToggle}
+          type="button"
           onClick={() => {
             setIsMenuOpen((currentValue) => !currentValue);
             closeDropdowns();
@@ -130,24 +140,51 @@ const Navbar = () => {
           >
             Teams
           </NavLink>
-          {canCreateTournament && (
-            <NavLink
-              to="/tournaments/create"
-              className={getNavClass}
-              onClick={closeEverything}
-            >
-              Create Tournament
-            </NavLink>
-          )}
 
-          {canCreateTournament && (
-            <NavLink
-              to="/match-rooms/create"
-              className={getNavClass}
-              onClick={closeEverything}
-            >
-              Create Match Room
-            </NavLink>
+          {canManageTournaments && (
+            <div className={styles.managementMenu}>
+              <button
+                className={`${styles.link} ${styles.menuButton} ${
+                  managementPathActive ? styles.activeLink : ""
+                }`}
+                type="button"
+                onClick={() => {
+                  setIsManagementOpen((currentValue) => !currentValue);
+                  setIsAdminOpen(false);
+                  setIsProfileOpen(false);
+                }}
+              >
+                Management ▾
+              </button>
+
+              {isManagementOpen && (
+                <div className={styles.managementDropdown}>
+                  <NavLink
+                    to="/tournaments/create"
+                    className={styles.dropdownLink}
+                    onClick={closeEverything}
+                  >
+                    Create Tournament
+                  </NavLink>
+
+                  <NavLink
+                    to="/tournaments/manage"
+                    className={styles.dropdownLink}
+                    onClick={closeEverything}
+                  >
+                    Manage Tournaments
+                  </NavLink>
+
+                  <NavLink
+                    to="/match-rooms/create"
+                    className={styles.dropdownLink}
+                    onClick={closeEverything}
+                  >
+                    Create Match Room
+                  </NavLink>
+                </div>
+              )}
+            </div>
           )}
 
           {isPlayer && (
@@ -160,22 +197,16 @@ const Navbar = () => {
             </NavLink>
           )}
 
-          <NavLink
-            to="/team-requests"
-            className={getNavClass}
-            onClick={closeEverything}
-          >
-            Team Requests
-          </NavLink>
-
           {isAdmin && (
             <div className={styles.adminMenu}>
               <button
                 className={`${styles.link} ${styles.menuButton} ${
                   adminPathActive ? styles.activeLink : ""
                 }`}
+                type="button"
                 onClick={() => {
                   setIsAdminOpen((currentValue) => !currentValue);
+                  setIsManagementOpen(false);
                   setIsProfileOpen(false);
                 }}
               >
@@ -217,30 +248,6 @@ const Navbar = () => {
                   </NavLink>
 
                   <NavLink
-                    to="/tournaments/create"
-                    className={styles.dropdownLink}
-                    onClick={closeEverything}
-                  >
-                    Create Tournament
-                  </NavLink>
-
-                  <NavLink
-                    to="/tournaments/manage"
-                    className={styles.dropdownLink}
-                    onClick={closeEverything}
-                  >
-                    Manage Tournaments
-                  </NavLink>
-
-                  <NavLink
-                    to="/match-rooms/create"
-                    className={styles.dropdownLink}
-                    onClick={closeEverything}
-                  >
-                    Create Match Room
-                  </NavLink>
-
-                  <NavLink
                     to="/admin/pending-results"
                     className={styles.dropdownLink}
                     onClick={closeEverything}
@@ -257,9 +264,11 @@ const Navbar = () => {
           <div className={styles.profileArea}>
             <button
               className={styles.profileButton}
+              type="button"
               onClick={() => {
                 setIsProfileOpen((currentValue) => !currentValue);
                 setIsAdminOpen(false);
+                setIsManagementOpen(false);
               }}
             >
               <div className={styles.avatar}>
@@ -298,6 +307,14 @@ const Navbar = () => {
                   My Submissions
                 </NavLink>
 
+                <NavLink
+                  to="/team-requests"
+                  className={styles.dropdownLink}
+                  onClick={closeEverything}
+                >
+                  Team Requests
+                </NavLink>
+
                 {isPlayer && (
                   <NavLink
                     to="/organizer/apply"
@@ -308,7 +325,11 @@ const Navbar = () => {
                   </NavLink>
                 )}
 
-                <button className={styles.logoutBtn} onClick={handleLogout}>
+                <button
+                  className={styles.logoutBtn}
+                  type="button"
+                  onClick={handleLogout}
+                >
                   Logout
                 </button>
               </div>
