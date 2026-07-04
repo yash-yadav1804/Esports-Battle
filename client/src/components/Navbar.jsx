@@ -130,14 +130,23 @@ const Navbar = () => {
           >
             Teams
           </NavLink>
-
           {canCreateTournament && (
             <NavLink
-              to="/admin/create-tournament"
+              to="/tournaments/create"
               className={getNavClass}
               onClick={closeEverything}
             >
               Create Tournament
+            </NavLink>
+          )}
+
+          {canCreateTournament && (
+            <NavLink
+              to="/match-rooms/create"
+              className={getNavClass}
+              onClick={closeEverything}
+            >
+              Create Match Room
             </NavLink>
           )}
 
@@ -224,7 +233,7 @@ const Navbar = () => {
                   </NavLink>
 
                   <NavLink
-                    to="/admin/create-match-room"
+                    to="/match-rooms/create"
                     className={styles.dropdownLink}
                     onClick={closeEverything}
                   >

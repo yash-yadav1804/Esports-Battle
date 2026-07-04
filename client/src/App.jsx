@@ -197,7 +197,7 @@ const App = () => {
         />
 
         <Route
-          path="/admin/create-match-room"
+          path="/match-rooms/create"
           element={
             <RoleRoute allowedRoles={["organizer", "admin", "superAdmin"]}>
               <CreateMatchRoom />
