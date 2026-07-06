@@ -10,10 +10,22 @@ const {
 
 const protect = require("../middleware/authMiddleware");
 const { authorizeRoles } = require("../middleware/roleMiddleware");
+const validateRequest = require("../middleware/validateRequest");
+
+const {
+  submitResultSchema,
+  submissionIdParamSchema,
+  rejectSubmissionSchema,
+} = require("../validators/resultSubmissionValidator");
 
 const router = express.Router();
 
-router.post("/submit", protect, submitResult);
+router.post(
+  "/submit",
+  protect,
+  validateRequest(submitResultSchema),
+  submitResult,
+);
 
 router.get("/my-submissions", protect, getMySubmissions);
 
@@ -28,6 +40,7 @@ router.patch(
   "/approve/:submissionId",
   protect,
   authorizeRoles("organizer", "admin", "superAdmin"),
+  validateRequest(submissionIdParamSchema),
   approveSubmission,
 );
 
@@ -35,6 +48,7 @@ router.patch(
   "/reject/:submissionId",
   protect,
   authorizeRoles("organizer", "admin", "superAdmin"),
+  validateRequest(rejectSubmissionSchema),
   rejectSubmission,
 );
 
