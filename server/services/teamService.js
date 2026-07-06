@@ -209,12 +209,22 @@ const transferCaptain = async (newCaptainId, currentUser) => {
 
   return updatedTeam;
 };
+const getMyTeam = async (currentUser) => {
+  const team = await populateTeam(
+    Team.findOne({
+      players: currentUser._id,
+    }),
+  );
+
+  return team;
+};
 
 module.exports = {
   createTeam,
   joinTeam,
   getAllTeams,
   getTeamById,
+  getMyTeam,
   leaveTeam,
   removePlayerFromTeam,
   transferCaptain,

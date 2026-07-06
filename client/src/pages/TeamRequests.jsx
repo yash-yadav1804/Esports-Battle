@@ -41,7 +41,7 @@ const TeamRequests = () => {
 
     const fetchTeamRequests = async () => {
       try {
-        const teamRes = await API.get("/profile/my-team");
+        const teamRes = await API.get("/teams/my-team");
         const myTeam = teamRes.data.team;
 
         if (!isMounted) return;

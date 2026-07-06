@@ -143,6 +143,22 @@ const Navbar = () => {
             Teams
           </NavLink>
 
+          <NavLink
+            to="/my-team"
+            className={getNavClass}
+            onClick={closeEverything}
+          >
+            My Team
+          </NavLink>
+
+          <NavLink
+            to="/team-requests"
+            className={getNavClass}
+            onClick={closeEverything}
+          >
+            Team Requests
+          </NavLink>
+
           {canManageTournaments && (
             <div className={styles.managementMenu}>
               <button

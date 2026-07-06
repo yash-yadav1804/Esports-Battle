@@ -8,6 +8,7 @@ import Profile from "./pages/Profile";
 import Notifications from "./pages/Notifications";
 
 import Teams from "./pages/Teams";
+import MyTeam from "./pages/MyTeam";
 import CreateTeam from "./pages/CreateTeam";
 import TeamRequests from "./pages/TeamRequests";
 
@@ -114,6 +115,15 @@ const App = () => {
           element={
             <ProtectedRoute>
               <CreateTeam />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/my-team"
+          element={
+            <ProtectedRoute>
+              <MyTeam />
             </ProtectedRoute>
           }
         />

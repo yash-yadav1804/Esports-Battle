@@ -5,6 +5,7 @@ const {
   joinTeam,
   getAllTeams,
   getTeamById,
+  getMyTeam,
   leaveTeam,
   removePlayerFromTeam,
   transferCaptain,
@@ -48,6 +49,7 @@ router.patch(
 );
 
 router.get("/", getAllTeams);
+router.get("/my-team", protect, getMyTeam);
 
 router.get("/:teamId", validateRequest(teamIdParamSchema), getTeamById);
 

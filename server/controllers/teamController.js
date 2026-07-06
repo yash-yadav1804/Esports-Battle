@@ -70,12 +70,19 @@ const transferCaptain = asyncHandler(async (req, res) => {
     team,
   });
 });
+const getMyTeam = asyncHandler(async (req, res) => {
+  const team = await teamService.getMyTeam(req.user);
 
+  res.status(200).json({
+    team,
+  });
+});
 module.exports = {
   createTeam,
   joinTeam,
   getAllTeams,
   getTeamById,
+  getMyTeam,
   leaveTeam,
   removePlayerFromTeam,
   transferCaptain,

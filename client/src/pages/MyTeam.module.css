@@ -1,0 +1,249 @@
+.page {
+  width: 100%;
+  min-height: 100vh;
+  padding: 40px 48px;
+  box-sizing: border-box;
+  background:
+    radial-gradient(circle at top right, rgba(34, 197, 94, 0.12), transparent 30%),
+    var(--bg-main);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  margin-bottom: 34px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0;
+  font-size: 44px;
+  line-height: 1.1;
+}
+
+.subtitle {
+  max-width: 760px;
+  margin: 14px 0 0;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.requestButton {
+  flex-shrink: 0;
+  padding: 14px 18px;
+  background: var(--primary);
+  color: #020617;
+  border-radius: 14px;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.teamCard {
+  display: grid;
+  gap: 18px;
+  margin-bottom: 34px;
+}
+
+.teamHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+}
+
+.label {
+  margin: 0 0 8px;
+  color: var(--text-muted);
+  font-weight: 800;
+}
+
+.teamHeader h2 {
+  margin: 0;
+  font-size: 34px;
+  text-transform: capitalize;
+}
+
+.badge,
+.captainBadge,
+.youBadge {
+  display: inline-flex;
+  width: fit-content;
+  padding: 7px 11px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.badge,
+.captainBadge {
+  background: rgba(34, 197, 94, 0.12);
+  color: var(--primary);
+}
+
+.youBadge {
+  background: rgba(59, 130, 246, 0.14);
+  color: #93c5fd;
+}
+
+.captainBox {
+  padding: 16px;
+  background: #020617;
+  border: 1px solid #334155;
+  border-radius: 14px;
+}
+
+.captainBox span {
+  display: block;
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.captainBox strong {
+  display: block;
+  font-size: 20px;
+}
+
+.captainBox p {
+  margin: 6px 0 0;
+  color: var(--text-muted);
+}
+
+.memberSection h2 {
+  margin: 0 0 18px;
+  font-size: 28px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.memberCard {
+  display: grid;
+  gap: 18px;
+}
+
+.memberTop {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.avatar {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 16px;
+  background: var(--primary);
+  color: #020617;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.memberTop h3 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.memberTop p {
+  margin: 6px 0 0;
+  color: var(--text-muted);
+  word-break: break-word;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.infoBox {
+  padding: 14px;
+  background: #020617;
+  border: 1px solid #334155;
+  border-radius: 12px;
+}
+
+.infoBox span {
+  display: block;
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.infoBox strong {
+  overflow-wrap: break-word;
+}
+
+.roleRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+.actions button {
+  flex: 1;
+}
+
+.leaveBox {
+  margin-top: 34px;
+  padding: 22px;
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.26);
+  border-radius: 18px;
+}
+
+.leaveBox h2 {
+  margin: 0 0 8px;
+}
+
+.leaveBox p {
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+@media (max-width: 760px) {
+  .page {
+    padding: 24px;
+  }
+
+  .header,
+  .teamHeader,
+  .leaveBox,
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .title {
+    font-size: 34px;
+  }
+
+  .infoGrid {
+    grid-template-columns: 1fr;
+  }
+}
