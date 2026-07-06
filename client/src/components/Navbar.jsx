@@ -248,7 +248,7 @@ const Navbar = () => {
                   </NavLink>
 
                   <NavLink
-                    to="/admin/pending-results"
+                    to="/results/pending"
                     className={styles.dropdownLink}
                     onClick={closeEverything}
                   >

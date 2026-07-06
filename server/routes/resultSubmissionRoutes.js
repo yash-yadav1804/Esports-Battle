@@ -17,19 +17,24 @@ router.post("/submit", protect, submitResult);
 
 router.get("/my-submissions", protect, getMySubmissions);
 
-router.get("/pending", protect, authorizeRoles("admin"), getPendingSubmissions);
+router.get(
+  "/pending",
+  protect,
+  authorizeRoles("organizer", "admin", "superAdmin"),
+  getPendingSubmissions,
+);
 
 router.patch(
   "/approve/:submissionId",
   protect,
-  authorizeRoles("admin"),
+  authorizeRoles("organizer", "admin", "superAdmin"),
   approveSubmission,
 );
 
 router.patch(
   "/reject/:submissionId",
   protect,
-  authorizeRoles("admin"),
+  authorizeRoles("organizer", "admin", "superAdmin"),
   rejectSubmission,
 );
 

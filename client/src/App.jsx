@@ -206,11 +206,11 @@ const App = () => {
         />
 
         <Route
-          path="/admin/pending-results"
+          path="/results/pending"
           element={
-            <AdminRoute>
+            <RoleRoute allowedRoles={["organizer", "admin", "superAdmin"]}>
               <PendingResults />
-            </AdminRoute>
+            </RoleRoute>
           }
         />
         <Route

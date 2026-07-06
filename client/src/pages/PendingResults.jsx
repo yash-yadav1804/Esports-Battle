@@ -27,6 +27,12 @@ const getTournamentName = (submission) => {
 };
 
 const getMatchRoomName = (submission) => {
+  if (submission?.matchRoom?.roomId) {
+    return `Room ${submission.matchRoom.roomId} • Match ${
+      submission.matchRoom.matchNumber || 1
+    }`;
+  }
+
   return (
     submission?.matchRoom?.roomName ||
     submission?.matchRoom?.title ||
@@ -35,8 +41,28 @@ const getMatchRoomName = (submission) => {
   );
 };
 
+const getStoredUser = () => {
+  try {
+    return JSON.parse(localStorage.getItem("user"));
+  } catch {
+    return null;
+  }
+};
+
+const getPendingData = (response) => {
+  return (
+    response.data?.submissions ||
+    response.data?.pendingSubmissions ||
+    response.data?.results ||
+    response.data?.data ||
+    response.data ||
+    []
+  );
+};
+
 const PendingResults = () => {
   const toast = useToast();
+  const user = getStoredUser();
 
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -50,43 +76,16 @@ const PendingResults = () => {
     adminNote: "",
   });
 
-  const fetchPendingSubmissions = async () => {
-    try {
-      const res = await API.get("/result-submissions/pending");
-
-      const data =
-        res.data.submissions ||
-        res.data.pendingSubmissions ||
-        res.data.results ||
-        res.data ||
-        [];
-
-      setSubmissions(Array.isArray(data) ? data : []);
-      setError("");
-    } catch (error) {
-      setError(
-        error.response?.data?.message || "Failed to fetch pending submissions",
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
     let isMounted = true;
 
     const loadPendingSubmissions = async () => {
       try {
-        const res = await API.get("/result-submissions/pending");
+        const response = await API.get("/result-submissions/pending");
 
         if (!isMounted) return;
 
-        const data =
-          res.data.submissions ||
-          res.data.pendingSubmissions ||
-          res.data.results ||
-          res.data ||
-          [];
+        const data = getPendingData(response);
 
         setSubmissions(Array.isArray(data) ? data : []);
         setError("");
@@ -111,17 +110,24 @@ const PendingResults = () => {
     };
   }, []);
 
+  const refreshPendingSubmissions = async () => {
+    const response = await API.get("/result-submissions/pending");
+    const data = getPendingData(response);
+
+    setSubmissions(Array.isArray(data) ? data : []);
+  };
+
   const approveSubmission = async (submissionId) => {
     try {
       setActionLoading(submissionId);
 
-      const res = await API.patch(
+      const response = await API.patch(
         `/result-submissions/approve/${submissionId}`,
       );
 
-      toast.success(res.data.message || "Result approved successfully");
+      toast.success(response.data.message || "Result approved successfully");
 
-      await fetchPendingSubmissions();
+      await refreshPendingSubmissions();
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to approve result");
     } finally {
@@ -163,17 +169,17 @@ const PendingResults = () => {
     try {
       setActionLoading(rejectModal.submissionId);
 
-      const res = await API.patch(
+      const response = await API.patch(
         `/result-submissions/reject/${rejectModal.submissionId}`,
         {
           adminNote: rejectModal.adminNote.trim(),
         },
       );
 
-      toast.success(res.data.message || "Result rejected successfully");
+      toast.success(response.data.message || "Result rejected successfully");
 
       closeRejectModal();
-      await fetchPendingSubmissions();
+      await refreshPendingSubmissions();
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to reject result");
     } finally {
@@ -186,7 +192,7 @@ const PendingResults = () => {
       <main className={styles.page}>
         <LoadingState
           title="Loading pending results"
-          message="Fetching player result submissions for admin review."
+          message="Fetching result submissions you are allowed to review."
         />
       </main>
     );
@@ -203,11 +209,12 @@ const PendingResults = () => {
   return (
     <main className={styles.page}>
       <section className={styles.header}>
-        <p className={styles.eyebrow}>Admin Result Review</p>
+        <p className={styles.eyebrow}>Result Review</p>
         <h1 className={styles.title}>Pending Results</h1>
         <p className={styles.subtitle}>
-          Review submitted kills and placement before adding results to the
-          final leaderboard.
+          {user?.role === "organizer"
+            ? "Review submitted kills and placement for tournaments created by you."
+            : "Review submitted kills and placement across platform tournaments."}
         </p>
       </section>
 
@@ -320,6 +327,7 @@ const PendingResults = () => {
             <div className={styles.modalActions}>
               <button
                 className={styles.cancelBtn}
+                type="button"
                 onClick={closeRejectModal}
                 disabled={actionLoading === rejectModal.submissionId}
               >
@@ -328,6 +336,7 @@ const PendingResults = () => {
 
               <button
                 className={styles.rejectBtn}
+                type="button"
                 onClick={rejectSubmission}
                 disabled={actionLoading === rejectModal.submissionId}
               >
