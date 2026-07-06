@@ -182,6 +182,13 @@ const Navbar = () => {
                   >
                     Create Match Room
                   </NavLink>
+                  <NavLink
+                    to="/results/pending"
+                    className={styles.dropdownLink}
+                    onClick={closeEverything}
+                  >
+                    Pending Results
+                  </NavLink>
                 </div>
               )}
             </div>
