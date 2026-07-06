@@ -4,8 +4,6 @@ const {
   getAllUsers,
   deleteUser,
   deleteTeam,
-  deleteTournament,
-  updateTournament,
   updateTeam,
   getDashboardStats,
 } = require("../controllers/adminController");
@@ -15,27 +13,39 @@ const { authorizeRoles } = require("../middleware/roleMiddleware");
 
 const router = express.Router();
 
-router.get("/users", protect, authorizeRoles("admin"), getAllUsers);
+router.get(
+  "/users",
+  protect,
+  authorizeRoles("admin", "superAdmin"),
+  getAllUsers,
+);
+
 router.get(
   "/dashboard-stats",
   protect,
-  authorizeRoles("admin"),
+  authorizeRoles("admin", "superAdmin"),
   getDashboardStats,
 );
 
-router.delete("/users/:userId", protect, authorizeRoles("admin"), deleteUser);
-router.delete("/teams/:teamId", protect, authorizeRoles("admin"), deleteTeam);
 router.delete(
-  "/tournaments/:tournamentId",
+  "/users/:userId",
   protect,
-  authorizeRoles("admin"),
-  deleteTournament,
+  authorizeRoles("admin", "superAdmin"),
+  deleteUser,
 );
+
+router.delete(
+  "/teams/:teamId",
+  protect,
+  authorizeRoles("admin", "superAdmin"),
+  deleteTeam,
+);
+
 router.patch(
-  "/tournaments/:tournamentId",
+  "/teams/:teamId",
   protect,
-  authorizeRoles("admin"),
-  updateTournament,
+  authorizeRoles("admin", "superAdmin"),
+  updateTeam,
 );
-router.patch("/teams/:teamId", protect, authorizeRoles("admin"), updateTeam);
+
 module.exports = router;

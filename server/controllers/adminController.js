@@ -5,264 +5,181 @@ const MatchRoom = require("../models/MatchRoom");
 const MatchResult = require("../models/MatchResult");
 const PrizeDistribution = require("../models/PrizeDistribution");
 
-const getAllUsers = async (req, res) => {
-  try {
-    const users = await User.find().select("-password");
+const asyncHandler = require("../utils/asyncHandler");
+const ApiError = require("../utils/ApiError");
 
-    res.status(200).json({
-      count: users.length,
-      users,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
-  }
+const isSuperAdmin = (user) => {
+  return user.role === "superAdmin";
 };
 
-const deleteUser = async (req, res) => {
-  try {
-    const { userId } = req.params;
+const getAllUsers = asyncHandler(async (req, res) => {
+  const users = await User.find().select("-password").sort({ createdAt: -1 });
 
-    const user = await User.findById(userId);
+  res.status(200).json({
+    count: users.length,
+    users,
+  });
+});
 
-    if (!user) {
-      return res.status(404).json({
-        message: "User not found",
-      });
-    }
+const deleteUser = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
 
-    await user.deleteOne();
+  const user = await User.findById(userId);
 
-    res.status(200).json({
-      message: "User deleted successfully",
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+  if (!user) {
+    throw new ApiError(404, "User not found");
   }
-};
-const deleteTeam = async (req, res) => {
-  try {
-    const { teamId } = req.params;
 
-    const team = await Team.findById(teamId);
-
-    if (!team) {
-      return res.status(404).json({
-        message: "Team not found",
-      });
-    }
-
-    await team.deleteOne();
-
-    res.status(200).json({
-      message: "Team deleted successfully",
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+  if (user._id.toString() === req.user._id.toString()) {
+    throw new ApiError(400, "You cannot delete your own account");
   }
-};
-const deleteTournament = async (req, res) => {
-  try {
-    const { tournamentId } = req.params;
 
-    const tournament = await Tournament.findById(tournamentId);
-
-    if (!tournament) {
-      return res.status(404).json({
-        message: "Tournament not found",
-      });
-    }
-
-    // Delete related match rooms
-    await MatchRoom.deleteMany({ tournament: tournamentId });
-
-    // Delete related match results
-    await MatchResult.deleteMany({ tournament: tournamentId });
-
-    // Delete related prize distribution
-    await PrizeDistribution.deleteMany({ tournament: tournamentId });
-
-    // Delete tournament
-    await tournament.deleteOne();
-
-    res.status(200).json({
-      message: "Tournament and related data deleted successfully",
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+  if (user.role === "superAdmin") {
+    throw new ApiError(403, "SuperAdmin account cannot be deleted");
   }
-};
 
-const updateTournament = async (req, res) => {
-  try {
-    const { tournamentId } = req.params;
-
-    const tournament = await Tournament.findById(tournamentId);
-
-    if (!tournament) {
-      return res.status(404).json({
-        message: "Tournament not found",
-      });
-    }
-
-    if (tournament.status === "completed") {
-      return res.status(400).json({
-        message: "Completed tournament cannot be updated",
-      });
-    }
-
-    const { title, game, mode, entryFee, prizePool, maxTeams, startDate } =
-      req.body;
-
-    if (title !== undefined) tournament.title = title;
-    if (game !== undefined) tournament.game = game;
-    if (mode !== undefined) tournament.mode = mode;
-    if (entryFee !== undefined) tournament.entryFee = entryFee;
-    if (prizePool !== undefined) tournament.prizePool = prizePool;
-    if (maxTeams !== undefined) tournament.maxTeams = maxTeams;
-    if (startDate !== undefined) tournament.startDate = startDate;
-
-    await tournament.save();
-
-    res.status(200).json({
-      message: "Tournament updated successfully",
-      tournament,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+  if (user.role === "admin" && !isSuperAdmin(req.user)) {
+    throw new ApiError(403, "Only SuperAdmin can delete admin users");
   }
-};
-const updateTeam = async (req, res) => {
-  try {
-    const { teamId } = req.params;
-    const { teamName, maxPlayers } = req.body;
 
-    const team = await Team.findById(teamId);
+  await user.deleteOne();
 
-    if (!team) {
-      return res.status(404).json({
-        message: "Team not found",
-      });
-    }
+  res.status(200).json({
+    message: "User deleted successfully",
+  });
+});
 
-    if (teamName !== undefined) {
-      const formattedTeamName = teamName.toLowerCase();
+const deleteTeam = asyncHandler(async (req, res) => {
+  const { teamId } = req.params;
 
-      const existingTeam = await Team.findOne({
-        teamName: formattedTeamName,
-        _id: { $ne: teamId },
-      });
+  const team = await Team.findById(teamId);
 
-      if (existingTeam) {
-        return res.status(400).json({
-          message: "Team name already exists",
-        });
-      }
-
-      team.teamName = formattedTeamName;
-    }
-
-    if (maxPlayers !== undefined) {
-      if (maxPlayers < team.players.length) {
-        return res.status(400).json({
-          message: "Max players cannot be less than current team players",
-        });
-      }
-
-      team.maxPlayers = maxPlayers;
-    }
-
-    await team.save();
-
-    res.status(200).json({
-      message: "Team updated successfully",
-      team,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+  if (!team) {
+    throw new ApiError(404, "Team not found");
   }
-};
-const getDashboardStats = async (req, res) => {
-  try {
-    const totalUsers = await User.countDocuments();
-    const totalPlayers = await User.countDocuments({ role: "player" });
-    const totalAdmins = await User.countDocuments({ role: "admin" });
 
-    const totalTeams = await Team.countDocuments();
+  await team.deleteOne();
 
-    const totalTournaments = await Tournament.countDocuments();
-    const upcomingTournaments = await Tournament.countDocuments({
-      status: "upcoming",
-    });
-    const liveTournaments = await Tournament.countDocuments({
-      status: "live",
-    });
-    const completedTournaments = await Tournament.countDocuments({
-      status: "completed",
-    });
+  res.status(200).json({
+    message: "Team deleted successfully",
+  });
+});
 
-    const totalMatchRooms = await MatchRoom.countDocuments();
-    const totalMatchResults = await MatchResult.countDocuments();
+const updateTeam = asyncHandler(async (req, res) => {
+  const { teamId } = req.params;
+  const { teamName, maxPlayers } = req.body;
 
-    const prizes = await PrizeDistribution.find();
+  const team = await Team.findById(teamId);
 
-    let totalPrizeDistributed = 0;
+  if (!team) {
+    throw new ApiError(404, "Team not found");
+  }
 
-    prizes.forEach((prize) => {
-      totalPrizeDistributed += prize.firstPlace?.amount || 0;
-      totalPrizeDistributed += prize.secondPlace?.amount || 0;
-      totalPrizeDistributed += prize.thirdPlace?.amount || 0;
+  if (teamName !== undefined) {
+    const formattedTeamName = teamName.toLowerCase().trim();
+
+    if (!formattedTeamName) {
+      throw new ApiError(400, "Team name cannot be empty");
+    }
+
+    const existingTeam = await Team.findOne({
+      teamName: formattedTeamName,
+      _id: { $ne: teamId },
     });
 
-    res.status(200).json({
-      message: "Dashboard stats fetched successfully",
-      stats: {
-        users: {
-          totalUsers,
-          totalPlayers,
-          totalAdmins,
-        },
-        teams: {
-          totalTeams,
-        },
-        tournaments: {
-          totalTournaments,
-          upcomingTournaments,
-          liveTournaments,
-          completedTournaments,
-        },
-        matches: {
-          totalMatchRooms,
-          totalMatchResults,
-        },
-        prizes: {
-          totalPrizeDistributed,
-        },
+    if (existingTeam) {
+      throw new ApiError(400, "Team name already exists");
+    }
+
+    team.teamName = formattedTeamName;
+  }
+
+  if (maxPlayers !== undefined) {
+    if (Number(maxPlayers) < team.players.length) {
+      throw new ApiError(
+        400,
+        "Max players cannot be less than current team players",
+      );
+    }
+
+    team.maxPlayers = Number(maxPlayers);
+  }
+
+  await team.save();
+
+  res.status(200).json({
+    message: "Team updated successfully",
+    team,
+  });
+});
+
+const getDashboardStats = asyncHandler(async (req, res) => {
+  const totalUsers = await User.countDocuments();
+  const totalPlayers = await User.countDocuments({ role: "player" });
+  const totalOrganizers = await User.countDocuments({ role: "organizer" });
+  const totalAdmins = await User.countDocuments({ role: "admin" });
+  const totalSuperAdmins = await User.countDocuments({ role: "superAdmin" });
+
+  const totalTeams = await Team.countDocuments();
+
+  const totalTournaments = await Tournament.countDocuments();
+  const upcomingTournaments = await Tournament.countDocuments({
+    status: "upcoming",
+  });
+  const liveTournaments = await Tournament.countDocuments({
+    status: "live",
+  });
+  const completedTournaments = await Tournament.countDocuments({
+    status: "completed",
+  });
+
+  const totalMatchRooms = await MatchRoom.countDocuments();
+  const totalMatchResults = await MatchResult.countDocuments();
+
+  const prizes = await PrizeDistribution.find();
+
+  let totalPrizeDistributed = 0;
+
+  prizes.forEach((prize) => {
+    totalPrizeDistributed += prize.firstPlace?.amount || 0;
+    totalPrizeDistributed += prize.secondPlace?.amount || 0;
+    totalPrizeDistributed += prize.thirdPlace?.amount || 0;
+  });
+
+  res.status(200).json({
+    message: "Dashboard stats fetched successfully",
+    stats: {
+      users: {
+        totalUsers,
+        totalPlayers,
+        totalOrganizers,
+        totalAdmins,
+        totalSuperAdmins,
       },
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
-  }
-};
+      teams: {
+        totalTeams,
+      },
+      tournaments: {
+        totalTournaments,
+        upcomingTournaments,
+        liveTournaments,
+        completedTournaments,
+      },
+      matches: {
+        totalMatchRooms,
+        totalMatchResults,
+      },
+      prizes: {
+        totalPrizeDistributed,
+      },
+    },
+  });
+});
+
 module.exports = {
   getAllUsers,
   deleteUser,
   deleteTeam,
-  deleteTournament,
-  updateTournament,
   updateTeam,
   getDashboardStats,
 };
