@@ -32,6 +32,8 @@ import RoleRoute from "./routes/RoleRoute";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import AdminRoute from "./routes/AdminRoute";
+import LandingPage from "./pages/LandingPage";
+import NotFound from "./pages/NotFound";
 
 const App = () => {
   return (
@@ -39,9 +41,9 @@ const App = () => {
       <Navbar />
 
       <Routes>
-        <Route path="/" element={<Navigate to="/login" replace />} />
-
+        <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
+        <Route path="*" element={<NotFound />} />
 
         <Route
           path="/tournaments"

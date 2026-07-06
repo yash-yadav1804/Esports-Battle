@@ -68,7 +68,9 @@ const Navbar = () => {
     return isActive ? `${styles.link} ${styles.activeLink}` : styles.link;
   };
 
-  if (location.pathname === "/login") {
+  const hideDashboardNavbarPaths = ["/", "/login"];
+
+  if (hideDashboardNavbarPaths.includes(location.pathname)) {
     return null;
   }
 
