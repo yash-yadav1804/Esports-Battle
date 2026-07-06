@@ -10,6 +10,10 @@
 
 .header {
   width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
   margin-bottom: 34px;
 }
 
@@ -33,6 +37,28 @@
   margin: 14px 0 0;
   color: var(--text-muted);
   line-height: 1.6;
+}
+
+.createButton {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 18px;
+  background: var(--primary);
+  color: #020617;
+  border-radius: 14px;
+  font-weight: 900;
+  text-decoration: none;
+  box-shadow: 0 14px 35px rgba(34, 197, 94, 0.24);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.createButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 45px rgba(34, 197, 94, 0.34);
 }
 
 .grid {
@@ -76,6 +102,13 @@
   margin: 0;
   font-size: 26px;
   line-height: 1.15;
+}
+
+.creatorText {
+  margin: 8px 0 0;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.45;
 }
 
 .mapBadge {
@@ -124,6 +157,11 @@
   .grid {
     grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
   }
+
+  .header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
 
 @media (max-width: 720px) {
@@ -146,5 +184,9 @@
 
   .mapBadge {
     width: fit-content;
+  }
+
+  .createButton {
+    width: 100%;
   }
 }

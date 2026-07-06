@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import API from "../api/axios";
 
 import Card from "../components/ui/Card";
@@ -8,21 +9,69 @@ import LoadingState from "../components/ui/LoadingState";
 
 import styles from "./MatchRooms.module.css";
 
+const getStoredUser = () => {
+  try {
+    return JSON.parse(localStorage.getItem("user"));
+  } catch {
+    return null;
+  }
+};
+
+const getMatchRoomsData = (response) => {
+  return (
+    response.data?.matchRooms ||
+    response.data?.rooms ||
+    response.data?.data?.matchRooms ||
+    response.data?.data?.rooms ||
+    response.data?.data ||
+    response.data ||
+    []
+  );
+};
+
+const getTournamentTitle = (room) => {
+  return (
+    room?.tournament?.title ||
+    room?.tournamentId?.title ||
+    room?.tournamentName ||
+    "Tournament Room"
+  );
+};
+
+const getRoomCreator = (room) => {
+  return room?.createdBy?.name || room?.createdBy?.email || "Platform";
+};
+
+const formatMatchTime = (matchTime) => {
+  if (!matchTime) return "Not scheduled";
+
+  return new Date(matchTime).toLocaleString();
+};
+
 const MatchRooms = () => {
+  const user = getStoredUser();
+
   const [matchRooms, setMatchRooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const canCreateMatchRoom =
+    user?.role === "organizer" ||
+    user?.role === "admin" ||
+    user?.role === "superAdmin";
 
   useEffect(() => {
     let isMounted = true;
 
     const fetchMatchRooms = async () => {
       try {
-        const res = await API.get("/matchrooms");
+        const response = await API.get("/matchrooms");
 
         if (!isMounted) return;
 
-        setMatchRooms(res.data.matchRooms || res.data.rooms || res.data || []);
+        const roomsData = getMatchRoomsData(response);
+
+        setMatchRooms(Array.isArray(roomsData) ? roomsData : []);
         setError("");
       } catch (error) {
         if (!isMounted) return;
@@ -66,20 +115,28 @@ const MatchRooms = () => {
   return (
     <main className={styles.page}>
       <section className={styles.header}>
-        <p className={styles.eyebrow}>Match Control</p>
-        <h1 className={styles.title}>Match Rooms</h1>
-        <p className={styles.subtitle}>
-          View room ID, password, map, and match timing for created tournament
-          rooms.
-        </p>
+        <div>
+          <p className={styles.eyebrow}>Match Control</p>
+          <h1 className={styles.title}>Match Rooms</h1>
+          <p className={styles.subtitle}>
+            View room ID, password, map, and match timing for created tournament
+            rooms.
+          </p>
+        </div>
+
+        {canCreateMatchRoom && (
+          <Link className={styles.createButton} to="/match-rooms/create">
+            Create Match Room
+          </Link>
+        )}
       </section>
 
       {matchRooms.length === 0 ? (
         <EmptyState
           title="No match rooms found"
-          message="Match rooms created by admin will appear here."
-          actionLabel="Create Match Room"
-          actionTo="/admin/create-match-room"
+          message="Match rooms created by organizers or admins will appear here."
+          actionLabel={canCreateMatchRoom ? "Create Match Room" : undefined}
+          actionTo={canCreateMatchRoom ? "/match-rooms/create" : undefined}
         />
       ) : (
         <section className={styles.grid}>
@@ -87,35 +144,33 @@ const MatchRooms = () => {
             <Card className={styles.roomCard} key={room._id}>
               <div className={styles.cardHeader}>
                 <div>
-                  <p className={styles.roomLabel}>Match #{room.matchNumber}</p>
-                  <h2>
-                    {room.tournament?.title ||
-                      room.tournamentId?.title ||
-                      "Tournament Room"}
-                  </h2>
+                  <p className={styles.roomLabel}>
+                    Match #{room.matchNumber || "N/A"}
+                  </p>
+                  <h2>{getTournamentTitle(room)}</h2>
+
+                  <p className={styles.creatorText}>
+                    Created by {getRoomCreator(room)}
+                  </p>
                 </div>
 
-                <span className={styles.mapBadge}>{room.map}</span>
+                <span className={styles.mapBadge}>{room.map || "Erangel"}</span>
               </div>
 
               <div className={styles.infoGrid}>
                 <div className={styles.infoBox}>
                   <span>Room ID</span>
-                  <strong>{room.roomId}</strong>
+                  <strong>{room.roomId || "Not added"}</strong>
                 </div>
 
                 <div className={styles.infoBox}>
                   <span>Password</span>
-                  <strong>{room.roomPassword}</strong>
+                  <strong>{room.roomPassword || "Not added"}</strong>
                 </div>
 
                 <div className={styles.infoBox}>
                   <span>Match Time</span>
-                  <strong>
-                    {room.matchTime
-                      ? new Date(room.matchTime).toLocaleString()
-                      : "Not scheduled"}
-                  </strong>
+                  <strong>{formatMatchTime(room.matchTime)}</strong>
                 </div>
 
                 <div className={styles.infoBox}>
