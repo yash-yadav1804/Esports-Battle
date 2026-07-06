@@ -83,10 +83,9 @@ const createMatchRoom = async (tournamentId, roomData, currentUser) => {
 
   return populateMatchRoom(MatchRoom.findById(matchRoom._id));
 };
-
 const getAllMatchRooms = async () => {
   const matchRooms = await populateMatchRoom(
-    MatchRoom.find().sort({ createdAt: -1 }),
+    MatchRoom.find().select("-roomPassword").sort({ createdAt: -1 }),
   );
 
   return matchRooms;
@@ -94,7 +93,11 @@ const getAllMatchRooms = async () => {
 
 const getMyCreatedMatchRooms = async (currentUser) => {
   if (isPlatformAdmin(currentUser)) {
-    return getAllMatchRooms();
+    const matchRooms = await populateMatchRoom(
+      MatchRoom.find().sort({ createdAt: -1 }),
+    );
+
+    return matchRooms;
   }
 
   const matchRooms = await populateMatchRoom(

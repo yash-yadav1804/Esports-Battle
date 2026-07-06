@@ -162,10 +162,9 @@ const MatchRooms = () => {
                   <span>Room ID</span>
                   <strong>{room.roomId || "Not added"}</strong>
                 </div>
-
                 <div className={styles.infoBox}>
                   <span>Password</span>
-                  <strong>{room.roomPassword || "Not added"}</strong>
+                  <strong>Visible to eligible teams</strong>
                 </div>
 
                 <div className={styles.infoBox}>
