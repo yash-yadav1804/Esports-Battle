@@ -38,6 +38,7 @@ const Navbar = () => {
     location.pathname.startsWith("/tournaments/create") ||
     location.pathname.startsWith("/tournaments/manage") ||
     location.pathname.startsWith("/match-rooms/create") ||
+    location.pathname.startsWith("/match-rooms/manage") ||
     location.pathname.startsWith("/results/pending");
 
   const closeDropdowns = () => {
@@ -182,6 +183,13 @@ const Navbar = () => {
                     onClick={closeEverything}
                   >
                     Create Match Room
+                  </NavLink>
+                  <NavLink
+                    to="/match-rooms/manage"
+                    className={styles.dropdownLink}
+                    onClick={closeEverything}
+                  >
+                    Manage Match Rooms
                   </NavLink>
 
                   <NavLink

@@ -22,6 +22,7 @@ import PendingResults from "./pages/PendingResults";
 import ManageTournaments from "./pages/ManageTournaments";
 import ManageUsers from "./pages/ManageUsers";
 import ManageTeams from "./pages/ManageTeams";
+import ManageMatchRooms from "./pages/ManageMatchRooms";
 import TournamentHistory from "./pages/TournamentHistory";
 import OrganizerApplication from "./pages/OrganizerApplication";
 import AdminOrganizerRequests from "./pages/AdminOrganizerRequests";
@@ -132,6 +133,14 @@ const App = () => {
             <ProtectedRoute>
               <MatchRooms />
             </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/match-rooms/manage"
+          element={
+            <RoleRoute allowedRoles={["organizer", "admin", "superAdmin"]}>
+              <ManageMatchRooms />
+            </RoleRoute>
           }
         />
 
