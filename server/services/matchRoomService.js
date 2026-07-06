@@ -14,40 +14,30 @@ const isTournamentOwner = (tournament, user) => {
   return tournament.createdBy.toString() === user._id.toString();
 };
 
-const ensureCanManageTournament = (tournament, user) => {
-  if (isPlatformAdmin(user)) return;
+const ensureCanManageTournament = (tournament, currentUser) => {
+  if (isPlatformAdmin(currentUser)) return;
 
-  if (user.role === ROLES.ORGANIZER && isTournamentOwner(tournament, user)) {
+  if (
+    currentUser.role === ROLES.ORGANIZER &&
+    isTournamentOwner(tournament, currentUser)
+  ) {
     return;
   }
 
   throw new ApiError(
     403,
-    "You can create match rooms only for your own tournaments",
+    "You can manage match rooms only for your own tournaments",
   );
 };
 
+const populateMatchRoom = (query) => {
+  return query
+    .populate("tournament", "title game mode status createdBy")
+    .populate("createdBy", "name email role");
+};
+
 const createMatchRoom = async (tournamentId, roomData, currentUser) => {
-  const { roomId, roomPassword, matchNumber, map, matchTime } = roomData;
-
-  if (!roomId || !roomPassword || !matchTime) {
-    throw new ApiError(
-      400,
-      "Room ID, room password and match time are required",
-    );
-  }
-
-  if (Number.isNaN(Number(roomId))) {
-    throw new ApiError(400, "Room ID must be a number");
-  }
-
-  if (matchNumber !== undefined && Number.isNaN(Number(matchNumber))) {
-    throw new ApiError(400, "Match number must be a number");
-  }
-
-  if (matchNumber !== undefined && Number(matchNumber) <= 0) {
-    throw new ApiError(400, "Match number must be greater than 0");
-  }
+  const { matchNumber, map, roomId, roomPassword, matchTime } = roomData;
 
   const tournament = await Tournament.findById(tournamentId);
 
@@ -58,56 +48,175 @@ const createMatchRoom = async (tournamentId, roomData, currentUser) => {
   ensureCanManageTournament(tournament, currentUser);
 
   if (tournament.status === "completed") {
-    throw new ApiError(400, "Tournament already completed");
+    throw new ApiError(
+      400,
+      "Cannot create match room for completed tournament",
+    );
   }
 
-  const existingRoom = await MatchRoom.findOne({
-    roomId: Number(roomId),
+  const existingRoomId = await MatchRoom.findOne({
+    roomId,
   });
 
-  if (existingRoom) {
+  if (existingRoomId) {
     throw new ApiError(400, "Room ID already exists");
   }
 
-  const room = await MatchRoom.create({
-    roomId: Number(roomId),
-    roomPassword: roomPassword.trim(),
-    matchNumber: Number(matchNumber) || 1,
-    map: map || "Erangel",
+  const existingMatchNumber = await MatchRoom.findOne({
+    tournament: tournamentId,
+    matchNumber,
+  });
+
+  if (existingMatchNumber) {
+    throw new ApiError(400, "Match number already exists for this tournament");
+  }
+
+  const matchRoom = await MatchRoom.create({
+    tournament: tournamentId,
+    matchNumber,
+    map,
+    roomId,
+    roomPassword,
     matchTime,
-    tournament: tournament._id,
     createdBy: currentUser._id,
   });
 
-  return room;
+  return populateMatchRoom(MatchRoom.findById(matchRoom._id));
 };
 
 const getAllMatchRooms = async () => {
-  const rooms = await MatchRoom.find()
-    .populate("tournament", "title game mode status createdBy")
-    .populate("createdBy", "name email role")
-    .sort({ createdAt: -1 });
+  const matchRooms = await populateMatchRoom(
+    MatchRoom.find().sort({ createdAt: -1 }),
+  );
 
-  return rooms;
+  return matchRooms;
 };
 
 const getMyCreatedMatchRooms = async (currentUser) => {
-  const query = isPlatformAdmin(currentUser)
-    ? {}
-    : {
-        createdBy: currentUser._id,
-      };
+  if (isPlatformAdmin(currentUser)) {
+    return getAllMatchRooms();
+  }
 
-  const rooms = await MatchRoom.find(query)
-    .populate("tournament", "title game mode status createdBy")
-    .populate("createdBy", "name email role")
-    .sort({ createdAt: -1 });
+  const matchRooms = await populateMatchRoom(
+    MatchRoom.find({
+      createdBy: currentUser._id,
+    }).sort({ createdAt: -1 }),
+  );
 
-  return rooms;
+  return matchRooms;
+};
+
+const getMatchRoomById = async (matchRoomId) => {
+  const matchRoom = await populateMatchRoom(MatchRoom.findById(matchRoomId));
+
+  if (!matchRoom) {
+    throw new ApiError(404, "Match room not found");
+  }
+
+  return matchRoom;
+};
+
+const updateMatchRoom = async (matchRoomId, updateData, currentUser) => {
+  const matchRoom = await MatchRoom.findById(matchRoomId);
+
+  if (!matchRoom) {
+    throw new ApiError(404, "Match room not found");
+  }
+
+  const tournament = await Tournament.findById(matchRoom.tournament);
+
+  if (!tournament) {
+    throw new ApiError(404, "Tournament not found");
+  }
+
+  ensureCanManageTournament(tournament, currentUser);
+
+  if (tournament.status === "completed") {
+    throw new ApiError(
+      400,
+      "Cannot update match room for completed tournament",
+    );
+  }
+
+  if (updateData.roomId !== undefined) {
+    const existingRoom = await MatchRoom.findOne({
+      roomId: updateData.roomId,
+      _id: { $ne: matchRoomId },
+    });
+
+    if (existingRoom) {
+      throw new ApiError(400, "Room ID already exists");
+    }
+
+    matchRoom.roomId = updateData.roomId;
+  }
+
+  if (updateData.matchNumber !== undefined) {
+    const existingMatchNumber = await MatchRoom.findOne({
+      tournament: matchRoom.tournament,
+      matchNumber: updateData.matchNumber,
+      _id: { $ne: matchRoomId },
+    });
+
+    if (existingMatchNumber) {
+      throw new ApiError(
+        400,
+        "Match number already exists for this tournament",
+      );
+    }
+
+    matchRoom.matchNumber = updateData.matchNumber;
+  }
+
+  if (updateData.map !== undefined) {
+    matchRoom.map = updateData.map;
+  }
+
+  if (updateData.roomPassword !== undefined) {
+    matchRoom.roomPassword = updateData.roomPassword;
+  }
+
+  if (updateData.matchTime !== undefined) {
+    matchRoom.matchTime = updateData.matchTime;
+  }
+
+  await matchRoom.save();
+
+  return populateMatchRoom(MatchRoom.findById(matchRoom._id));
+};
+
+const deleteMatchRoom = async (matchRoomId, currentUser) => {
+  const matchRoom = await MatchRoom.findById(matchRoomId);
+
+  if (!matchRoom) {
+    throw new ApiError(404, "Match room not found");
+  }
+
+  const tournament = await Tournament.findById(matchRoom.tournament);
+
+  if (!tournament) {
+    throw new ApiError(404, "Tournament not found");
+  }
+
+  ensureCanManageTournament(tournament, currentUser);
+
+  if (tournament.status === "completed") {
+    throw new ApiError(
+      400,
+      "Cannot delete match room for completed tournament",
+    );
+  }
+
+  await matchRoom.deleteOne();
+
+  return matchRoom;
 };
 
 module.exports = {
   createMatchRoom,
   getAllMatchRooms,
   getMyCreatedMatchRooms,
+  getMatchRoomById,
+  updateMatchRoom,
+  deleteMatchRoom,
 };
