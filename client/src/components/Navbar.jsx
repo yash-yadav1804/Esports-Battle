@@ -37,7 +37,8 @@ const Navbar = () => {
   const managementPathActive =
     location.pathname.startsWith("/tournaments/create") ||
     location.pathname.startsWith("/tournaments/manage") ||
-    location.pathname.startsWith("/match-rooms/create");
+    location.pathname.startsWith("/match-rooms/create") ||
+    location.pathname.startsWith("/results/pending");
 
   const closeDropdowns = () => {
     setIsProfileOpen(false);
@@ -182,6 +183,7 @@ const Navbar = () => {
                   >
                     Create Match Room
                   </NavLink>
+
                   <NavLink
                     to="/results/pending"
                     className={styles.dropdownLink}
@@ -252,14 +254,6 @@ const Navbar = () => {
                     onClick={closeEverything}
                   >
                     Manage Teams
-                  </NavLink>
-
-                  <NavLink
-                    to="/results/pending"
-                    className={styles.dropdownLink}
-                    onClick={closeEverything}
-                  >
-                    Pending Results
                   </NavLink>
                 </div>
               )}
