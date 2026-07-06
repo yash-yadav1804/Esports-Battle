@@ -11,6 +11,16 @@ import { useToast } from "../components/ui/useToast";
 
 import styles from "./Teams.module.css";
 
+const getTeamsData = (response) => {
+  return (
+    response.data?.teams ||
+    response.data?.data?.teams ||
+    response.data?.data ||
+    response.data ||
+    []
+  );
+};
+
 const Teams = () => {
   const toast = useToast();
 
@@ -28,7 +38,9 @@ const Teams = () => {
 
         if (!isMounted) return;
 
-        setTeams(res.data);
+        const teamsData = getTeamsData(res);
+
+        setTeams(Array.isArray(teamsData) ? teamsData : []);
         setError("");
       } catch (error) {
         if (!isMounted) return;
@@ -112,7 +124,9 @@ const Teams = () => {
             <Card className={styles.teamCard} key={team._id}>
               <div className={styles.cardHeader}>
                 <div>
-                  <h2 className={styles.teamName}>{team.teamName}</h2>
+                  <h2 className={styles.teamName}>
+                    {team.teamName || "Unnamed Team"}
+                  </h2>
                   <p className={styles.teamMeta}>Competitive Squad</p>
                 </div>
               </div>
