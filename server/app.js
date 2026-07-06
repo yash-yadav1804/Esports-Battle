@@ -1,8 +1,14 @@
 const express = require("express");
-const cors = require("cors");
 const dotenv = require("dotenv");
 
 dotenv.config();
+
+const helmet = require("helmet");
+const cors = require("cors");
+
+const corsOptions = require("./config/corsOptions");
+const sanitizeMongoInput = require("./middleware/sanitizeMongoInput");
+const { apiLimiter, authLimiter } = require("./middleware/rateLimitMiddleware");
 
 const authRoutes = require("./routes/authRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
@@ -26,30 +32,36 @@ const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 
 const app = express();
 
-// Core middlewares
-app.use(
-  cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
-    credentials: true,
-  }),
-);
+/* Security + core middlewares */
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1);
+}
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(helmet());
 
-// Health route
+app.use(cors(corsOptions));
+
+app.use(express.json({ limit: "10kb" }));
+app.use(express.urlencoded({ extended: true, limit: "10kb" }));
+
+app.use(sanitizeMongoInput);
+
+app.use("/api/auth", authLimiter);
+app.use("/api", apiLimiter);
+
+/* Health route */
 app.get("/", (req, res) => {
   res
     .status(200)
     .json(new ApiResponse(200, null, "Esports API Running Successfully"));
 });
 
-// API routes
+/* API routes */
+app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/tournaments", tournamentRoutes);
-app.use("/api/auth", authRoutes);
 app.use("/api/teams", teamRoutes);
 app.use("/api/matchrooms", matchRoomRoutes);
 app.use("/api/matchregistrations", matchRegistrationRoutes);
@@ -62,7 +74,7 @@ app.use("/api/prizes", prizeRoutes);
 app.use("/api/result-submissions", resultSubmissionRoutes);
 app.use("/api/organizer-requests", organizerRequestRoutes);
 
-// Error middlewares must be after all routes
+/* Error middlewares must be after all routes */
 app.use(notFound);
 app.use(errorHandler);
 
