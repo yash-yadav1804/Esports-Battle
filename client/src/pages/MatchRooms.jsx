@@ -65,13 +65,42 @@ const MatchRooms = () => {
 
     const fetchMatchRooms = async () => {
       try {
-        const response = await API.get("/matchrooms");
+        const publicResponse = await API.get("/matchrooms");
+        const publicRoomsData = getMatchRoomsData(publicResponse);
+
+        let eligibleRoomsMap = {};
+
+        const token = localStorage.getItem("token");
+
+        if (token) {
+          try {
+            const eligibleResponse = await API.get("/matchrooms/eligible");
+            const eligibleRoomsData = getMatchRoomsData(eligibleResponse);
+
+            if (Array.isArray(eligibleRoomsData)) {
+              eligibleRoomsMap = eligibleRoomsData.reduce((acc, room) => {
+                acc[room._id] = room;
+                return acc;
+              }, {});
+            }
+          } catch {
+            eligibleRoomsMap = {};
+          }
+        }
 
         if (!isMounted) return;
 
-        const roomsData = getMatchRoomsData(response);
+        const mergedRooms = Array.isArray(publicRoomsData)
+          ? publicRoomsData.map((room) => ({
+              ...room,
+              roomPassword: eligibleRoomsMap[room._id]?.roomPassword,
+              isPasswordVisible: Boolean(
+                eligibleRoomsMap[room._id]?.roomPassword,
+              ),
+            }))
+          : [];
 
-        setMatchRooms(Array.isArray(roomsData) ? roomsData : []);
+        setMatchRooms(mergedRooms);
         setError("");
       } catch (error) {
         if (!isMounted) return;
@@ -119,8 +148,8 @@ const MatchRooms = () => {
           <p className={styles.eyebrow}>Match Control</p>
           <h1 className={styles.title}>Match Rooms</h1>
           <p className={styles.subtitle}>
-            View room ID, password, map, and match timing for created tournament
-            rooms.
+            View room ID, password access, map, and match timing for created
+            tournament rooms.
           </p>
         </div>
 
@@ -147,6 +176,7 @@ const MatchRooms = () => {
                   <p className={styles.roomLabel}>
                     Match #{room.matchNumber || "N/A"}
                   </p>
+
                   <h2>{getTournamentTitle(room)}</h2>
 
                   <p className={styles.creatorText}>
@@ -162,9 +192,14 @@ const MatchRooms = () => {
                   <span>Room ID</span>
                   <strong>{room.roomId || "Not added"}</strong>
                 </div>
+
                 <div className={styles.infoBox}>
                   <span>Password</span>
-                  <strong>Visible to eligible teams</strong>
+                  <strong>
+                    {room.isPasswordVisible
+                      ? room.roomPassword
+                      : "Visible after team registration"}
+                  </strong>
                 </div>
 
                 <div className={styles.infoBox}>
