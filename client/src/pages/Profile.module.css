@@ -1,14 +1,33 @@
-css .page {
+.page {
   width: 100%;
   min-height: 100vh;
   padding: 40px 48px;
   box-sizing: border-box;
-  background: radial-gradient(circle at top left, rgba(34, 197, 94, 0.12), transparent 30%), radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.08), transparent 28%), var(--bg-main);
+  background:
+    radial-gradient(circle at top left, rgba(34, 197, 94, 0.13), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.08), transparent 28%),
+    var(--bg-main);
 }
 
-.header {
+.hero {
   width: 100%;
-  margin-bottom: 34px;
+  margin-bottom: 26px;
+  padding: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  background:
+    linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 0.9)),
+    radial-gradient(circle at top right, rgba(34, 197, 94, 0.15), transparent 36%);
+  border: 1px solid #334155;
+  border-radius: 26px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.22);
+  box-sizing: border-box;
+}
+
+.heroContent {
+  min-width: 0;
 }
 
 .eyebrow,
@@ -16,28 +35,99 @@ css .page {
   margin: 0 0 8px;
   color: var(--primary);
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: 1px;
   text-transform: uppercase;
 }
 
 .title {
   margin: 0;
-  font-size: 44px;
-  line-height: 1.1;
+  font-size: clamp(38px, 4vw, 58px);
+  line-height: 1.02;
+  letter-spacing: -1px;
 }
 
 .subtitle {
   max-width: 860px;
   margin: 14px 0 0;
   color: var(--text-muted);
-  line-height: 1.6;
+  line-height: 1.7;
+}
+
+.heroActions {
+  display: flex;
+  gap: 12px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.primaryAction,
+.secondaryAction,
+.cardLink,
+.requestBanner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-weight: 900;
+  border-radius: 14px;
+}
+
+.primaryAction {
+  padding: 13px 18px;
+  background: var(--primary);
+  color: #020617;
+  box-shadow: 0 14px 35px rgba(34, 197, 94, 0.22);
+}
+
+.secondaryAction {
+  padding: 13px 18px;
+  background: #0f172a;
+  border: 1px solid #334155;
+  color: white;
+}
+
+.cardLink {
+  padding: 10px 13px;
+  background: rgba(34, 197, 94, 0.12);
+  color: var(--primary);
+  white-space: nowrap;
+}
+
+.summaryGrid {
+  width: 100%;
+  margin-bottom: 26px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.summaryCard {
+  padding: 18px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid #334155;
+  border-radius: 18px;
+}
+
+.summaryCard span {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.summaryCard strong {
+  display: block;
+  font-size: 24px;
+  text-transform: capitalize;
+  overflow-wrap: break-word;
 }
 
 .dashboardColumns {
   width: 100%;
   display: grid;
-  grid-template-columns: minmax(420px, 0.9fr) minmax(520px, 1.1fr);
+  grid-template-columns: minmax(380px, 0.92fr) minmax(520px, 1.08fr);
   gap: 26px;
   align-items: start;
 }
@@ -55,17 +145,22 @@ css .page {
   display: grid;
   gap: 22px;
   padding: 28px;
-  background: var(--bg-card);
+  background: rgba(15, 23, 42, 0.92);
   border: 1px solid #334155;
-  border-radius: 22px;
+  border-radius: 24px;
   box-sizing: border-box;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.16);
 }
 
 .profileTop {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 16px;
   align-items: center;
+}
+
+.profileIdentity {
+  min-width: 0;
 }
 
 .cardHeader {
@@ -80,20 +175,21 @@ css .page {
   height: 72px;
   display: grid;
   place-items: center;
-  border-radius: 20px;
+  border-radius: 22px;
   background: var(--primary);
   color: #020617;
   font-size: 32px;
   font-weight: 900;
   flex-shrink: 0;
+  box-shadow: 0 18px 40px rgba(34, 197, 94, 0.22);
 }
 
 .smallAvatar {
-  width: 44px;
-  height: 44px;
+  width: 46px;
+  height: 46px;
   display: grid;
   place-items: center;
-  border-radius: 14px;
+  border-radius: 15px;
   background: rgba(34, 197, 94, 0.14);
   color: var(--primary);
   font-size: 18px;
@@ -119,16 +215,22 @@ css .page {
 
 .roleBadge,
 .statusBadge,
-.pointsBadge {
+.pointsBadge,
+.captainBadge {
   width: fit-content;
   padding: 7px 12px;
-  background: rgba(34, 197, 94, 0.12);
-  color: var(--primary);
   border-radius: 999px;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 900;
   text-transform: capitalize;
   white-space: nowrap;
+}
+
+.roleBadge,
+.statusBadge,
+.captainBadge {
+  background: rgba(34, 197, 94, 0.12);
+  color: var(--primary);
 }
 
 .pointsBadge {
@@ -145,10 +247,10 @@ css .page {
 
 .infoBox {
   min-width: 0;
-  padding: 14px;
+  padding: 15px;
   background: #020617;
   border: 1px solid #334155;
-  border-radius: 12px;
+  border-radius: 14px;
 }
 
 .infoBox span {
@@ -156,6 +258,7 @@ css .page {
   margin-bottom: 6px;
   color: var(--text-muted);
   font-size: 13px;
+  font-weight: 700;
 }
 
 .infoBox strong {
@@ -166,6 +269,10 @@ css .page {
   word-break: normal;
   overflow-wrap: break-word;
   text-transform: capitalize;
+}
+
+.noCapitalize {
+  text-transform: none !important;
 }
 
 .playerList {
@@ -194,11 +301,16 @@ css .page {
   padding: 16px;
   background: #020617;
   border: 1px solid #334155;
-  border-radius: 14px;
+  border-radius: 16px;
 }
 
 .listItem {
   justify-content: flex-start;
+}
+
+.playerInfo {
+  min-width: 0;
+  flex: 1;
 }
 
 .listItem strong,
@@ -220,17 +332,66 @@ css .page {
   overflow-wrap: break-word;
 }
 
-.emptyBox {
+.requestBanner {
+  width: 100%;
+  padding: 14px;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.28);
+  color: var(--primary);
+  box-sizing: border-box;
+}
+
+.emptyBox,
+.emptyActionBox {
   padding: 18px;
   background: #020617;
   border: 1px solid #334155;
-  border-radius: 12px;
+  border-radius: 14px;
   color: var(--text-muted);
   line-height: 1.5;
 }
 
+.emptyActionBox {
+  display: grid;
+  gap: 16px;
+}
+
+.emptyActionBox p {
+  margin: 0;
+}
+
+.emptyActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
 .stateCard {
   max-width: 720px;
+  margin: 60px auto;
+  text-align: center;
+}
+
+.stateIcon,
+.errorIcon {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.stateIcon {
+  background: rgba(34, 197, 94, 0.12);
+  color: var(--primary);
+}
+
+.errorIcon {
+  background: rgba(239, 68, 68, 0.12);
+  color: #f87171;
 }
 
 .stateCard h1 {
@@ -245,7 +406,7 @@ css .page {
 }
 
 .error {
-  margin: 0;
+  margin-top: 16px !important;
   padding: 14px 16px;
   background: rgba(239, 68, 68, 0.1);
   border: 1px solid rgba(239, 68, 68, 0.35);
@@ -254,19 +415,48 @@ css .page {
   line-height: 1.5;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1180px) {
+  .summaryGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .dashboardColumns {
     grid-template-columns: 1fr;
   }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 760px) {
   .page {
     padding: 24px;
   }
 
+  .hero,
+  .cardHeader,
+  .tournamentItem,
+  .historyItem {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
   .title {
     font-size: 34px;
+  }
+
+  .heroActions,
+  .emptyActions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .primaryAction,
+  .secondaryAction {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .summaryGrid,
+  .infoGrid {
+    grid-template-columns: 1fr;
   }
 
   .profileCard,
@@ -277,26 +467,15 @@ css .page {
   }
 
   .profileTop {
-    grid-template-columns: auto 1fr;
+    grid-template-columns: auto minmax(0, 1fr);
   }
 
   .roleBadge {
     grid-column: 1 / -1;
   }
 
-  .cardHeader {
-    flex-direction: column;
-  }
-
-  .infoGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .listItem,
-  .tournamentItem,
-  .historyItem {
+  .listItem {
     align-items: flex-start;
-    flex-direction: column;
   }
 
   .avatar {
