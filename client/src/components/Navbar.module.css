@@ -7,7 +7,7 @@
   display: flex;
   align-items: center;
   gap: 26px;
-  background: rgba(2, 6, 23, 0.94);
+  background: rgba(2, 6, 23, 0.95);
   border-bottom: 1px solid #1e293b;
   backdrop-filter: blur(14px);
 }
@@ -113,6 +113,7 @@
 
 .adminMenu,
 .managementMenu,
+.teamMenu,
 .profileArea {
   position: relative;
   flex-shrink: 0;
@@ -173,7 +174,8 @@
 
 .dropdown,
 .adminDropdown,
-.managementDropdown {
+.managementDropdown,
+.teamDropdown {
   position: absolute;
   top: calc(100% + 12px);
   padding: 10px;
@@ -189,7 +191,8 @@
 }
 
 .adminDropdown,
-.managementDropdown {
+.managementDropdown,
+.teamDropdown {
   left: 0;
   width: 270px;
 }
@@ -221,7 +224,7 @@
   color: #f87171;
 }
 
-@media (max-width: 1250px) {
+@media (max-width: 1380px) {
   .navbar {
     min-height: auto;
     padding: 16px 24px;
@@ -264,6 +267,7 @@
 
   .adminMenu,
   .managementMenu,
+  .teamMenu,
   .profileArea {
     width: 100%;
   }
@@ -279,7 +283,8 @@
 
   .dropdown,
   .adminDropdown,
-  .managementDropdown {
+  .managementDropdown,
+  .teamDropdown {
     position: static;
     width: 100%;
     margin-top: 10px;

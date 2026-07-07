@@ -20,6 +20,7 @@ const Navbar = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isManagementOpen, setIsManagementOpen] = useState(false);
+  const [isTeamOpen, setIsTeamOpen] = useState(false);
 
   const token = localStorage.getItem("token");
   const user = getStoredUser();
@@ -32,7 +33,14 @@ const Navbar = () => {
 
   const canManageTournaments = isOrganizer || isAdmin;
 
+  const hideDashboardNavbarPaths = ["/", "/login"];
+
   const adminPathActive = location.pathname.startsWith("/admin");
+
+  const teamPathActive =
+    location.pathname.startsWith("/teams") ||
+    location.pathname.startsWith("/my-team") ||
+    location.pathname.startsWith("/team-requests");
 
   const managementPathActive =
     location.pathname.startsWith("/tournaments/create") ||
@@ -45,6 +53,7 @@ const Navbar = () => {
     setIsProfileOpen(false);
     setIsAdminOpen(false);
     setIsManagementOpen(false);
+    setIsTeamOpen(false);
   };
 
   const closeEverything = () => {
@@ -52,6 +61,7 @@ const Navbar = () => {
     setIsProfileOpen(false);
     setIsAdminOpen(false);
     setIsManagementOpen(false);
+    setIsTeamOpen(false);
   };
 
   const handleLogout = () => {
@@ -67,8 +77,6 @@ const Navbar = () => {
   const getNavClass = ({ isActive }) => {
     return isActive ? `${styles.link} ${styles.activeLink}` : styles.link;
   };
-
-  const hideDashboardNavbarPaths = ["/", "/login"];
 
   if (hideDashboardNavbarPaths.includes(location.pathname)) {
     return null;
@@ -137,29 +145,50 @@ const Navbar = () => {
             Submit Result
           </NavLink>
 
-          <NavLink
-            to="/teams"
-            className={getNavClass}
-            onClick={closeEverything}
-          >
-            Teams
-          </NavLink>
+          <div className={styles.teamMenu}>
+            <button
+              className={`${styles.link} ${styles.menuButton} ${
+                teamPathActive ? styles.activeLink : ""
+              }`}
+              type="button"
+              onClick={() => {
+                setIsTeamOpen((currentValue) => !currentValue);
+                setIsManagementOpen(false);
+                setIsAdminOpen(false);
+                setIsProfileOpen(false);
+              }}
+            >
+              Team ▾
+            </button>
 
-          <NavLink
-            to="/my-team"
-            className={getNavClass}
-            onClick={closeEverything}
-          >
-            My Team
-          </NavLink>
+            {isTeamOpen && (
+              <div className={styles.teamDropdown}>
+                <NavLink
+                  to="/teams"
+                  className={styles.dropdownLink}
+                  onClick={closeEverything}
+                >
+                  All Teams
+                </NavLink>
 
-          <NavLink
-            to="/team-requests"
-            className={getNavClass}
-            onClick={closeEverything}
-          >
-            Team Requests
-          </NavLink>
+                <NavLink
+                  to="/my-team"
+                  className={styles.dropdownLink}
+                  onClick={closeEverything}
+                >
+                  My Team
+                </NavLink>
+
+                <NavLink
+                  to="/team-requests"
+                  className={styles.dropdownLink}
+                  onClick={closeEverything}
+                >
+                  Team Requests
+                </NavLink>
+              </div>
+            )}
+          </div>
 
           {canManageTournaments && (
             <div className={styles.managementMenu}>
@@ -170,6 +199,7 @@ const Navbar = () => {
                 type="button"
                 onClick={() => {
                   setIsManagementOpen((currentValue) => !currentValue);
+                  setIsTeamOpen(false);
                   setIsAdminOpen(false);
                   setIsProfileOpen(false);
                 }}
@@ -202,6 +232,7 @@ const Navbar = () => {
                   >
                     Create Match Room
                   </NavLink>
+
                   <NavLink
                     to="/match-rooms/manage"
                     className={styles.dropdownLink}
@@ -241,6 +272,7 @@ const Navbar = () => {
                 type="button"
                 onClick={() => {
                   setIsAdminOpen((currentValue) => !currentValue);
+                  setIsTeamOpen(false);
                   setIsManagementOpen(false);
                   setIsProfileOpen(false);
                 }}
@@ -294,6 +326,7 @@ const Navbar = () => {
               type="button"
               onClick={() => {
                 setIsProfileOpen((currentValue) => !currentValue);
+                setIsTeamOpen(false);
                 setIsAdminOpen(false);
                 setIsManagementOpen(false);
               }}
@@ -332,6 +365,14 @@ const Navbar = () => {
                   onClick={closeEverything}
                 >
                   My Submissions
+                </NavLink>
+
+                <NavLink
+                  to="/my-team"
+                  className={styles.dropdownLink}
+                  onClick={closeEverything}
+                >
+                  My Team
                 </NavLink>
 
                 <NavLink
