@@ -1,62 +1,43 @@
-# Esports Battle
+# Esports Battle - MERN Tournament Management Platform
 
-Esports Battle is a full-stack MERN esports tournament management platform where players can create teams, register for tournaments, view match rooms, submit match results, and track leaderboards. Admins can manage users, teams, tournaments, match rooms, result approvals, dashboard statistics, and completed tournament history.
-
----
-
-## Project Overview
-
-This project is built to manage esports tournaments like BGMI, PUBG, and Free Fire. It includes a complete player flow and admin control panel.
-
-Players can join teams and participate in tournaments. Admins can create tournaments, create match rooms, approve results, manage platform data, and complete tournaments with automatic winner and prize distribution flow.
+Esports Battle is a full-stack MERN esports tournament management platform where players can create teams, register for tournaments, access match rooms, submit results, and track performance. Organizers can manage their own tournaments and match rooms, while admins and superAdmins can control platform-level operations.
 
 ---
 
-## Features
+## 🚀 Features
 
-### Player Features
-
-- Register and login
-- JWT-based authentication
-- Create team
-- View all teams
-- Send team join request
-- Approve or reject team requests as IGL
-- Register team in tournaments
-- Leave tournament before it starts
-- View match rooms
-- Submit match result
-- View personal result submissions
-- View notifications
-- View leaderboard
-- View completed tournament history
-
-### Admin Features
-
-- Admin dashboard with platform statistics
-- Manage users
-- Manage teams
-- Create tournaments
-- Update tournaments
-- Delete tournaments
-- Start tournaments
-- Complete tournaments
-- Create match rooms
-- Review pending result submissions
-- Approve submitted results
-- Reject submitted results with admin note
-- View prize distribution
-- View completed tournament history
+- Player registration and login with JWT authentication
+- Team creation, join requests, approvals, captain transfer, and team management
+- Organizer application and admin approval workflow
+- Tournament creation and role-based tournament management
+- Match room creation and secure room password access
+- Room passwords visible only to eligible registered teams or authorized managers
+- Result submission and approval system
+- Organizer can approve results only for their own tournaments
+- Admin and superAdmin platform control
+- Notifications for team requests and tournament updates
+- Public landing page and dashboard-style UI
 
 ---
 
-## Tech Stack
+## 🧑‍💻 Role System
+
+| Role       | Permissions                                                                   |
+| ---------- | ----------------------------------------------------------------------------- |
+| Player     | Create/join teams, register for tournaments, submit results, view match rooms |
+| Organizer  | Create/manage own tournaments and match rooms, review own tournament results  |
+| Admin      | Manage users, teams, organizers, tournaments, match rooms, and results        |
+| SuperAdmin | Full platform-level control                                                   |
+
+---
+
+## 🛠️ Tech Stack
 
 ### Frontend
 
-- React.js
+- React
 - Vite
-- React Router DOM
+- React Router
 - Axios
 - CSS Modules
 
@@ -66,36 +47,74 @@ Players can join teams and participate in tournaments. Admins can create tournam
 - Express.js
 - MongoDB
 - Mongoose
-- JWT
-- Bcrypt.js
+- JWT Authentication
+- Bcrypt
+- Zod Validation
+- Helmet
+- Express Rate Limit
 
 ---
 
-## Project Structure
+## 📸 Screenshots
 
-```text
-Esports-Battle
-├── client
-│   ├── src
-│   │   ├── api
-│   │   ├── components
-│   │   ├── pages
-│   │   ├── routes
-│   │   ├── App.jsx
-│   │   └── main.jsx
-│   └── package.json
-│
-├── server
-│   ├── controllers
-│   ├── middleware
-│   ├── models
-│   ├── routes
-│   ├── app.js
-│   ├── server.js
-│   └── package.json
-│
-├── docs
-│   └── API_DOCUMENTATION.md
-│
-└── README.md
+### Landing Page - Hero Section
+
+![Landing Hero](docs/screenshots/landing-hero.png)
+
+### Landing Page - Features
+
+![Landing Features](docs/screenshots/landing-features.png)
+
+### Landing Page - Footer
+
+![Landing Footer](docs/screenshots/landing-footer.png)
+
+### Login Page
+
+![Login Page](docs/screenshots/login-page.png)
+
+### Tournaments Page
+
+![Tournaments Page](docs/screenshots/tournaments-page.png)
+
+### Match Rooms Page
+
+![Match Rooms Page](docs/screenshots/match-rooms-page.png)
+
+### Manage Match Rooms Page
+
+![Manage Match Rooms](docs/screenshots/manage-match-room-page.png)
+
+### My Team Page
+
+![My Team Page](docs/screenshots/my-team-page.png)
+
+### Profile Page
+
+![Profile Page](docs/screenshots/profile-page.png)
+
+### Admin Dashboard
+
+![Admin Dashboard](docs/screenshots/admin-dashboard.png)
+
+---
+
+## ⚙️ Environment Variables
+
+Create `.env` file inside the `server` folder:
+
+```env
+NODE_ENV=development
+PORT=5000
+
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_strong_jwt_secret
+
+CLIENT_URL=http://localhost:5173
+
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX=300
+
+AUTH_RATE_LIMIT_WINDOW_MS=900000
+AUTH_RATE_LIMIT_MAX=20
 ```
