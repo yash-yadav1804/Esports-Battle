@@ -62,11 +62,20 @@ const deleteMatchRoom = asyncHandler(async (req, res) => {
     message: "Match room deleted successfully",
   });
 });
+const getEligibleMatchRooms = asyncHandler(async (req, res) => {
+  const matchRooms = await matchRoomService.getEligibleMatchRooms(req.user);
+
+  res.status(200).json({
+    count: matchRooms.length,
+    matchRooms,
+  });
+});
 
 module.exports = {
   createMatchRoom,
   getAllMatchRooms,
   getMyCreatedMatchRooms,
+  getEligibleMatchRooms,
   getMatchRoomById,
   updateMatchRoom,
   deleteMatchRoom,

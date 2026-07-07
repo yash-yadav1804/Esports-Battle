@@ -4,6 +4,7 @@ const {
   createMatchRoom,
   getAllMatchRooms,
   getMyCreatedMatchRooms,
+  getEligibleMatchRooms,
   getMatchRoomById,
   updateMatchRoom,
   deleteMatchRoom,
@@ -37,6 +38,7 @@ router.get(
   authorizeRoles("organizer", "admin", "superAdmin"),
   getMyCreatedMatchRooms,
 );
+router.get("/eligible", protect, getEligibleMatchRooms);
 
 router.patch(
   "/manage/:matchRoomId",

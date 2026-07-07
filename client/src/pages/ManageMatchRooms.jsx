@@ -13,7 +13,7 @@ const MAP_OPTIONS = [
   "Erangel",
   "Miramar",
   "Sanhok",
-  "Vikindi",
+  "Vikendi",
   "Livik",
   "Karakin",
 ];

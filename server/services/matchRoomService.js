@@ -1,3 +1,4 @@
+const Team = require("../models/Team");
 const MatchRoom = require("../models/MatchRoom");
 const Tournament = require("../models/Tournament");
 
@@ -214,11 +215,42 @@ const deleteMatchRoom = async (matchRoomId, currentUser) => {
 
   return matchRoom;
 };
+const getEligibleMatchRooms = async (currentUser) => {
+  const team = await Team.findOne({
+    players: currentUser._id,
+  });
+
+  if (!team) {
+    return [];
+  }
+
+  const registeredTournaments = await Tournament.find({
+    registeredTeams: team._id,
+    status: { $in: ["upcoming", "live"] },
+  }).select("_id");
+
+  const tournamentIds = registeredTournaments.map(
+    (tournament) => tournament._id,
+  );
+
+  if (tournamentIds.length === 0) {
+    return [];
+  }
+
+  const matchRooms = await populateMatchRoom(
+    MatchRoom.find({
+      tournament: { $in: tournamentIds },
+    }).sort({ matchTime: 1 }),
+  );
+
+  return matchRooms;
+};
 
 module.exports = {
   createMatchRoom,
   getAllMatchRooms,
   getMyCreatedMatchRooms,
+  getEligibleMatchRooms,
   getMatchRoomById,
   updateMatchRoom,
   deleteMatchRoom,
