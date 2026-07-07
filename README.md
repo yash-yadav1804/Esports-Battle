@@ -25,6 +25,12 @@ Esports Battle is a full-stack MERN esports tournament management platform where
 
 ---
 
+## 📚 API Documentation
+
+Detailed backend API documentation is available here:
+
+[View API Documentation](docs/API_DOCUMENTATION.md)
+
 ## 🧑‍💻 Role System
 
 | Role       | Permissions                                                                   |
