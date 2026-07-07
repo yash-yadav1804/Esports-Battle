@@ -1,5 +1,7 @@
 # Esports Battle - MERN Tournament Management Platform
 
+[![MERN CI](https://github.com/yash-yadav1804/Esports-Battle/actions/workflows/ci.yml/badge.svg)](https://github.com/yash-yadav1804/Esports-Battle/actions/workflows/ci.yml)
+
 Esports Battle is a full-stack MERN esports tournament management platform where players can create teams, register for tournaments, access match rooms, submit results, and track performance. Organizers can manage their own tournaments and match rooms, while admins and superAdmins can control platform-level operations.
 
 ## 🌐 Live Demo
