@@ -2,6 +2,11 @@
 
 Esports Battle is a full-stack MERN esports tournament management platform where players can create teams, register for tournaments, access match rooms, submit results, and track performance. Organizers can manage their own tournaments and match rooms, while admins and superAdmins can control platform-level operations.
 
+## 🌐 Live Demo
+
+- Frontend: https://esports-battle-coral.vercel.app
+- Backend API: https://esports-battle-api.onrender.com
+
 ---
 
 ## 🚀 Features
