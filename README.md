@@ -42,6 +42,37 @@ Detailed backend API documentation is available here:
 
 ---
 
+## 🧠 Key Engineering Decisions
+
+- Public signup creates only player accounts for security.
+- Organizer role is granted through admin approval.
+- Admin and superAdmin have platform-level control.
+- Organizers can manage only their own tournaments, match rooms, and result submissions.
+- Room passwords are visible only to eligible registered teams or authorized managers.
+- Backend follows layered architecture: routes, controllers, services, models, middleware, and validators.
+- Validation is handled with Zod before business logic execution.
+- JWT is used for stateless authentication.
+- CORS, Helmet, rate limiting, and MongoDB input sanitization are used for basic API security.
+
+---
+
+## 🏗️ System Architecture
+
+Client (React + Vite)
+|
+| Axios + JWT Token
+v
+Backend API (Node.js + Express)
+|
+| Mongoose ODM
+v
+MongoDB Atlas
+
+Backend Structure:
+routes → validation middleware → controllers → services → models
+
+---
+
 ## 🛠️ Tech Stack
 
 ### Frontend
