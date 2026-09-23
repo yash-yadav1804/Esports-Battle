@@ -1,0 +1,195 @@
+.page {
+  width: 100%;
+  min-height: 100vh;
+  padding: 40px 48px;
+  box-sizing: border-box;
+  background:
+    radial-gradient(circle at top right, rgba(34, 197, 94, 0.12), transparent 30%),
+    var(--bg-main);
+}
+
+.header {
+  width: 100%;
+  margin-bottom: 34px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0;
+  font-size: 44px;
+  line-height: 1.1;
+}
+
+.subtitle {
+  max-width: 860px;
+  margin: 14px 0 0;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(460px, 1fr));
+  gap: 26px;
+  align-items: stretch;
+}
+
+.tournamentCard {
+  display: grid;
+  gap: 20px;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.tournamentCard:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary);
+}
+
+.cardHeader h2 {
+  margin: 0;
+  font-size: 26px;
+}
+
+.status {
+  display: inline-block;
+  margin: 0 0 10px;
+  padding: 7px 11px;
+  background: rgba(34, 197, 94, 0.12);
+  color: var(--primary);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.statusRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.ownerBadge {
+  display: inline-block;
+  padding: 7px 11px;
+  background: rgba(59, 130, 246, 0.12);
+  color: #93c5fd;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.meta {
+  margin: 8px 0 0;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.infoGrid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.infoBox {
+  min-width: 0;
+  padding: 14px;
+  background: #020617;
+  border: 1px solid #334155;
+  border-radius: 12px;
+}
+
+.infoBox span {
+  display: block;
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.infoBox strong {
+  display: block;
+  font-size: 18px;
+  overflow-wrap: break-word;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+.actions button {
+  flex: 1;
+}
+
+.editTitle {
+  margin: 0;
+  font-size: 24px;
+}
+
+.label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.input {
+  width: 100%;
+  padding: 13px 14px;
+  margin-bottom: 16px;
+  background: #020617;
+  border: 1px solid #334155;
+  color: white;
+  border-radius: 10px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  border-color: var(--primary);
+}
+
+.twoColumn {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .page {
+    padding: 24px;
+  }
+
+  .title {
+    font-size: 34px;
+  }
+
+  .grid,
+  .infoGrid,
+  .twoColumn {
+    grid-template-columns: 1fr;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+}

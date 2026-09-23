@@ -1,0 +1,37 @@
+.button {
+  padding: 11px 16px;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.primary {
+  background: var(--primary);
+}
+
+.primary:hover {
+  background: var(--primary-hover);
+}
+
+.danger {
+  background: #ef4444;
+}
+
+.danger:hover {
+  background: #dc2626;
+}
+
+.secondary {
+  background: #334155;
+}
+
+.secondary:hover {
+  background: #475569;
+}
+
+.button:disabled {
+  background: #64748b;
+  cursor: not-allowed;
+}

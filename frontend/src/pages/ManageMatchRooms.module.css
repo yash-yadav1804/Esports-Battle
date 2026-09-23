@@ -1,0 +1,295 @@
+.page {
+  width: 100%;
+  min-height: 100vh;
+  padding: 40px 48px;
+  box-sizing: border-box;
+  background:
+    radial-gradient(circle at top right, rgba(34, 197, 94, 0.12), transparent 30%),
+    var(--bg-main);
+}
+
+.header {
+  width: 100%;
+  margin-bottom: 34px;
+}
+
+.eyebrow,
+.modalEyebrow {
+  margin: 0 0 8px;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0;
+  font-size: 44px;
+  line-height: 1.1;
+}
+
+.subtitle {
+  max-width: 860px;
+  margin: 14px 0 0;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+  gap: 26px;
+}
+
+.roomCard {
+  display: grid;
+  gap: 20px;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.roomCard:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.roomLabel {
+  margin: 0 0 8px;
+  color: var(--primary);
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.cardHeader h2 {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.15;
+}
+
+.metaText {
+  margin: 8px 0 0;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.mapBadge {
+  flex-shrink: 0;
+  padding: 7px 11px;
+  background: rgba(34, 197, 94, 0.12);
+  color: var(--primary);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.infoGrid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.infoBox {
+  min-width: 0;
+  padding: 14px;
+  background: #020617;
+  border: 1px solid #334155;
+  border-radius: 12px;
+}
+
+.infoBox span {
+  display: block;
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.infoBox strong {
+  display: block;
+  font-size: 16px;
+  line-height: 1.35;
+  overflow-wrap: break-word;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+.actions button,
+.modalActions button {
+  flex: 1;
+  padding: 12px 14px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.actions button:disabled,
+.modalActions button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.editBtn {
+  background: var(--primary);
+  color: #020617;
+}
+
+.deleteBtn {
+  background: #ef4444;
+  color: white;
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(2, 6, 23, 0.78);
+  backdrop-filter: blur(8px);
+}
+
+.modalCard,
+.deleteCard {
+  width: min(100%, 560px);
+  padding: 28px;
+  background: #020617;
+  border: 1px solid #334155;
+  border-radius: 22px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+}
+
+.modalCard h2,
+.deleteCard h2 {
+  margin: 0 0 20px;
+  font-size: 28px;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.formGroup {
+  display: grid;
+  gap: 8px;
+  color: var(--text-muted);
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.formGroup input,
+.formGroup select {
+  width: 100%;
+  padding: 13px 14px;
+  background: #0f172a;
+  border: 1px solid #334155;
+  color: white;
+  border-radius: 12px;
+  outline: none;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.formGroup input:focus,
+.formGroup select:focus {
+  border-color: var(--primary);
+}
+
+.fullWidth {
+  grid-column: 1 / -1;
+}
+
+.modalActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.cancelBtn {
+  background: #0f172a;
+  color: white;
+  border: 1px solid #334155 !important;
+}
+
+.cancelBtn:hover {
+  border-color: var(--primary) !important;
+}
+
+.saveBtn {
+  background: var(--primary);
+  color: #020617;
+}
+
+.deleteIcon {
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 16px;
+  border-radius: 50%;
+  background: rgba(248, 113, 113, 0.14);
+  color: #f87171;
+  font-size: 26px;
+  font-weight: 900;
+}
+
+.deleteCard p {
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.deleteCard strong {
+  color: white;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .page {
+    padding: 24px;
+  }
+
+  .title {
+    font-size: 34px;
+  }
+
+  .grid,
+  .infoGrid,
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .cardHeader,
+  .actions,
+  .modalActions {
+    flex-direction: column;
+  }
+
+  .mapBadge {
+    width: fit-content;
+  }
+}

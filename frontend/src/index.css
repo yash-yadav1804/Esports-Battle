@@ -1,0 +1,26 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --bg-main: #0f172a;
+  --bg-card: #1e293b;
+  --text-main: #ffffff;
+  --text-muted: #cbd5e1;
+  --primary: #22c55e;
+  --primary-hover: #16a34a;
+  --danger: #f87171;
+  --link: #93c5fd;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: var(--bg-main);
+  color: var(--text-main);
+}
+
+button,
+input {
+  font-family: inherit;
+}
