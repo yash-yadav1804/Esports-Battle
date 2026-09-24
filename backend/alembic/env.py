@@ -4,12 +4,11 @@ from sqlalchemy import engine_from_config, pool
 from app.core.config import settings
 from app.models import Base
 
-
 config = context.config
 
 config.set_main_option(
     "sqlalchemy.url",
-    settings.database_url,
+    settings.database_url.replace("%", "%%"),
 )
 
 target_metadata = Base.metadata
