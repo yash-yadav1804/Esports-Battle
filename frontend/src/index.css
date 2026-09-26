@@ -24,3 +24,194 @@ button,
 input {
   font-family: inherit;
 }
+
+/* =========================================================
+   FINAL UI SYSTEM
+   CSS-ONLY VISUAL LAYER
+   No React / JS / API / routing changes
+   ========================================================= */
+
+:root {
+  --bg-main: #070b14;
+  --bg-card: #101827;
+  --bg-elevated: #131d2e;
+  --bg-soft: #0b1220;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-soft: #64748b;
+  --primary: #22c55e;
+  --primary-hover: #16a34a;
+  --primary-soft: rgba(34, 197, 94, 0.10);
+  --primary-border: rgba(34, 197, 94, 0.30);
+  --danger: #f87171;
+  --danger-soft: rgba(239, 68, 68, 0.10);
+  --warning-soft: rgba(245, 158, 11, 0.10);
+  --border-color: rgba(148, 163, 184, 0.16);
+  --border-strong: rgba(148, 163, 184, 0.28);
+  --link: #93c5fd;
+  --shadow-sm: 0 10px 30px rgba(0, 0, 0, 0.18);
+  --shadow-md: 0 18px 45px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 30px 80px rgba(0, 0, 0, 0.38);
+}
+
+html {
+  background: var(--bg-main);
+  color-scheme: dark;
+}
+
+body {
+  min-width: 320px;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(34, 197, 94, 0.055), transparent 28%),
+    radial-gradient(circle at 90% 100%, rgba(59, 130, 246, 0.045), transparent 30%),
+    var(--bg-main);
+  color: var(--text-main);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+input,
+textarea,
+select {
+  color: var(--text-main);
+  background: rgba(2, 6, 23, 0.88);
+  border-color: var(--border-color);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #64748b;
+}
+
+a {
+  transition: color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
+}
+
+::selection {
+  background: rgba(34, 197, 94, 0.24);
+  color: white;
+}
+
+:where(
+  [class*="Card"],
+  [class*="card"],
+  [class*="Panel"],
+  [class*="panel"],
+  [class*="Box"],
+  [class*="box"]
+) {
+  border-color: var(--border-color);
+}
+
+:where(
+  [class*="input"],
+  [class*="Input"],
+  [class*="textarea"],
+  [class*="Textarea"],
+  [class*="select"],
+  [class*="Select"]
+) {
+  border-color: var(--border-color);
+  border-radius: 12px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+:where(
+  [class*="input"],
+  [class*="Input"],
+  [class*="textarea"],
+  [class*="Textarea"],
+  [class*="select"],
+  [class*="Select"]
+):focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.08);
+}
+
+:where(
+  [class*="Button"],
+  [class*="button"],
+  [class*="Action"],
+  [class*="action"]
+) {
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+:where(
+  [class*="teamCard"],
+  [class*="TeamCard"],
+  [class*="tournamentCard"],
+  [class*="TournamentCard"],
+  [class*="statCard"],
+  [class*="StatCard"],
+  [class*="actionCard"],
+  [class*="ActionCard"],
+  [class*="featureCard"],
+  [class*="FeatureCard"],
+  [class*="heroCard"],
+  [class*="HeroCard"],
+  [class*="roomCard"],
+  [class*="RoomCard"],
+  [class*="userCard"],
+  [class*="UserCard"],
+  [class*="resultCard"],
+  [class*="ResultCard"]
+) {
+  box-shadow: var(--shadow-sm);
+}
+
+:where([class*="title"], [class*="Title"]) {
+  color: var(--text-main);
+}
+
+:where(
+  [class*="subtitle"],
+  [class*="Subtitle"],
+  [class*="description"],
+  [class*="Description"],
+  [class*="meta"],
+  [class*="Meta"]
+) {
+  color: var(--text-muted);
+}
+
+:where(
+  [class*="status"],
+  [class*="Status"],
+  [class*="badge"],
+  [class*="Badge"]
+) {
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+@media (max-width: 640px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  :where(
+    [class*="modal"],
+    [class*="Modal"],
+    [class*="dialog"],
+    [class*="Dialog"]
+  ) {
+    max-width: calc(100vw - 28px);
+  }
+}
