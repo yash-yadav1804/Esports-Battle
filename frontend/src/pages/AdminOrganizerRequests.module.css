@@ -1,179 +1,412 @@
-css .page {
+.page {
   width: 100%;
   min-height: 100vh;
-  padding: 40px 48px;
   box-sizing: border-box;
-  background: radial-gradient(circle at top right, rgba(34, 197, 94, 0.12), transparent 30%), radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.08), transparent 28%), var(--bg-main);
+
+  padding: 48px clamp(24px, 4vw, 64px) 72px;
+
+  background:
+    radial-gradient(circle at 85% 0%,
+      rgba(34, 197, 94, 0.10),
+      transparent 32%),
+    radial-gradient(circle at 0% 45%,
+      rgba(59, 130, 246, 0.06),
+      transparent 28%),
+    var(--bg-main);
 }
+
+
+/* =========================================================
+   PAGE CONTENT
+   ========================================================= */
 
 .header {
   width: 100%;
-  margin-bottom: 34px;
+  max-width: 1280px;
+
+  margin: 0 auto 36px;
 }
 
 .eyebrow,
 .cardEyebrow {
-  margin: 0 0 8px;
-  color: var(--primary);
-  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  margin: 0 0 12px;
+  padding: 6px 11px;
+
+  color: #86efac;
+
+  background: rgba(34, 197, 94, 0.07);
+
+  border: 1px solid rgba(34, 197, 94, 0.18);
+
+  border-radius: 999px;
+
+  font-size: 11px;
   font-weight: 900;
-  letter-spacing: 1px;
+  letter-spacing: 1.1px;
+
   text-transform: uppercase;
+}
+
+.eyebrow::before {
+  content: "";
+
+  width: 6px;
+  height: 6px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: var(--primary);
+
+  box-shadow:
+    0 0 0 4px rgba(34, 197, 94, 0.06),
+    0 0 12px rgba(34, 197, 94, 0.65);
 }
 
 .title {
   margin: 0;
-  font-size: 44px;
-  line-height: 1.1;
+
+  color: var(--text-main);
+
+  font-size: clamp(38px, 4vw, 54px);
+  line-height: 1.04;
+
+  letter-spacing: -2px;
+  font-weight: 900;
 }
 
 .subtitle {
-  max-width: 900px;
-  margin: 14px 0 0;
+  max-width: 780px;
+
+  margin: 16px 0 0;
+
   color: var(--text-muted);
-  line-height: 1.6;
+
+  font-size: 16px;
+  line-height: 1.7;
 }
+
+
+/* =========================================================
+   REQUEST GRID
+   ========================================================= */
 
 .grid {
   width: 100%;
+  max-width: 1280px;
+
+  margin: 0 auto;
+
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
   gap: 24px;
+
   align-items: start;
 }
 
-.card,
-.emptyBox,
-.stateCard {
-  padding: 28px;
-  background: var(--bg-card);
-  border: 1px solid #334155;
-  border-radius: 22px;
-  box-sizing: border-box;
-}
+
+/* =========================================================
+   REQUEST CARD
+   ========================================================= */
 
 .card {
+  width: 100%;
+  min-width: 0;
+
+  box-sizing: border-box;
+
   display: grid;
-  gap: 18px;
+  gap: 20px;
+
+  padding: 26px;
+
+  background:
+    linear-gradient(145deg,
+      rgba(17, 24, 39, 0.98),
+      rgba(15, 23, 42, 0.98));
+
+  border: 1px solid rgba(71, 85, 105, 0.62);
+
+  border-radius: 20px;
+
+  box-shadow:
+    0 14px 40px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.02);
+
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
+
+.card:hover {
+  transform: translateY(-3px);
+
+  border-color: rgba(34, 197, 94, 0.32);
+
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.18),
+    0 0 0 1px rgba(34, 197, 94, 0.04);
+}
+
+
+/* =========================================================
+   CARD HEADER
+   ========================================================= */
 
 .cardTop {
   display: flex;
+
   justify-content: space-between;
-  gap: 16px;
   align-items: flex-start;
+
+  gap: 18px;
 }
 
 .cardTop h2 {
+  min-width: 0;
+
   margin: 0;
-  font-size: 28px;
-  line-height: 1.15;
+
+  color: var(--text-main);
+
+  font-size: 25px;
+  line-height: 1.2;
+  font-weight: 900;
+
+  letter-spacing: -0.5px;
+
   overflow-wrap: break-word;
 }
 
 .dateText {
   margin: 8px 0 0;
+
   color: var(--text-muted);
+
+  font-size: 14px;
   line-height: 1.5;
 }
 
+
+/* =========================================================
+   STATUS
+   ========================================================= */
+
 .statusBadge {
   flex-shrink: 0;
+
   padding: 7px 11px;
-  background: rgba(250, 204, 21, 0.12);
+
   color: #facc15;
+
+  background: rgba(250, 204, 21, 0.08);
+
+  border: 1px solid rgba(250, 204, 21, 0.22);
+
   border-radius: 999px;
-  font-size: 13px;
+
+  font-size: 12px;
   font-weight: 900;
+
   text-transform: capitalize;
 }
 
+
+/* =========================================================
+   USER SECTION
+   ========================================================= */
+
 .userBox {
   display: flex;
-  gap: 14px;
+
   align-items: center;
+
+  gap: 14px;
+
   padding: 16px;
-  background: #020617;
-  border: 1px solid #334155;
-  border-radius: 14px;
+
+  background:
+    rgba(2, 6, 23, 0.78);
+
+  border: 1px solid rgba(71, 85, 105, 0.55);
+
+  border-radius: 15px;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.userBox:hover {
+  background:
+    rgba(15, 23, 42, 0.9);
+
+  border-color:
+    rgba(34, 197, 94, 0.25);
 }
 
 .avatar {
   width: 48px;
   height: 48px;
+
   display: grid;
   place-items: center;
+
   flex-shrink: 0;
-  background: var(--primary);
+
+  background:
+    linear-gradient(135deg,
+      var(--primary),
+      var(--primary-hover));
+
   color: #020617;
-  border-radius: 50%;
-  font-size: 20px;
+
+  border-radius: 14px;
+
+  font-size: 19px;
   font-weight: 900;
+
+  box-shadow:
+    0 8px 20px rgba(34, 197, 94, 0.14);
 }
 
 .userBox strong {
   display: block;
-  font-size: 18px;
+
+  color: var(--text-main);
+
+  font-size: 17px;
   line-height: 1.35;
 }
 
 .userBox p {
   margin: 5px 0 0;
+
   color: var(--text-muted);
+
+  font-size: 13px;
   line-height: 1.45;
+
   overflow-wrap: break-word;
 }
 
+
+/* =========================================================
+   INFORMATION GRID
+   ========================================================= */
+
 .infoGrid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
   gap: 12px;
 }
 
 .infoGrid div,
 .textBlock {
   min-width: 0;
+
   padding: 14px;
-  background: #020617;
-  border: 1px solid #334155;
-  border-radius: 12px;
+
+  background:
+    rgba(2, 6, 23, 0.72);
+
+  border: 1px solid rgba(71, 85, 105, 0.52);
+
+  border-radius: 13px;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.infoGrid div:hover,
+.textBlock:hover {
+  background:
+    rgba(15, 23, 42, 0.82);
+
+  border-color:
+    rgba(71, 85, 105, 0.78);
 }
 
 .infoGrid span,
 .textBlock span,
 .label {
   display: block;
+
   margin-bottom: 7px;
+
   color: var(--text-muted);
-  font-size: 13px;
+
+  font-size: 12px;
   font-weight: 800;
+
+  letter-spacing: 0.2px;
 }
 
 .infoGrid strong {
   display: block;
-  line-height: 1.35;
+
+  color: var(--text-main);
+
+  line-height: 1.4;
+
   overflow-wrap: break-word;
 }
 
 .textBlock p {
   margin: 0;
+
   color: var(--text-muted);
+
   line-height: 1.6;
+
   overflow-wrap: break-word;
 }
 
+
+/* =========================================================
+   TEXTAREA
+   ========================================================= */
+
 .textarea {
   width: 100%;
-  min-height: 96px;
-  padding: 13px 14px;
-  background: #020617;
-  border: 1px solid #334155;
-  color: white;
-  border-radius: 12px;
-  outline: none;
+  min-height: 100px;
+
   box-sizing: border-box;
+
+  padding: 14px 15px;
+
+  background:
+    rgba(2, 6, 23, 0.9);
+
+  border: 1px solid rgba(71, 85, 105, 0.62);
+
+  color: var(--text-main);
+
+  border-radius: 13px;
+
+  outline: none;
+
   font: inherit;
+
   resize: vertical;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 }
 
 .textarea::placeholder {
@@ -181,106 +414,362 @@ css .page {
 }
 
 .textarea:focus {
+  background:
+    rgba(2, 6, 23, 0.98);
+
   border-color: var(--primary);
+
+  box-shadow:
+    0 0 0 3px rgba(34, 197, 94, 0.08);
 }
+
+
+/* =========================================================
+   ACTION BUTTONS
+   ========================================================= */
 
 .actions {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
   gap: 12px;
 }
 
 .approveBtn,
 .rejectBtn {
   min-height: 50px;
-  border-radius: 12px;
+
+  border-radius: 13px;
+
   cursor: pointer;
+
+  font-family: inherit;
+
+  font-size: 14px;
   font-weight: 900;
-  font-size: 15px;
-  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .approveBtn {
-  background: var(--primary);
+  background:
+    linear-gradient(135deg,
+      var(--primary),
+      var(--primary-hover));
+
   color: #020617;
+
   border: none;
+
+  box-shadow:
+    0 8px 20px rgba(34, 197, 94, 0.12);
+}
+
+.approveBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 12px 28px rgba(34, 197, 94, 0.2);
 }
 
 .rejectBtn {
-  background: rgba(239, 68, 68, 0.12);
+  background:
+    rgba(239, 68, 68, 0.08);
+
   color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.35);
+
+  border:
+    1px solid rgba(239, 68, 68, 0.3);
 }
 
-.approveBtn:hover,
-.rejectBtn:hover {
+.rejectBtn:hover:not(:disabled) {
   transform: translateY(-2px);
+
+  background:
+    rgba(239, 68, 68, 0.14);
+
+  border-color:
+    rgba(248, 113, 113, 0.5);
 }
 
 .approveBtn:disabled,
 .rejectBtn:disabled {
-  opacity: 0.65;
+  opacity: 0.55;
+
   cursor: not-allowed;
+
   transform: none;
+
+  box-shadow: none;
 }
+
+
+/* =========================================================
+   EMPTY / LOADING / ERROR STATES
+   ========================================================= */
 
 .emptyBox,
 .stateCard {
-  max-width: 720px;
+  width: 100%;
+  max-width: 1280px;
+
+  min-height: 360px;
+
+  box-sizing: border-box;
+
+  margin: 0 auto;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 12px;
+
+  padding: 56px 32px;
+
+  text-align: center;
+
+  position: relative;
+
+  overflow: hidden;
+
+  background:
+    radial-gradient(circle at 50% 0%,
+      rgba(34, 197, 94, 0.075),
+      transparent 42%),
+    linear-gradient(145deg,
+      rgba(17, 24, 39, 0.98),
+      rgba(2, 6, 23, 0.98));
+
+  border:
+    1px solid rgba(71, 85, 105, 0.65);
+
+  border-radius: 22px;
+
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.025);
+}
+
+
+/* Decorative glow */
+.emptyBox::after,
+.stateCard::after {
+  content: "";
+
+  position: absolute;
+
+  width: 340px;
+  height: 180px;
+
+  top: -100px;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  background:
+    rgba(34, 197, 94, 0.09);
+
+  filter: blur(65px);
+
+  pointer-events: none;
+}
+
+
+/* Success icon */
+.emptyBox::before {
+  content: "✓";
+
+  position: relative;
+
+  z-index: 1;
+
+  width: 68px;
+  height: 68px;
+
   display: grid;
-  gap: 10px;
+  place-items: center;
+
+  margin-bottom: 8px;
+
+  background:
+    linear-gradient(135deg,
+      var(--primary),
+      var(--primary-hover));
+
+  color: #020617;
+
+  border-radius: 18px;
+
+  font-size: 31px;
+  font-weight: 1000;
+
+  box-shadow:
+    0 12px 30px rgba(34, 197, 94, 0.18);
 }
 
 .emptyBox h2,
 .stateCard h1 {
+  position: relative;
+
+  z-index: 1;
+
   margin: 0;
-  font-size: 30px;
+
+  color: var(--text-main);
+
+  font-size: clamp(26px, 3vw, 34px);
+
+  line-height: 1.15;
+
+  letter-spacing: -0.7px;
 }
 
 .emptyBox p,
 .stateCard p {
+  position: relative;
+
+  z-index: 1;
+
+  max-width: 560px;
+
   margin: 0;
+
   color: var(--text-muted);
-  line-height: 1.6;
+
+  font-size: 15px;
+
+  line-height: 1.7;
 }
 
+
+/* =========================================================
+   ERROR
+   ========================================================= */
+
 .error {
-  margin: 0 0 22px;
+  width: 100%;
+  max-width: 1280px;
+
+  box-sizing: border-box;
+
+  margin: 0 auto 24px;
+
   padding: 14px 16px;
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.35);
+
+  background:
+    rgba(239, 68, 68, 0.08);
+
+  border:
+    1px solid rgba(239, 68, 68, 0.3);
+
   color: #f87171;
-  border-radius: 12px;
+
+  border-radius: 13px;
+
   line-height: 1.5;
 }
 
-@media (max-width: 720px) {
-  .page {
-    padding: 24px;
-  }
 
-  .title {
-    font-size: 34px;
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1000px) {
+  .page {
+    padding:
+      40px 28px 60px;
   }
 
   .grid {
     grid-template-columns: 1fr;
   }
 
-  .card,
-  .emptyBox,
-  .stateCard {
-    padding: 24px;
+  .header {
+    margin-bottom: 30px;
   }
 
-  .cardTop,
-  .userBox {
+  .emptyBox,
+  .stateCard {
+    min-height: 320px;
+  }
+}
+
+
+@media (max-width: 720px) {
+  .page {
+    padding:
+      28px 18px 48px;
+  }
+
+  .header {
+    margin-bottom: 26px;
+  }
+
+  .title {
+    font-size: 36px;
+
+    letter-spacing: -1.3px;
+  }
+
+  .subtitle {
+    margin-top: 12px;
+
+    font-size: 14px;
+  }
+
+  .card {
+    padding: 20px;
+
+    border-radius: 17px;
+  }
+
+  .cardTop {
     flex-direction: column;
+
+    align-items: flex-start;
+  }
+
+  .userBox {
     align-items: flex-start;
   }
 
   .infoGrid,
   .actions {
     grid-template-columns: 1fr;
+  }
+
+  .emptyBox,
+  .stateCard {
+    min-height: 280px;
+
+    padding:
+      40px 20px;
+
+    border-radius: 18px;
+  }
+
+  .emptyBox::before {
+    width: 58px;
+    height: 58px;
+
+    border-radius: 16px;
+
+    font-size: 27px;
+  }
+
+  .emptyBox h2,
+  .stateCard h1 {
+    font-size: 26px;
   }
 }
